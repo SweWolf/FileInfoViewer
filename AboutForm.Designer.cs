@@ -20,6 +20,7 @@ namespace FileInfoViewer
             pnlContent = new Panel();
             lblDescription = new Label();
             lblCopyright = new Label();
+            lnkGitHub = new LinkLabel();
             lblBuiltWithHeader = new Label();
             lblBuiltWith = new Label();
             btnClose = new Button();
@@ -74,13 +75,14 @@ namespace FileInfoViewer
             pnlContent.BackColor = Color.White;
             pnlContent.Controls.Add(lblDescription);
             pnlContent.Controls.Add(lblCopyright);
+            pnlContent.Controls.Add(lnkGitHub);
             pnlContent.Controls.Add(lblBuiltWithHeader);
             pnlContent.Controls.Add(lblBuiltWith);
             pnlContent.Controls.Add(btnClose);
             pnlContent.Dock = DockStyle.Fill;
             pnlContent.Location = new Point(0, 88);
             pnlContent.Name = "pnlContent";
-            pnlContent.Size = new Size(440, 232);
+            pnlContent.Size = new Size(440, 252);
             pnlContent.TabIndex = 1;
             //
             // lblDescription
@@ -103,24 +105,35 @@ namespace FileInfoViewer
             lblCopyright.TabIndex = 1;
             lblCopyright.Text = "SweWolf Software";
             //
+            // lnkGitHub
+            //
+            lnkGitHub.AutoSize = true;
+            lnkGitHub.Font = new Font("Segoe UI", 9F);
+            lnkGitHub.Location = new Point(20, 84);
+            lnkGitHub.Name = "lnkGitHub";
+            lnkGitHub.TabIndex = 2;
+            lnkGitHub.TabStop = true;
+            lnkGitHub.Text = "https://github.com/SweWolf/FileInfoViewer";
+            lnkGitHub.LinkClicked += lnkGitHub_LinkClicked;
+            //
             // lblBuiltWithHeader
             //
             lblBuiltWithHeader.AutoSize = true;
             lblBuiltWithHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             lblBuiltWithHeader.ForeColor = Color.FromArgb(50, 50, 50);
-            lblBuiltWithHeader.Location = new Point(20, 96);
+            lblBuiltWithHeader.Location = new Point(20, 116);
             lblBuiltWithHeader.Name = "lblBuiltWithHeader";
-            lblBuiltWithHeader.TabIndex = 2;
+            lblBuiltWithHeader.TabIndex = 3;
             lblBuiltWithHeader.Text = "Built with:";
             //
             // lblBuiltWith
             //
             lblBuiltWith.Font = new Font("Segoe UI", 9F);
             lblBuiltWith.ForeColor = Color.FromArgb(80, 80, 80);
-            lblBuiltWith.Location = new Point(20, 116);
+            lblBuiltWith.Location = new Point(20, 136);
             lblBuiltWith.Name = "lblBuiltWith";
             lblBuiltWith.Size = new Size(400, 52);
-            lblBuiltWith.TabIndex = 3;
+            lblBuiltWith.TabIndex = 4;
             lblBuiltWith.Text = "• MetadataExtractor 2.9.0\r\n• TagLibSharp 2.3.0\r\n• .NET 9 / Windows Forms";
             //
             // btnClose
@@ -131,10 +144,10 @@ namespace FileInfoViewer
             btnClose.FlatStyle = FlatStyle.Flat;
             btnClose.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
             btnClose.ForeColor = Color.White;
-            btnClose.Location = new Point(340, 190);
+            btnClose.Location = new Point(340, 210);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(80, 28);
-            btnClose.TabIndex = 4;
+            btnClose.TabIndex = 5;
             btnClose.Text = "Close";
             btnClose.UseVisualStyleBackColor = false;
             btnClose.Click += btnClose_Click;
@@ -143,7 +156,7 @@ namespace FileInfoViewer
             //
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(440, 320);
+            ClientSize = new Size(440, 340);
             Controls.Add(pnlContent);
             Controls.Add(pnlHeader);
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -169,6 +182,7 @@ namespace FileInfoViewer
         private Label lblCopyright;
         private Label lblBuiltWithHeader;
         private Label lblBuiltWith;
+        private LinkLabel lnkGitHub;
         private Button btnClose;
     }
 }

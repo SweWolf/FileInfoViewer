@@ -25,6 +25,15 @@ public partial class AboutForm : Form
 
     private void btnClose_Click(object sender, EventArgs e) => Close();
 
+    private void lnkGitHub_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+    {
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+        {
+            FileName = "https://github.com/SweWolf/FileInfoViewer",
+            UseShellExecute = true,
+        });
+    }
+
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
         if (keyData == Keys.Escape) { Close(); return true; }
