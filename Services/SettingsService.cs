@@ -6,7 +6,7 @@ namespace FileInfoViewer.Services;
 public static class SettingsService
 {
     private static readonly string SettingsFolder =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FileInfoViewer");
+        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SweWolfSoftware", "FileInfoViewer");
 
     private static readonly string SettingsFilePath =
         Path.Combine(SettingsFolder, "settings.json");
