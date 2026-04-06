@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Resources\FileInfoViewer.ico</ApplicationIcon>
+    <Version>1.0.0</Version>
+    <Title>File Info Viewer</Title>
+    <PackageIcon>FileInfoViewer.png</PackageIcon>
+    <Company>SweWolf Software</Company>
+    <Product>File Info Viewer</Product>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\FileInfoViewer.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MetadataExtractor" Version="2.9.0" />
+    <PackageReference Include="System.Reflection.Metadata" Version="10.0.5" />
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Resources\FileInfoViewer.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <EmbeddedResource Include="Resources\FileInfoViewer.png" />
+  </ItemGroup>
+
+</Project>
