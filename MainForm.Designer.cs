@@ -25,12 +25,12 @@ partial class MainForm
         pnlHeader = new Panel();
         lblTitle = new Label();
         btnSettings = new Button();
+        btnAbout = new Button();
         pnlMain = new Panel();
         lblFilePathLabel = new Label();
         txtFilePath = new TextBox();
         btnBrowse = new Button();
         btnView = new Button();
-        btnAbout = new Button();
         lblStatus = new Label();
         pnlHeader.SuspendLayout();
         pnlMain.SuspendLayout();
@@ -75,6 +75,21 @@ partial class MainForm
         btnSettings.UseVisualStyleBackColor = false;
         btnSettings.Click += btnSettings_Click;
         // 
+        // btnAbout
+        // 
+        btnAbout.BackColor = Color.FromArgb(240, 242, 248);
+        btnAbout.Cursor = Cursors.Hand;
+        btnAbout.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);
+        btnAbout.FlatStyle = FlatStyle.Flat;
+        btnAbout.ForeColor = Color.FromArgb(40, 40, 80);
+        btnAbout.Location = new Point(696, 9);
+        btnAbout.Name = "btnAbout";
+        btnAbout.Size = new Size(100, 34);
+        btnAbout.TabIndex = 6;
+        btnAbout.Text = "ℹ About";
+        btnAbout.UseVisualStyleBackColor = false;
+        btnAbout.Click += btnAbout_Click;
+        // 
         // pnlMain
         // 
         pnlMain.BackColor = Color.White;
@@ -108,7 +123,7 @@ partial class MainForm
         txtFilePath.Font = new Font("Consolas", 9.5F);
         txtFilePath.Location = new Point(82, 20);
         txtFilePath.Name = "txtFilePath";
-        txtFilePath.Size = new Size(679, 22);
+        txtFilePath.Size = new Size(690, 22);
         txtFilePath.TabIndex = 1;
         txtFilePath.KeyDown += txtFilePath_KeyDown;
         // 
@@ -120,9 +135,9 @@ partial class MainForm
         btnBrowse.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);
         btnBrowse.FlatStyle = FlatStyle.Flat;
         btnBrowse.ForeColor = Color.FromArgb(40, 40, 80);
-        btnBrowse.Location = new Point(767, 19);
+        btnBrowse.Location = new Point(778, 19);
         btnBrowse.Name = "btnBrowse";
-        btnBrowse.Size = new Size(41, 23);
+        btnBrowse.Size = new Size(30, 23);
         btnBrowse.TabIndex = 2;
         btnBrowse.Text = "...";
         btnBrowse.UseVisualStyleBackColor = false;
@@ -143,21 +158,6 @@ partial class MainForm
         btnView.Text = "View File Info";
         btnView.UseVisualStyleBackColor = false;
         btnView.Click += btnView_Click;
-        // 
-        // btnAbout
-        // 
-        btnAbout.BackColor = Color.FromArgb(240, 242, 248);
-        btnAbout.Cursor = Cursors.Hand;
-        btnAbout.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);
-        btnAbout.FlatStyle = FlatStyle.Flat;
-        btnAbout.ForeColor = Color.FromArgb(40, 40, 80);
-        btnAbout.Location = new Point(696, 9);
-        btnAbout.Name = "btnAbout";
-        btnAbout.Size = new Size(100, 34);
-        btnAbout.TabIndex = 6;
-        btnAbout.Text = "ℹ About";
-        btnAbout.UseVisualStyleBackColor = false;
-        btnAbout.Click += btnAbout_Click;
         // 
         // lblStatus
         // 
