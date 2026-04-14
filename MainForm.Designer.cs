@@ -22,6 +22,9 @@ partial class MainForm
     private void InitializeComponent()
     {
         System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
+        menuStrip = new MenuStrip();
+        toolsToolStripMenuItem = new ToolStripMenuItem();
+        createShortcutToolStripMenuItem = new ToolStripMenuItem();
         pnlHeader = new Panel();
         lblTitle = new Label();
         btnSettings = new Button();
@@ -32,9 +35,32 @@ partial class MainForm
         btnBrowse = new Button();
         btnView = new Button();
         lblStatus = new Label();
+        menuStrip.SuspendLayout();
         pnlHeader.SuspendLayout();
         pnlMain.SuspendLayout();
         SuspendLayout();
+        // 
+        // menuStrip
+        // 
+        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem });
+        menuStrip.Location = new Point(0, 0);
+        menuStrip.Name = "menuStrip";
+        menuStrip.Size = new Size(820, 24);
+        menuStrip.TabIndex = 2;
+        // 
+        // toolsToolStripMenuItem
+        // 
+        toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createShortcutToolStripMenuItem });
+        toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
+        toolsToolStripMenuItem.Size = new Size(49, 20);
+        toolsToolStripMenuItem.Text = "Setup";
+        // 
+        // createShortcutToolStripMenuItem
+        // 
+        createShortcutToolStripMenuItem.Name = "createShortcutToolStripMenuItem";
+        createShortcutToolStripMenuItem.Size = new Size(180, 22);
+        createShortcutToolStripMenuItem.Text = "Create Shortcut...";
+        createShortcutToolStripMenuItem.Click += btnCreateShortcut_Click;
         // 
         // pnlHeader
         // 
@@ -43,7 +69,7 @@ partial class MainForm
         pnlHeader.Controls.Add(btnSettings);
         pnlHeader.Controls.Add(btnAbout);
         pnlHeader.Dock = DockStyle.Top;
-        pnlHeader.Location = new Point(0, 0);
+        pnlHeader.Location = new Point(0, 24);
         pnlHeader.Name = "pnlHeader";
         pnlHeader.Padding = new Padding(16, 0, 0, 0);
         pnlHeader.Size = new Size(820, 56);
@@ -99,7 +125,7 @@ partial class MainForm
         pnlMain.Controls.Add(btnView);
         pnlMain.Controls.Add(lblStatus);
         pnlMain.Dock = DockStyle.Fill;
-        pnlMain.Location = new Point(0, 56);
+        pnlMain.Location = new Point(0, 80);
         pnlMain.Name = "pnlMain";
         pnlMain.Padding = new Padding(20, 18, 20, 12);
         pnlMain.Size = new Size(820, 125);
@@ -173,25 +199,33 @@ partial class MainForm
         // 
         AutoScaleDimensions = new SizeF(7F, 17F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(820, 181);
+        ClientSize = new Size(820, 205);
         Controls.Add(pnlMain);
         Controls.Add(pnlHeader);
+        Controls.Add(menuStrip);
         Font = new Font("Segoe UI", 9.5F);
         Icon = (Icon)resources.GetObject("$this.Icon");
+        MainMenuStrip = menuStrip;
         MaximizeBox = false;
-        MaximumSize = new Size(1200, 220);
-        MinimumSize = new Size(480, 220);
+        MaximumSize = new Size(1200, 244);
+        MinimumSize = new Size(480, 244);
         Name = "MainForm";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "File Info Viewer";
         Resize += MainForm_Resize;
+        menuStrip.ResumeLayout(false);
+        menuStrip.PerformLayout();
         pnlHeader.ResumeLayout(false);
         pnlHeader.PerformLayout();
         pnlMain.ResumeLayout(false);
         pnlMain.PerformLayout();
         ResumeLayout(false);
+        PerformLayout();
     }
 
     private Label lblStatus;
     private Button btnAbout;
+    private MenuStrip menuStrip;
+    private ToolStripMenuItem toolsToolStripMenuItem;
+    private ToolStripMenuItem createShortcutToolStripMenuItem;
 }

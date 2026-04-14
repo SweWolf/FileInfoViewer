@@ -33,7 +33,10 @@ public partial class MainForm : Form
         }
 
         if (dlg.ShowDialog() == DialogResult.OK)
+        {
             txtFilePath.Text = dlg.FileName;
+            ProcessFile(dlg.FileName);
+        }
     }
 
     private void btnView_Click(object sender, EventArgs e)
@@ -110,6 +113,12 @@ public partial class MainForm : Form
     private void btnAbout_Click(object sender, EventArgs e)
     {
         using var form = new AboutForm();
+        form.ShowDialog(this);
+    }
+
+    private void btnCreateShortcut_Click(object sender, EventArgs e)
+    {
+        using var form = new CreateShortcutForm(Application.ExecutablePath);
         form.ShowDialog(this);
     }
 
