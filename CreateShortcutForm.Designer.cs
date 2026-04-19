@@ -12,15 +12,17 @@ namespace FileInfoViewer
 
         private void InitializeComponent()
         {
-            grpLocation   = new GroupBox();
-            chkDesktop    = new CheckBox();
-            chkStartMenu  = new CheckBox();
-            grpFor        = new GroupBox();
+            grpLocation    = new GroupBox();
+            chkDesktop     = new CheckBox();
+            chkStartMenu   = new CheckBox();
+            chkSendTo      = new CheckBox();
+            grpFor         = new GroupBox();
             rdoCurrentUser = new RadioButton();
-            rdoAllUsers   = new RadioButton();
-            lblNote       = new Label();
-            btnOK         = new Button();
-            btnCancel     = new Button();
+            rdoAllUsers    = new RadioButton();
+            lblNote        = new Label();
+            lblSendToNote  = new Label();
+            btnOK          = new Button();
+            btnCancel      = new Button();
             grpLocation.SuspendLayout();
             grpFor.SuspendLayout();
             SuspendLayout();
@@ -28,9 +30,10 @@ namespace FileInfoViewer
             // grpLocation
             grpLocation.Controls.Add(chkDesktop);
             grpLocation.Controls.Add(chkStartMenu);
+            grpLocation.Controls.Add(chkSendTo);
             grpLocation.Location = new Point(12, 12);
             grpLocation.Name = "grpLocation";
-            grpLocation.Size = new Size(356, 82);
+            grpLocation.Size = new Size(356, 107);
             grpLocation.TabIndex = 0;
             grpLocation.TabStop = false;
             grpLocation.Text = "Create shortcut on:";
@@ -53,10 +56,18 @@ namespace FileInfoViewer
             chkStartMenu.Text = "Start Menu (Programs)";
             chkStartMenu.UseVisualStyleBackColor = true;
 
+            // chkSendTo
+            chkSendTo.AutoSize = true;
+            chkSendTo.Location = new Point(15, 78);
+            chkSendTo.Name = "chkSendTo";
+            chkSendTo.TabIndex = 2;
+            chkSendTo.Text = "Send To menu";
+            chkSendTo.UseVisualStyleBackColor = true;
+
             // grpFor
             grpFor.Controls.Add(rdoCurrentUser);
             grpFor.Controls.Add(rdoAllUsers);
-            grpFor.Location = new Point(12, 106);
+            grpFor.Location = new Point(12, 131);
             grpFor.Name = "grpFor";
             grpFor.Size = new Size(356, 82);
             grpFor.TabIndex = 1;
@@ -84,25 +95,33 @@ namespace FileInfoViewer
             // lblNote
             lblNote.AutoSize = true;
             lblNote.ForeColor = SystemColors.GrayText;
-            lblNote.Location = new Point(12, 202);
+            lblNote.Location = new Point(12, 227);
             lblNote.Name = "lblNote";
             lblNote.TabIndex = 2;
             lblNote.Text = "The shortcut will point to the currently running EXE.";
 
+            // lblSendToNote
+            lblSendToNote.AutoSize = true;
+            lblSendToNote.ForeColor = SystemColors.GrayText;
+            lblSendToNote.Location = new Point(12, 244);
+            lblSendToNote.Name = "lblSendToNote";
+            lblSendToNote.TabIndex = 3;
+            lblSendToNote.Text = "* Send To shortcut is always for current user only.";
+
             // btnOK
-            btnOK.Location = new Point(212, 228);
+            btnOK.Location = new Point(212, 265);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(75, 28);
-            btnOK.TabIndex = 3;
+            btnOK.TabIndex = 4;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += btnOK_Click;
 
             // btnCancel
-            btnCancel.Location = new Point(293, 228);
+            btnCancel.Location = new Point(293, 265);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 28);
-            btnCancel.TabIndex = 4;
+            btnCancel.TabIndex = 5;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             btnCancel.Click += btnCancel_Click;
@@ -112,8 +131,9 @@ namespace FileInfoViewer
             CancelButton = btnCancel;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(380, 268);
+            ClientSize = new Size(380, 305);
             Controls.Add(lblNote);
+            Controls.Add(lblSendToNote);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
             Controls.Add(grpFor);
@@ -135,10 +155,12 @@ namespace FileInfoViewer
         private GroupBox grpLocation;
         private CheckBox chkDesktop;
         private CheckBox chkStartMenu;
+        private CheckBox chkSendTo;
         private GroupBox grpFor;
         private RadioButton rdoCurrentUser;
         private RadioButton rdoAllUsers;
         private Label lblNote;
+        private Label lblSendToNote;
         private Button btnOK;
         private Button btnCancel;
     }

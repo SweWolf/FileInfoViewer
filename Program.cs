@@ -1,5 +1,6 @@
 using FileInfoViewer;
 using FileInfoViewer.Services;
+using System.Diagnostics;
 
 static class Program
 {

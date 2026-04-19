@@ -16,7 +16,7 @@ public partial class CreateShortcutForm : Form
 
     private void btnOK_Click(object sender, EventArgs e)
     {
-        if (!chkDesktop.Checked && !chkStartMenu.Checked)
+        if (!chkDesktop.Checked && !chkStartMenu.Checked && !chkSendTo.Checked)
         {
             MessageBox.Show(
                 "Please select at least one location.",
@@ -46,6 +46,14 @@ public partial class CreateShortcutForm : Form
             TryCreate(System.IO.Path.Combine(programsFolder, $"{_appName}.lnk"), created, failed);
         }
 
+        if (chkSendTo.Checked)
+        {
+            // Send To is always per-user — no "all users" equivalent in Windows
+            string sendToFolder = Environment.GetFolderPath(Environment.SpecialFolder.SendTo);
+            TryCreate(System.IO.Path.Combine(sendToFolder, $"{_appName}.lnk"), created, failed,
+                arguments: "\"%1\"");
+        }
+
         if (failed.Count > 0)
         {
             string msg = "Could not create the following shortcut(s):\n\n"
@@ -65,7 +73,8 @@ public partial class CreateShortcutForm : Form
         }
     }
 
-    private void TryCreate(string shortcutPath, List<string> created, List<string> failed)
+    private void TryCreate(string shortcutPath, List<string> created, List<string> failed,
+        string arguments = "")
     {
         try
         {
@@ -73,6 +82,7 @@ public partial class CreateShortcutForm : Form
             dynamic shell  = Activator.CreateInstance(shellType)!;
             dynamic lnk    = shell.CreateShortcut(shortcutPath);
             lnk.TargetPath       = _exePath;
+            lnk.Arguments        = arguments;
             lnk.WorkingDirectory = System.IO.Path.GetDirectoryName(_exePath);
             lnk.Description      = _appName;
             lnk.IconLocation     = _exePath;
