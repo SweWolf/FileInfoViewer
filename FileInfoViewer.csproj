@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
@@ -9,9 +9,11 @@
     <ApplicationIcon>Resources\FileInfoViewer.ico</ApplicationIcon>
     <Version>1.0.0</Version>
     <Title>File Info Viewer</Title>
-    <PackageIcon>FileInfoViewer.png</PackageIcon>
+    <Description>Collects and displays detailed metadata about files in a rich, self-contained HTML report.</Description>
     <Company>SweWolf Software</Company>
     <Product>File Info Viewer</Product>
+    <Copyright>SweWolf Software</Copyright>
+    <RepositoryUrl>https://github.com/SweWolf/FileInfoViewer</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Resources\FileInfoViewer.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
     <EmbeddedResource Include="Resources\FileInfoViewer.png" />
   </ItemGroup>
 

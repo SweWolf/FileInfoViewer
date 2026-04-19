@@ -28,16 +28,17 @@ namespace FileInfoViewer
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             grpFileDate = new GroupBox();
             cboTimeZone = new ComboBox();
             label1 = new Label();
             chkShowSeconds = new CheckBox();
             grpShow = new GroupBox();
+            chkShowFileHashes = new CheckBox();
+            chkFileAttributes = new CheckBox();
+            chkOwner = new CheckBox();
             cboShowCopyButton = new ComboBox();
             label2 = new Label();
-            chkOwner = new CheckBox();
-            chkFileAttributes = new CheckBox();
-            chkShowFileHashes = new CheckBox();
             grpFileDate.SuspendLayout();
             grpShow.SuspendLayout();
             SuspendLayout();
@@ -95,9 +96,44 @@ namespace FileInfoViewer
             grpShow.Location = new Point(12, 137);
             grpShow.Name = "grpShow";
             grpShow.Size = new Size(360, 155);
-            grpShow.TabIndex = 0;
+            grpShow.TabIndex = 1;
             grpShow.TabStop = false;
             grpShow.Text = "Show";
+            // 
+            // chkShowFileHashes
+            // 
+            chkShowFileHashes.AutoSize = true;
+            chkShowFileHashes.Checked = true;
+            chkShowFileHashes.CheckState = CheckState.Checked;
+            chkShowFileHashes.Location = new Point(108, 115);
+            chkShowFileHashes.Name = "chkShowFileHashes";
+            chkShowFileHashes.Size = new Size(85, 19);
+            chkShowFileHashes.TabIndex = 4;
+            chkShowFileHashes.Text = "File Hashes";
+            chkShowFileHashes.UseVisualStyleBackColor = true;
+            chkShowFileHashes.CheckedChanged += chkShowFileHashes_CheckedChanged;
+            // 
+            // chkFileAttributes
+            // 
+            chkFileAttributes.AutoSize = true;
+            chkFileAttributes.Location = new Point(108, 90);
+            chkFileAttributes.Name = "chkFileAttributes";
+            chkFileAttributes.Size = new Size(99, 19);
+            chkFileAttributes.TabIndex = 3;
+            chkFileAttributes.Text = "File Attributes";
+            chkFileAttributes.UseVisualStyleBackColor = true;
+            chkFileAttributes.CheckedChanged += chkFileAttributes_CheckedChanged;
+            // 
+            // chkOwner
+            // 
+            chkOwner.AutoSize = true;
+            chkOwner.Location = new Point(108, 65);
+            chkOwner.Name = "chkOwner";
+            chkOwner.Size = new Size(61, 19);
+            chkOwner.TabIndex = 2;
+            chkOwner.Text = "Owner";
+            chkOwner.UseVisualStyleBackColor = true;
+            chkOwner.CheckedChanged += chkOwner_CheckedChanged;
             // 
             // cboShowCopyButton
             // 
@@ -119,41 +155,6 @@ namespace FileInfoViewer
             label2.TabIndex = 1;
             label2.Text = "Copy Button";
             // 
-            // chkOwner
-            // 
-            chkOwner.AutoSize = true;
-            chkOwner.Location = new Point(108, 65);
-            chkOwner.Name = "chkOwner";
-            chkOwner.Size = new Size(61, 19);
-            chkOwner.TabIndex = 2;
-            chkOwner.Text = "Owner";
-            chkOwner.UseVisualStyleBackColor = true;
-            chkOwner.CheckedChanged += chkOwner_CheckedChanged;
-            //
-            // chkFileAttributes
-            //
-            chkFileAttributes.AutoSize = true;
-            chkFileAttributes.Location = new Point(108, 90);
-            chkFileAttributes.Name = "chkFileAttributes";
-            chkFileAttributes.Size = new Size(99, 19);
-            chkFileAttributes.TabIndex = 3;
-            chkFileAttributes.Text = "File Attributes";
-            chkFileAttributes.UseVisualStyleBackColor = true;
-            chkFileAttributes.CheckedChanged += chkFileAttributes_CheckedChanged;
-            //
-            // chkShowFileHashes
-            //
-            chkShowFileHashes.AutoSize = true;
-            chkShowFileHashes.Checked = true;
-            chkShowFileHashes.CheckState = CheckState.Checked;
-            chkShowFileHashes.Location = new Point(108, 115);
-            chkShowFileHashes.Name = "chkShowFileHashes";
-            chkShowFileHashes.Size = new Size(85, 19);
-            chkShowFileHashes.TabIndex = 4;
-            chkShowFileHashes.Text = "File Hashes";
-            chkShowFileHashes.UseVisualStyleBackColor = true;
-            chkShowFileHashes.CheckedChanged += chkShowFileHashes_CheckedChanged;
-            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -162,6 +163,7 @@ namespace FileInfoViewer
             Controls.Add(grpShow);
             Controls.Add(grpFileDate);
             FormBorderStyle = FormBorderStyle.FixedDialog;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "SettingsForm";
