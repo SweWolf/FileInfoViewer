@@ -6,7 +6,8 @@ publish-multifile/
 publish-standalone/
 
 # Claude Code
-.claude/settings.local.json
+.claude/
+CLAUDE.md
 
 # Visual Studio
 .vs/
