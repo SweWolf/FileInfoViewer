@@ -6,6 +6,9 @@ public partial class MainForm : Form
 {
     public MainForm()
     {
+        // Check for updates in the background — does not block startup
+        _ = Common.CheckForUpdatesAsync("SweWolf", "FileInfoViewer");
+
         InitializeComponent();
         AllowDrop = true;
         DragEnter += MainForm_DragEnter;
