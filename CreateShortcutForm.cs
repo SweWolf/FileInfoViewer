@@ -50,8 +50,7 @@ public partial class CreateShortcutForm : Form
         {
             // Send To is always per-user — no "all users" equivalent in Windows
             string sendToFolder = Environment.GetFolderPath(Environment.SpecialFolder.SendTo);
-            TryCreate(System.IO.Path.Combine(sendToFolder, $"{_appName}.lnk"), created, failed,
-                arguments: "\"%1\"");
+            TryCreate(System.IO.Path.Combine(sendToFolder, $"{_appName}.lnk"), created, failed);
         }
 
         if (failed.Count > 0)
@@ -73,8 +72,7 @@ public partial class CreateShortcutForm : Form
         }
     }
 
-    private void TryCreate(string shortcutPath, List<string> created, List<string> failed,
-        string arguments = "")
+    private void TryCreate(string shortcutPath, List<string> created, List<string> failed)
     {
         try
         {
@@ -82,7 +80,6 @@ public partial class CreateShortcutForm : Form
             dynamic shell  = Activator.CreateInstance(shellType)!;
             dynamic lnk    = shell.CreateShortcut(shortcutPath);
             lnk.TargetPath       = _exePath;
-            lnk.Arguments        = arguments;
             lnk.WorkingDirectory = System.IO.Path.GetDirectoryName(_exePath);
             lnk.Description      = _appName;
             lnk.IconLocation     = _exePath;
