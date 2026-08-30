@@ -11,8 +11,11 @@ A .NET 9 WinForms application that collects as much metadata as possible about a
 - **Rich HTML report** — single self-contained file, no internet connection required to view
 - **Drag and drop** — drop any file onto the window to inspect it instantly
 - **Command-line / Send To support** — pass a file path as an argument for headless operation
-- **Wide file type support** — images, audio, executables, text files, and more (see below)
-- **Configurable** — control timestamp format, timezone display, copy buttons, and which sections to show
+- **Wide file type support** — images, audio, video, executables, text files, and more (see below)
+- **Clickable web links** — URLs inside any metadata value are rendered as clickable hyperlinks in the report, including inside syntax-highlighted JSON blocks
+- **Copy buttons** — copy any metadata value to the clipboard with one click; optionally shown on hover only
+- **Syntax-highlighted JSON** — structured metadata (e.g. embedded workflow data in AI-generated images) is pretty-printed with color coding
+- **Configurable** — control timestamp format, timezone, copy buttons, content width, web links, and which sections to show
 
 ---
 
@@ -20,8 +23,9 @@ A .NET 9 WinForms application that collects as much metadata as possible about a
 
 | Type | What is collected |
 |---|---|
-| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic) | Dimensions, DPI, pixel format, bit depth, full EXIF metadata |
+| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic) | Dimensions, DPI, pixel format, bit depth, full EXIF metadata, embedded textual/JSON data |
 | **Audio** (mp3, flac, ogg, m4a, aac, wav, wma, opus, ape, aiff) | ID3/Vorbis tags, lyrics, embedded cover art, duration, bitrate, sample rate |
+| **Video** (mp4, mkv, avi, mov, wmv, flv, webm, m4v, 3gp, ts) | Duration, dimensions, frame rate, codec, audio streams, video streams, full tag metadata |
 | **Executables / DLLs** (.exe, .dll) | File version info, .NET assembly info, target framework, architecture, referenced assemblies |
 | **Text files** (.txt, .log, .cs, .json, .xml, etc.) | Line, word and character count, encoding detection, BOM presence |
 | **All files** | Size, timestamps, MD5 + SHA-256 hashes, MIME type, file attributes, owner |
@@ -64,14 +68,30 @@ This makes it ideal for use via the Windows **Send To** menu — use the built-i
 
 Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` and can be changed via the **⚙ Settings** button:
 
+### File Date
 | Setting | Description |
 |---|---|
 | Time zone | Show timestamps in Local time, UTC, or Both |
 | Show seconds | Include seconds in all timestamps |
-| Copy button | Show a clipboard copy button next to selected fields (No / Yes / Yes on hover) |
-| Show owner | Include the file owner row in the report |
-| Show file attributes | Include the file attributes section in the report |
-| Show file hashes | Include MD5 and SHA-256 hashes in the report |
+
+### Show
+| Setting | Description |
+|---|---|
+| Copy button | Show a clipboard copy button next to metadata values (No / Yes / Yes on hover) |
+| Owner | Include the file owner row in the report |
+| File attributes | Include the file attributes section in the report |
+| File hashes | Include MD5 and SHA-256 hashes in the report |
+| Textual data | How to display structured/JSON metadata: None, Formatted, Raw data, or Both |
+
+### Layout
+| Setting | Description |
+|---|---|
+| Content width | Max width of the report content area: Narrow (800px), Normal (1100px), Wide (1400px), Very wide (1800px), Full width, or Custom (enter your own pixel or percentage value) |
+
+### Web Links
+| Setting | Description |
+|---|---|
+| Clickable | Render URLs found in metadata values as clickable hyperlinks (on by default) |
 
 ---
 

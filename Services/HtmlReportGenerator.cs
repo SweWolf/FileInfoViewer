@@ -1,6 +1,8 @@
 using System.Globalization;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Web;
 using FileInfoViewer.Models;
 using FileInfoViewer.Services;
@@ -31,7 +33,15 @@ public static class HtmlReportGenerator
         var showOwner    = settings.ShowOwner;
         var showAttribs  = settings.ShowFileAttributes;
         var showHashes   = settings.ShowFileHashes;
-        var tzDisplay = settings.TimeZoneDisplay;
+        var tzDisplay    = settings.TimeZoneDisplay;
+        var contentWidth = settings.ContentMaxWidth switch {
+            "Narrow (800px)"    => "800px",
+            "Wide (1400px)"     => "1400px",
+            "Very wide (1800px)"=> "1800px",
+            "Full width"        => "100%",
+            "Custom"            => ResolveCustomWidth(settings.CustomContentWidth, settings.CustomContentWidthUnit),
+            _                   => "1100px",
+        };
 
         sb.AppendLine($$"""
 <!DOCTYPE html>
@@ -49,7 +59,7 @@ public static class HtmlReportGenerator
   .header .icon { font-size: 3rem; }
   .header h1 { font-size: 1.8rem; font-weight: 600; word-break: break-all; }
   .header .subtitle { font-size: 0.9rem; opacity: 0.75; margin-top: 0.2rem; word-break: break-all; }
-  .content { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem 3rem; }
+  .content { max-width: {{contentWidth}}; margin: 2rem auto; padding: 0 1.5rem 3rem; }
   .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,.07);
           margin-bottom: 1.5rem; overflow: hidden; }
   .card-header { background: #f8f9fc; border-bottom: 1px solid #e8eaf0; padding: 0.9rem 1.4rem;
@@ -78,6 +88,12 @@ public static class HtmlReportGenerator
   .copy-hover { opacity: 0; }
   tr:hover .copy-hover { opacity: 1; }
   .hover-parent:hover .copy-hover { opacity: 1; }
+  .json-block { background: #f8f9fc; border: 1px solid #e0e4ef; border-radius: 6px;
+                padding: .75rem 1rem; font-family: 'Consolas','Courier New',monospace;
+                font-size: .82rem; line-height: 1.55; white-space: pre-wrap; word-break: break-word;
+                max-height: 420px; overflow-y: auto; color: #333; display: block; margin: .1rem 0; }
+  .jk { color: #7b2fbe; } .js { color: #1a5276; } .jn { color: #c0392b; }
+  .jb { color: #1565c0; } .jz { color: #999; }
 </style>
 <script>
 function copyFileName(btn) {
@@ -88,6 +104,20 @@ function copyFileName(btn) {
     setTimeout(function() { btn.textContent = orig; btn.style.color = ''; }, 1500);
   });
 }
+var webLinksClickable={{(settings.WebLinksClickable?"true":"false")}};
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function trimUrl(u){for(;;){if(!u.length)break;var l=u[u.length-1];if(l==='.'||l===','||l===';'||l===':'){u=u.slice(0,-1);continue;}if(l===')'){var a=(u.match(/\(/g)||[]).length,b=(u.match(/\)/g)||[]).length;if(b>a){u=u.slice(0,-1);continue;} }if(l===']'){var c=(u.match(/\[/g)||[]).length,d=(u.match(/\]/g)||[]).length;if(d>c){u=u.slice(0,-1);continue;} }break;}return u;}
+function linkifyInStr(raw){var re=/(https?:\/\/[^\s"\\]+)/g,out='',last=0,m;while((m=re.exec(raw))!==null){out+=esc(raw.slice(last,m.index));var u=trimUrl(m[1]);out+='<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+esc(u)+'</a>'+esc(m[1].slice(u.length));last=m.index+m[0].length;}return out+esc(raw.slice(last));}
+function highlightJson(el){
+  var t=el.textContent;
+  el.innerHTML=t.replace(/("(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){
+    if(/^"/.test(m)){if(/:$/.test(m))return'<span class="jk">'+esc(m)+'</span>';var inner=m.slice(1,m.length-1);return'<span class="js">"'+(webLinksClickable?linkifyInStr(inner):esc(inner))+'"</span>';}
+    if(m==='true'||m==='false')return'<span class="jb">'+m+'</span>';
+    if(m==='null')return'<span class="jz">'+m+'</span>';
+    return'<span class="jn">'+m+'</span>';
+  });
+}
+document.addEventListener('DOMContentLoaded',function(){document.querySelectorAll('.json-block').forEach(highlightJson);});
 </script>
 </head>
 <body>
@@ -219,13 +249,43 @@ function copyFileName(btn) {
             Row(sb, "Megapixels", $"{img.Width * (long)img.Height / 1_000_000.0:F2} MP");
             sb.AppendLine("  </table>");
 
-            if (img.ExifTags.Count > 0)
+            var textualMode = SettingsService.Current.TextualDataDisplay;
+            var showRaw       = textualMode is "Raw data" or "Both Formatted and Raw Data";
+            var showFormatted = textualMode is "Formatted" or "Both Formatted and Raw Data";
+
+            var exifEntries = img.ExifTags
+                .Where(kv => showRaw || !kv.Key.StartsWith("PNG-tEXt", StringComparison.OrdinalIgnoreCase))
+                .OrderBy(kv => kv.Key)
+                .ToList();
+
+            if (exifEntries.Count > 0)
             {
                 sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">📷 EXIF / Metadata</div><table class="tag-table">""");
-                foreach (var (key, value) in img.ExifTags.OrderBy(x => x.Key))
-                    Row(sb, key, value);
+                foreach (var (key, value) in exifEntries)
+                {
+                    var jsonHtml = TryRenderJson(value, copyDisplay);
+                    if (jsonHtml != null)
+                        Row(sb, key, jsonHtml, raw: true);
+                    else
+                        Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
+                }
                 sb.AppendLine("  </table>");
             }
+
+            if (showFormatted && img.PngTextChunks.Count > 0)
+            {
+                sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">📝 PNG Text Chunks</div><table class="tag-table">""");
+                foreach (var (keyword, text) in img.PngTextChunks.OrderBy(x => x.Key))
+                {
+                    var jsonHtml = TryRenderJson(text, copyDisplay);
+                    if (jsonHtml != null)
+                        Row(sb, keyword, jsonHtml, raw: true);
+                    else
+                        Row(sb, keyword, MaybeLinkify(text) + CopyBtn(text, copyDisplay), raw: true);
+                }
+                sb.AppendLine("  </table>");
+            }
+
             sb.AppendLine("</div>");
         }
 
@@ -308,7 +368,88 @@ function copyFileName(btn) {
             {
                 sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">🏷️ All Metadata Tags</div><table class="tag-table">""");
                 foreach (var (key, value) in aud.AllTags.OrderBy(x => x.Key))
-                    Row(sb, key, value);
+                    Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
+                sb.AppendLine("  </table>");
+            }
+
+            sb.AppendLine("</div>");
+        }
+
+        // Video info card
+        if (model.VideoInfo is { } vid)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🎬 Video Information</div>
+""");
+            // Description group (matches Windows Explorer Details tab)
+            bool hasDesc = !string.IsNullOrEmpty(vid.Title) || !string.IsNullOrEmpty(vid.Subject)
+                        || !string.IsNullOrEmpty(vid.Comment) || !string.IsNullOrEmpty(vid.Tags)
+                        || !string.IsNullOrEmpty(vid.Rating);
+            if (hasDesc)
+            {
+                sb.AppendLine("""  <div class="card-header" style="font-size:.82rem;color:#888;padding:.4rem 1.4rem;background:#fafbff;border-bottom:1px solid #f0f2f5">Description</div><table>""");
+                RowIfSetCopy(sb, "Title",    vid.Title,   copyDisplay);
+                RowIfSet(sb, "Subtitle", vid.Subject);
+                RowJsonOrCopy(sb, "Comment",  vid.Comment, copyDisplay);
+                RowIfSetCopy(sb, "Tags",     vid.Tags,    copyDisplay);
+                RowIfSet(sb, "Rating",   vid.Rating);
+                sb.AppendLine("  </table>");
+            }
+
+            // Video group
+            bool hasVideo = !string.IsNullOrEmpty(vid.Duration) || vid.Width > 0 || !string.IsNullOrEmpty(vid.FrameRate)
+                         || !string.IsNullOrEmpty(vid.DataRate) || !string.IsNullOrEmpty(vid.TotalBitrate)
+                         || !string.IsNullOrEmpty(vid.VideoCodec);
+            if (hasVideo)
+            {
+                sb.AppendLine("""  <div class="card-header" style="font-size:.82rem;color:#888;padding:.4rem 1.4rem;background:#fafbff;border-top:1px solid #e8eaf0;border-bottom:1px solid #f0f2f5">Video</div><table>""");
+                RowIfSet(sb, "Length",       vid.Duration);
+                if (vid.Width > 0 && vid.Height > 0)
+                    Row(sb, "Frame size", $"{vid.Width} × {vid.Height}");
+                RowIfSet(sb, "Frame rate",    vid.FrameRate);
+                RowIfSet(sb, "Data rate",     vid.DataRate);
+                RowIfSet(sb, "Total bitrate", vid.TotalBitrate);
+                RowIfSet(sb, "Codec",         vid.VideoCodec);
+                sb.AppendLine("  </table>");
+            }
+
+            // Audio group
+            bool hasAudio = !string.IsNullOrEmpty(vid.AudioBitrate) || !string.IsNullOrEmpty(vid.AudioChannels)
+                         || !string.IsNullOrEmpty(vid.AudioSampleRate);
+            if (hasAudio)
+            {
+                sb.AppendLine("""  <div class="card-header" style="font-size:.82rem;color:#888;padding:.4rem 1.4rem;background:#fafbff;border-top:1px solid #e8eaf0;border-bottom:1px solid #f0f2f5">Audio</div><table>""");
+                RowIfSet(sb, "Bit rate",         vid.AudioBitrate);
+                RowIfSet(sb, "Channels",         vid.AudioChannels);
+                RowIfSet(sb, "Audio sample rate", vid.AudioSampleRate);
+                sb.AppendLine("  </table>");
+            }
+
+            // Extra tags from TagLib# (Creator, Year, Genre, Copyright)
+            bool hasExtra = !string.IsNullOrEmpty(vid.Creator) || !string.IsNullOrEmpty(vid.Year)
+                         || !string.IsNullOrEmpty(vid.Genre)   || !string.IsNullOrEmpty(vid.Copyright);
+            if (hasExtra)
+            {
+                sb.AppendLine("""  <div class="card-header" style="font-size:.82rem;color:#888;padding:.4rem 1.4rem;background:#fafbff;border-top:1px solid #e8eaf0;border-bottom:1px solid #f0f2f5">Extra</div><table>""");
+                RowIfSet(sb, "Creator",   vid.Creator);
+                RowIfSet(sb, "Year",      vid.Year);
+                RowIfSet(sb, "Genre",     vid.Genre);
+                RowIfSet(sb, "Copyright", vid.Copyright);
+                sb.AppendLine("  </table>");
+            }
+
+            if (vid.AllTags.Count > 0)
+            {
+                sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">🏷️ All Metadata Tags</div><table class="tag-table">""");
+                foreach (var (key, value) in vid.AllTags.OrderBy(x => x.Key))
+                {
+                    var jsonHtml = TryRenderJson(value, copyDisplay);
+                    if (jsonHtml != null)
+                        Row(sb, key, jsonHtml, raw: true);
+                    else
+                        Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
+                }
                 sb.AppendLine("  </table>");
             }
 
@@ -338,13 +479,50 @@ function copyFileName(btn) {
     private static void RowIfSet(StringBuilder sb, string label, string value)
     {
         if (!string.IsNullOrWhiteSpace(value))
-            Row(sb, label, value);
+            Row(sb, label, MaybeLinkify(value), raw: true);
     }
 
     private static void RowIfSetCopy(StringBuilder sb, string label, string value, string copyDisplay)
     {
         if (!string.IsNullOrWhiteSpace(value))
+            Row(sb, label, MaybeLinkify(value) + CopyBtn(value, copyDisplay), raw: true);
+    }
+
+    private static void RowJsonOrCopy(StringBuilder sb, string label, string value, string copyDisplay)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        var jsonHtml = TryRenderJson(value, copyDisplay);
+        if (jsonHtml != null)
+            Row(sb, label, jsonHtml, raw: true);
+        else
             Row(sb, label, H(value) + CopyBtn(value, copyDisplay), raw: true);
+    }
+
+    private static readonly JsonDocumentOptions _lenientJson = new()
+    {
+        AllowTrailingCommas = true,
+        CommentHandling = JsonCommentHandling.Skip,
+    };
+
+    private static readonly JsonSerializerOptions _prettyJson = new()
+    {
+        WriteIndented = true,
+    };
+
+    private static string? TryRenderJson(string value, string copyDisplay)
+    {
+        var trimmed = value.Trim();
+        if (!trimmed.StartsWith('{') && !trimmed.StartsWith('[')) return null;
+        try
+        {
+            using var doc = JsonDocument.Parse(trimmed, _lenientJson);
+            var pretty = JsonSerializer.Serialize(doc.RootElement, _prettyJson);
+            return $"""<code class="json-block">{H(pretty)}</code>{CopyBtn(pretty, copyDisplay)}""";
+        }
+        catch
+        {
+            return $"""<code class="json-block">{H(trimmed)}</code>{CopyBtn(trimmed, copyDisplay)}""";
+        }
     }
 
     private static string CopyBtn(string value, string display)
@@ -355,6 +533,85 @@ function copyFileName(btn) {
     }
 
     private static string H(string s) => HttpUtility.HtmlEncode(s);
+
+    private static readonly Regex _urlRx =
+        new(@"https?://[^\s""'<>\\]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+
+    // Strip trailing punctuation that is likely not part of the URL.
+    private static string ResolveCustomWidth(string value, string unit)
+    {
+        if (unit == "%")
+        {
+            if (int.TryParse(value, out int pct) && pct >= 1 && pct <= 100)
+                return $"{pct}%";
+        }
+        else
+        {
+            if (int.TryParse(value, out int px) && px >= 100 && px <= 9999)
+                return $"{px}px";
+        }
+        return "1100px"; // fallback for invalid input
+    }
+
+    // Handles unbalanced closing parens/brackets (e.g. markdown "[text](url)").
+    private static string TrimUrlTrail(string url)
+    {
+        bool changed;
+        do {
+            changed = false;
+            if (url.Length == 0) break;
+            char last = url[^1];
+            if (last is '.' or ',' or ';' or ':') { url = url[..^1]; changed = true; }
+            else if (last == ')' && url.Count(c => c == ')') > url.Count(c => c == '('))
+                { url = url[..^1]; changed = true; }
+            else if (last == ']' && url.Count(c => c == ']') > url.Count(c => c == '['))
+                { url = url[..^1]; changed = true; }
+        } while (changed);
+        return url;
+    }
+
+    private static string MaybeLinkify(string value)
+    {
+        if (!SettingsService.Current.WebLinksClickable)
+            return H(value);
+
+        var matches = _urlRx.Matches(value);
+        if (matches.Count == 0)
+            return H(value);
+
+        var sb = new StringBuilder();
+        int last = 0;
+        foreach (Match m in matches)
+        {
+            sb.Append(H(value[last..m.Index]));
+            var url = TrimUrlTrail(m.Value);
+            sb.Append($"""<a href="{H(url)}" target="_blank" rel="noopener noreferrer">{H(url)}</a>""");
+            if (url.Length < m.Length) sb.Append(H(m.Value[url.Length..]));
+            last = m.Index + m.Length;
+        }
+        sb.Append(H(value[last..]));
+        return sb.ToString();
+    }
+
+    // Format a tag value with thousand separators when it looks like a large integer,
+    // but leave it untouched when the key suggests it's a seed, hash, or identifier.
+    private static string SmartFormatTagValue(string key, string value)
+    {
+        var lk = key.ToLowerInvariant();
+        if (lk.Contains("seed") || lk.Contains("hash") || lk.Contains("crc") ||
+            lk.Contains("checksum") || lk.Contains("unique id") || lk.Contains("uniqueid"))
+            return H(value);
+
+        var trimmed = value.Trim();
+        var spaceIdx = trimmed.IndexOf(' ');
+        var numPart  = spaceIdx > 0 ? trimmed[..spaceIdx] : trimmed;
+        var unitPart = spaceIdx > 0 ? trimmed[spaceIdx..] : "";  // keeps the leading space
+
+        if (long.TryParse(numPart, out long num) && num >= 10_000)
+            return H($"{num:N0}{unitPart}");
+
+        return MaybeLinkify(value);
+    }
 
     private static string GetFileIcon(string ext) => ext.ToLowerInvariant() switch
     {

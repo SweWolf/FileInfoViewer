@@ -27,6 +27,9 @@ public static class FileInfoCollector
     private static readonly HashSet<string> AudioExtensions =
         [".mp3", ".flac", ".ogg", ".m4a", ".aac", ".wav", ".wma", ".opus", ".ape", ".aiff", ".aif"];
 
+    private static readonly HashSet<string> VideoExtensions =
+        [".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm", ".m4v", ".mpg", ".mpeg", ".3gp", ".ts", ".mts", ".m2ts"];
+
     private static readonly Dictionary<string, string> MimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         { ".jpg", "image/jpeg" }, { ".jpeg", "image/jpeg" }, { ".png", "image/png" },
@@ -188,6 +191,19 @@ public static class FileInfoCollector
             }
         }
 
+        // Video file info
+        if (VideoExtensions.Contains(model.Extension))
+        {
+            try
+            {
+                CollectVideoInfo(filePath, model);
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read video info: {ex.Message}");
+            }
+        }
+
         return model;
     }
 
@@ -215,10 +231,15 @@ public static class FileInfoCollector
             {
                 foreach (var tag in directory.Tags)
                 {
-                    var key = $"{directory.Name} / {tag.Name}";
+                    var baseKey = $"{directory.Name} / {tag.Name}";
                     var value = tag.Description ?? "";
-                    if (!string.IsNullOrWhiteSpace(value))
-                        imageInfo.ExifTags[key] = value;
+                    if (string.IsNullOrWhiteSpace(value)) continue;
+                    // Deduplicate keys (e.g. multiple PNG-tEXt / Textual Data entries)
+                    var key = baseKey;
+                    var n = 2;
+                    while (imageInfo.ExifTags.ContainsKey(key))
+                        key = $"{baseKey} ({n++})";
+                    imageInfo.ExifTags[key] = value;
                 }
             }
         }
@@ -227,7 +248,71 @@ public static class FileInfoCollector
             // EXIF read failure is non-critical
         }
 
+        // For PNG files, read tEXt/iTXt chunks directly — MetadataExtractor can truncate or
+        // mis-encode large text chunks (e.g. ComfyUI prompt/workflow JSON).
+        if (model.Extension == ".png")
+        {
+            try { ReadPngTextChunks(filePath, imageInfo); }
+            catch { }
+        }
+
         model.ImageInfo = imageInfo;
+    }
+
+    private static void ReadPngTextChunks(string filePath, ImageInfoModel imageInfo)
+    {
+        using var fs = File.OpenRead(filePath);
+        Span<byte> hdr = stackalloc byte[8];
+        fs.ReadExactly(hdr); // PNG signature
+
+        Span<byte> buf4 = stackalloc byte[4];
+        while (fs.Position <= fs.Length - 12)
+        {
+            fs.ReadExactly(buf4);
+            int length = (buf4[0] << 24) | (buf4[1] << 16) | (buf4[2] << 8) | buf4[3];
+            if (length < 0 || length > 50 * 1024 * 1024) break;
+
+            fs.ReadExactly(buf4);
+            var type = Encoding.ASCII.GetString(buf4);
+
+            if (type is "tEXt" or "iTXt")
+            {
+                var data = new byte[length];
+                fs.ReadExactly(data);
+                fs.Seek(4, SeekOrigin.Current); // skip CRC
+
+                int nullPos = Array.IndexOf(data, (byte)0);
+                if (nullPos < 0) continue;
+
+                var keyword = Encoding.UTF8.GetString(data, 0, nullPos);
+                string text;
+
+                if (type == "tEXt")
+                {
+                    text = Encoding.UTF8.GetString(data, nullPos + 1, length - nullPos - 1);
+                }
+                else // iTXt: keyword\0compFlag\0compMethod\0lang\0translatedKw\0text
+                {
+                    int pos = nullPos + 3; // skip compFlag, compMethod
+                    while (pos < length && data[pos] != 0) pos++;  // skip lang
+                    pos++;
+                    while (pos < length && data[pos] != 0) pos++;  // skip translated keyword
+                    pos++;
+                    text = pos < length ? Encoding.UTF8.GetString(data, pos, length - pos) : "";
+                }
+
+                if (!string.IsNullOrWhiteSpace(text))
+                    imageInfo.PngTextChunks[keyword] = text;
+            }
+            else if (type == "IEND")
+            {
+                break;
+            }
+            else
+            {
+                fs.Seek(length + 4, SeekOrigin.Current); // skip data + CRC
+            }
+        }
     }
 
     private static void CollectAudioInfo(string filePath, FileInfoModel model)
@@ -352,6 +437,84 @@ public static class FileInfoCollector
 
         model.AudioInfo = audio;
     }
+
+    private static void CollectVideoInfo(string filePath, FileInfoModel model)
+    {
+        var video = new VideoInfoModel();
+
+        // Primary source: Windows Shell property store (matches what Explorer shows)
+        var shell = ShellPropertyReader.ReadVideo(filePath);
+        video.Title   = shell.Title;
+        video.Subject = shell.Subject;
+        video.Comment = shell.Comment;
+        video.Tags    = shell.Tags.Length > 0 ? string.Join("; ", shell.Tags) : "";
+        video.Rating  = FormatRating(shell.Rating);
+
+        if (shell.Duration.TotalSeconds > 0)
+            video.Duration = $"{(int)shell.Duration.TotalMinutes}:{shell.Duration.Seconds:D2} ({shell.Duration.TotalSeconds:F1}s)";
+        if (shell.FrameWidth > 0)  video.Width  = shell.FrameWidth;
+        if (shell.FrameHeight > 0) video.Height = shell.FrameHeight;
+        if (shell.FrameRate > 0)    video.FrameRate    = $"{shell.FrameRate:F2} fps";
+        if (shell.DataRate > 0)     video.DataRate      = $"{shell.DataRate:N0} kbps";
+        if (shell.TotalBitrate > 0) video.TotalBitrate  = $"{shell.TotalBitrate:N0} kbps";
+        if (shell.AudioBitrate > 0)    video.AudioBitrate    = $"{shell.AudioBitrate:N0} kbps";
+        if (shell.AudioSampleRate > 0) video.AudioSampleRate = $"{shell.AudioSampleRate / 1000.0:F3} kHz";
+        if (shell.AudioChannels > 0)   video.AudioChannels   = shell.AudioChannels == 1 ? "1 (mono)"
+                                                              : shell.AudioChannels == 2 ? "2 (stereo)"
+                                                              : shell.AudioChannels.ToString();
+
+        // Secondary source: TagLib# for any tags the Shell property store doesn't expose
+        try
+        {
+            using var tagFile = TagLib.File.Create(filePath);
+            var tag = tagFile.Tag;
+            if (string.IsNullOrEmpty(video.Title))   video.Title   = tag.Title ?? "";
+            if (string.IsNullOrEmpty(video.Comment)) video.Comment = tag.Comment ?? "";
+            video.Creator   = tag.Performers?.Length > 0 ? string.Join(", ", tag.Performers) : "";
+            video.Year      = tag.Year > 0 ? tag.Year.ToString() : "";
+            video.Genre     = tag.Genres?.Length > 0 ? string.Join(", ", tag.Genres) : "";
+            video.Copyright = tag.Copyright ?? "";
+
+            var props = tagFile.Properties;
+            if (props != null)
+            {
+                if (video.Width == 0)  video.Width  = props.VideoWidth;
+                if (video.Height == 0) video.Height = props.VideoHeight;
+                if (!string.IsNullOrEmpty(props.Description))
+                    video.VideoCodec = props.Description;
+            }
+        }
+        catch { }
+
+        // Tertiary source: MetadataExtractor for raw atoms → AllTags table
+        try
+        {
+            var directories = ImageMetadataReader.ReadMetadata(filePath);
+            foreach (var directory in directories)
+            {
+                foreach (var rawTag in directory.Tags)
+                {
+                    var value = rawTag.Description ?? "";
+                    if (string.IsNullOrWhiteSpace(value)) continue;
+                    var fullKey = $"{directory.Name.Trim()} / {rawTag.Name.Trim()}";
+                    video.AllTags[fullKey] = value;
+                }
+            }
+        }
+        catch { }
+
+        model.VideoInfo = video;
+    }
+
+    private static string FormatRating(uint rating) => rating switch
+    {
+        0         => "",
+        <= 12     => "★☆☆☆☆ (1/5)",
+        <= 37     => "★★☆☆☆ (2/5)",
+        <= 62     => "★★★☆☆ (3/5)",
+        <= 87     => "★★★★☆ (4/5)",
+        _         => "★★★★★ (5/5)",
+    };
 
     private static void CollectTextInfo(string filePath, FileInfoModel model)
     {

@@ -37,10 +37,22 @@ namespace FileInfoViewer
             chkShowFileHashes = new CheckBox();
             chkFileAttributes = new CheckBox();
             chkOwner = new CheckBox();
+            cboTextualData = new ComboBox();
+            label3 = new Label();
             cboShowCopyButton = new ComboBox();
             label2 = new Label();
+            grpLayout = new GroupBox();
+            cboContentWidth = new ComboBox();
+            label4 = new Label();
+            groupBox1 = new GroupBox();
+            chkWebLinksClickable = new CheckBox();
+            txtCustomContentWidth = new TextBox();
+            optCustContWidthPx = new RadioButton();
+            optCustContWidthPerc = new RadioButton();
             grpFileDate.SuspendLayout();
             grpShow.SuspendLayout();
+            grpLayout.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // grpFileDate
@@ -50,7 +62,7 @@ namespace FileInfoViewer
             grpFileDate.Controls.Add(chkShowSeconds);
             grpFileDate.Location = new Point(12, 12);
             grpFileDate.Name = "grpFileDate";
-            grpFileDate.Size = new Size(360, 110);
+            grpFileDate.Size = new Size(360, 101);
             grpFileDate.TabIndex = 0;
             grpFileDate.TabStop = false;
             grpFileDate.Text = "File Date";
@@ -91,11 +103,13 @@ namespace FileInfoViewer
             grpShow.Controls.Add(chkShowFileHashes);
             grpShow.Controls.Add(chkFileAttributes);
             grpShow.Controls.Add(chkOwner);
+            grpShow.Controls.Add(cboTextualData);
+            grpShow.Controls.Add(label3);
             grpShow.Controls.Add(cboShowCopyButton);
             grpShow.Controls.Add(label2);
-            grpShow.Location = new Point(12, 137);
+            grpShow.Location = new Point(12, 128);
             grpShow.Name = "grpShow";
-            grpShow.Size = new Size(360, 155);
+            grpShow.Size = new Size(360, 187);
             grpShow.TabIndex = 1;
             grpShow.TabStop = false;
             grpShow.Text = "Show";
@@ -135,6 +149,26 @@ namespace FileInfoViewer
             chkOwner.UseVisualStyleBackColor = true;
             chkOwner.CheckedChanged += chkOwner_CheckedChanged;
             // 
+            // cboTextualData
+            // 
+            cboTextualData.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboTextualData.FormattingEnabled = true;
+            cboTextualData.Items.AddRange(new object[] { "None", "Formatted", "Raw data", "Both Formatted and Raw Data" });
+            cboTextualData.Location = new Point(108, 150);
+            cboTextualData.Name = "cboTextualData";
+            cboTextualData.Size = new Size(200, 23);
+            cboTextualData.TabIndex = 5;
+            cboTextualData.SelectedIndexChanged += cboTextualData_SelectedIndexChanged;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(20, 153);
+            label3.Name = "label3";
+            label3.Size = new Size(71, 15);
+            label3.TabIndex = 1;
+            label3.Text = "Textual Data";
+            // 
             // cboShowCopyButton
             // 
             cboShowCopyButton.DropDownStyle = ComboBoxStyle.DropDownList;
@@ -155,11 +189,105 @@ namespace FileInfoViewer
             label2.TabIndex = 1;
             label2.Text = "Copy Button";
             // 
+            // grpLayout
+            // 
+            grpLayout.Controls.Add(optCustContWidthPerc);
+            grpLayout.Controls.Add(optCustContWidthPx);
+            grpLayout.Controls.Add(txtCustomContentWidth);
+            grpLayout.Controls.Add(cboContentWidth);
+            grpLayout.Controls.Add(label4);
+            grpLayout.Location = new Point(14, 396);
+            grpLayout.Name = "grpLayout";
+            grpLayout.Size = new Size(360, 114);
+            grpLayout.TabIndex = 2;
+            grpLayout.TabStop = false;
+            grpLayout.Text = "Layout";
+            // 
+            // cboContentWidth
+            // 
+            cboContentWidth.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboContentWidth.FormattingEnabled = true;
+            cboContentWidth.Items.AddRange(new object[] { "Narrow (800px)", "Normal (1100px)", "Wide (1400px)", "Very wide (1800px)", "Full width", "Custom" });
+            cboContentWidth.Location = new Point(106, 19);
+            cboContentWidth.Name = "cboContentWidth";
+            cboContentWidth.Size = new Size(202, 23);
+            cboContentWidth.TabIndex = 0;
+            cboContentWidth.SelectedIndexChanged += cboContentWidth_SelectedIndexChanged;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(20, 22);
+            label4.Name = "label4";
+            label4.Size = new Size(85, 15);
+            label4.TabIndex = 1;
+            label4.Text = "Content Width";
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(chkWebLinksClickable);
+            groupBox1.Location = new Point(14, 330);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(362, 54);
+            groupBox1.TabIndex = 2;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Web Links";
+            // 
+            // chkWebLinksClickable
+            // 
+            chkWebLinksClickable.AutoSize = true;
+            chkWebLinksClickable.Checked = true;
+            chkWebLinksClickable.CheckState = CheckState.Checked;
+            chkWebLinksClickable.Location = new Point(110, 22);
+            chkWebLinksClickable.Name = "chkWebLinksClickable";
+            chkWebLinksClickable.Size = new Size(74, 19);
+            chkWebLinksClickable.TabIndex = 0;
+            chkWebLinksClickable.Text = "Clickable";
+            chkWebLinksClickable.UseVisualStyleBackColor = true;
+            chkWebLinksClickable.CheckedChanged += chkWebLinksClickable_CheckedChanged;
+            // 
+            // txtCustomContentWidth
+            // 
+            txtCustomContentWidth.Location = new Point(106, 57);
+            txtCustomContentWidth.Name = "txtCustomContentWidth";
+            txtCustomContentWidth.Size = new Size(202, 23);
+            txtCustomContentWidth.TabIndex = 2;
+            txtCustomContentWidth.Visible = false;
+            txtCustomContentWidth.TextChanged += txtCustomContentWidth_TextChanged;
+            // 
+            // optCustContWidthPx
+            // 
+            optCustContWidthPx.AutoSize = true;
+            optCustContWidthPx.Checked = true;
+            optCustContWidthPx.Location = new Point(111, 86);
+            optCustContWidthPx.Name = "optCustContWidthPx";
+            optCustContWidthPx.Size = new Size(54, 19);
+            optCustContWidthPx.TabIndex = 3;
+            optCustContWidthPx.TabStop = true;
+            optCustContWidthPx.Text = "Pixels";
+            optCustContWidthPx.UseVisualStyleBackColor = true;
+            optCustContWidthPx.Visible = false;
+            optCustContWidthPx.CheckedChanged += optCustContWidthUnit_CheckedChanged;
+            // 
+            // optCustContWidthPerc
+            // 
+            optCustContWidthPerc.AutoSize = true;
+            optCustContWidthPerc.Location = new Point(188, 86);
+            optCustContWidthPerc.Name = "optCustContWidthPerc";
+            optCustContWidthPerc.Size = new Size(65, 19);
+            optCustContWidthPerc.TabIndex = 3;
+            optCustContWidthPerc.Text = "Percent";
+            optCustContWidthPerc.UseVisualStyleBackColor = true;
+            optCustContWidthPerc.Visible = false;
+            optCustContWidthPerc.CheckedChanged += optCustContWidthUnit_CheckedChanged;
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(388, 307);
+            ClientSize = new Size(388, 522);
+            Controls.Add(groupBox1);
+            Controls.Add(grpLayout);
             Controls.Add(grpShow);
             Controls.Add(grpFileDate);
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -173,6 +301,10 @@ namespace FileInfoViewer
             grpFileDate.PerformLayout();
             grpShow.ResumeLayout(false);
             grpShow.PerformLayout();
+            grpLayout.ResumeLayout(false);
+            grpLayout.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -188,5 +320,15 @@ namespace FileInfoViewer
         private CheckBox chkFileAttributes;
         private CheckBox chkOwner;
         private CheckBox chkShowFileHashes;
+        private ComboBox cboTextualData;
+        private Label label3;
+        private GroupBox grpLayout;
+        private ComboBox cboContentWidth;
+        private Label label4;
+        private GroupBox groupBox1;
+        private CheckBox chkWebLinksClickable;
+        private RadioButton optCustContWidthPx;
+        private TextBox txtCustomContentWidth;
+        private RadioButton optCustContWidthPerc;
     }
 }

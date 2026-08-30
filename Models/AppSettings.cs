@@ -19,4 +19,19 @@ public class AppSettings
 
     /// <summary>Whether to show the File Hashes section in the HTML report.</summary>
     public bool ShowFileHashes { get; set; } = true;
+
+    /// <summary>How to display textual/JSON metadata: "None", "Formatted", "Raw data", or "Both Formatted and Raw Data".</summary>
+    public string TextualDataDisplay { get; set; } = "Formatted";
+
+    /// <summary>Whether to render values starting with http:// or https:// as clickable hyperlinks.</summary>
+    public bool WebLinksClickable { get; set; } = true;
+
+    /// <summary>Max width of the HTML report content area: "Narrow (800px)", "Normal (1100px)", "Wide (1400px)", "Very wide (1800px)", "Full width", "Custom".</summary>
+    public string ContentMaxWidth { get; set; } = "Normal (1100px)";
+
+    /// <summary>Numeric part of the custom content width (e.g. "1200").</summary>
+    public string CustomContentWidth { get; set; } = "1200";
+
+    /// <summary>Unit for the custom content width: "px" or "%".</summary>
+    public string CustomContentWidthUnit { get; set; } = "px";
 }

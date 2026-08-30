@@ -37,6 +37,9 @@ public class FileInfoModel
     // Audio file info
     public AudioInfoModel? AudioInfo { get; set; }
 
+    // Video file info
+    public VideoInfoModel? VideoInfo { get; set; }
+
     // Errors/warnings encountered during collection
     public List<string> Warnings { get; set; } = [];
 }
@@ -66,6 +69,7 @@ public class ImageInfoModel
     public string PixelFormat { get; set; } = "";
     public int BitDepth { get; set; }
     public Dictionary<string, string> ExifTags { get; set; } = [];
+    public Dictionary<string, string> PngTextChunks { get; set; } = [];
 }
 
 public class TextInfoModel
@@ -107,6 +111,41 @@ public class AudioInfoModel
     public string AudioSourceUrl { get; set; } = "";
 
     // All raw metadata tags (for anything not mapped above)
+    public Dictionary<string, string> AllTags { get; set; } = [];
+}
+
+public class VideoInfoModel
+{
+    // Description (Windows Explorer "Description" group)
+    public string Title    { get; set; } = "";
+    public string Subject  { get; set; } = "";  // "Subtitle" in Explorer
+    public string Comment  { get; set; } = "";
+    public string Tags     { get; set; } = "";
+    public string Rating   { get; set; } = "";
+
+    // Extra tags (from TagLib# / MP4 atoms)
+    public string Creator   { get; set; } = "";
+    public string Year      { get; set; } = "";
+    public string Genre     { get; set; } = "";
+    public string Copyright { get; set; } = "";
+
+    // Technical (Windows Explorer "Video" group)
+    public string Duration     { get; set; } = "";
+    public int    Width        { get; set; }
+    public int    Height       { get; set; }
+    public string FrameRate    { get; set; } = "";
+    public string DataRate     { get; set; } = "";  // video stream only
+    public string TotalBitrate { get; set; } = "";
+
+    // Technical (Windows Explorer "Audio" group)
+    public string AudioBitrate    { get; set; } = "";
+    public string AudioSampleRate { get; set; } = "";
+    public string AudioChannels   { get; set; } = "";
+
+    // Codec string from TagLib# properties
+    public string VideoCodec { get; set; } = "";
+
+    // All raw metadata tags
     public Dictionary<string, string> AllTags { get; set; } = [];
 }
 
