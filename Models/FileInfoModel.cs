@@ -145,6 +145,9 @@ public class VideoInfoModel
     // Codec string from TagLib# properties
     public string VideoCodec { get; set; } = "";
 
+    // Lyrics (from ID3v2 USLT or similar)
+    public string Lyrics { get; set; } = "";
+
     // All raw metadata tags
     public Dictionary<string, string> AllTags { get; set; } = [];
 }

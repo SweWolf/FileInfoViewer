@@ -439,6 +439,14 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 sb.AppendLine("  </table>");
             }
 
+            if (!string.IsNullOrWhiteSpace(vid.Lyrics))
+            {
+                sb.AppendLine("""  <div class="hover-parent">""");
+                sb.AppendLine($"""    <div class="card-header" style="border-top:1px solid #e8eaf0">🎤 Lyrics{CopyBtn(vid.Lyrics, copyDisplay)}</div>""");
+                sb.AppendLine($"""    <div style="padding:1rem 1.4rem;white-space:pre-wrap;font-size:.9rem;line-height:1.8;color:#333">{H(vid.Lyrics)}</div>""");
+                sb.AppendLine("""  </div>""");
+            }
+
             if (vid.AllTags.Count > 0)
             {
                 sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">🏷️ All Metadata Tags</div><table class="tag-table">""");

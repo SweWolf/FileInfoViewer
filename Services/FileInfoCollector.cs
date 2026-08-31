@@ -474,6 +474,22 @@ public static class FileInfoCollector
             video.Year      = tag.Year > 0 ? tag.Year.ToString() : "";
             video.Genre     = tag.Genres?.Length > 0 ? string.Join(", ", tag.Genres) : "";
             video.Copyright = tag.Copyright ?? "";
+            video.Lyrics    = tag.Lyrics ?? "";
+
+            // ID3v2 USLT frames (more reliable than tag.Lyrics when mixed tags are present)
+            if (string.IsNullOrEmpty(video.Lyrics)
+                && tagFile.TagTypes.HasFlag(TagLib.TagTypes.Id3v2))
+            {
+                var id3v2 = (TagLib.Id3v2.Tag)tagFile.GetTag(TagLib.TagTypes.Id3v2);
+                foreach (var frame in id3v2.GetFrames<TagLib.Id3v2.UnsynchronisedLyricsFrame>())
+                {
+                    if (!string.IsNullOrWhiteSpace(frame.Text))
+                    {
+                        video.Lyrics = frame.Text;
+                        break;
+                    }
+                }
+            }
 
             var props = tagFile.Properties;
             if (props != null)

@@ -7,7 +7,8 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>Resources\FileInfoViewer.ico</ApplicationIcon>
-    <Version>1.0.0</Version>
+    <Version>1.1.0</Version>
+    <Authors>SweWolf</Authors>
     <Title>File Info Viewer</Title>
     <Description>Collects and displays detailed metadata about files in a rich, self-contained HTML report.</Description>
     <Company>SweWolf Software</Company>
