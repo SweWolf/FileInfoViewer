@@ -476,6 +476,19 @@ public static class FileInfoCollector
             video.Copyright = tag.Copyright ?? "";
             video.Lyrics    = tag.Lyrics ?? "";
 
+            // Cover art — prefer FrontCover type, fall back to first picture
+            video.HasCoverArt = tag.Pictures?.Length > 0;
+            if (video.HasCoverArt)
+            {
+                var pictures = tag.Pictures ?? [];
+                var picture  = pictures.FirstOrDefault(p => p.Type == TagLib.PictureType.FrontCover)
+                               ?? pictures[0];
+                video.CoverArtMimeType    = picture.MimeType ?? "image/jpeg";
+                video.CoverArtPictureType = FormatPictureType(picture.Type);
+                video.CoverArtDescription = picture.Description ?? "";
+                video.CoverArtBase64      = Convert.ToBase64String(picture.Data.Data);
+            }
+
             // ID3v2 USLT frames (more reliable than tag.Lyrics when mixed tags are present)
             if (string.IsNullOrEmpty(video.Lyrics)
                 && tagFile.TagTypes.HasFlag(TagLib.TagTypes.Id3v2))

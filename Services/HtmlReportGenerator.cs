@@ -439,6 +439,24 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 sb.AppendLine("  </table>");
             }
 
+            if (vid.HasCoverArt && vid.CoverArtBase64 != null)
+            {
+                var altText = string.IsNullOrWhiteSpace(vid.CoverArtDescription) ? "Cover Art" : H(vid.CoverArtDescription);
+                sb.AppendLine($$"""
+  <div class="card-header" style="border-top:1px solid #e8eaf0">🖼️ Cover Art</div>
+  <div style="padding:1.2rem 1.4rem;display:flex;align-items:flex-start;gap:1.4rem">
+    <img src="data:{{vid.CoverArtMimeType}};base64,{{vid.CoverArtBase64}}"
+         alt="{{altText}}"
+         style="max-width:220px;max-height:220px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.18);object-fit:contain;flex-shrink:0" />
+    <table style="border-collapse:collapse;font-size:.88rem;align-self:center">
+      <tr><td style="color:#666;font-weight:500;padding:0.3rem 1rem 0.3rem 0;white-space:nowrap">Picture MIME Type</td><td style="color:#222">{{H(vid.CoverArtMimeType)}}</td></tr>
+      <tr><td style="color:#666;font-weight:500;padding:0.3rem 1rem 0.3rem 0;white-space:nowrap">Picture Type</td><td style="color:#222">{{H(vid.CoverArtPictureType)}}</td></tr>
+      <tr><td style="color:#666;font-weight:500;padding:0.3rem 1rem 0.3rem 0;white-space:nowrap">Picture Description</td><td style="color:#222">{{H(vid.CoverArtDescription)}}</td></tr>
+    </table>
+  </div>
+""");
+            }
+
             if (!string.IsNullOrWhiteSpace(vid.Lyrics))
             {
                 sb.AppendLine("""  <div class="hover-parent">""");

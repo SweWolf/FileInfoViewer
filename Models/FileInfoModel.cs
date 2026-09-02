@@ -148,6 +148,13 @@ public class VideoInfoModel
     // Lyrics (from ID3v2 USLT or similar)
     public string Lyrics { get; set; } = "";
 
+    // Cover art
+    public bool HasCoverArt { get; set; }
+    public string? CoverArtBase64 { get; set; }
+    public string CoverArtMimeType { get; set; } = "";
+    public string CoverArtPictureType { get; set; } = "";
+    public string CoverArtDescription { get; set; } = "";
+
     // All raw metadata tags
     public Dictionary<string, string> AllTags { get; set; } = [];
 }
