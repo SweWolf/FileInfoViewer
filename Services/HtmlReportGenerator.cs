@@ -106,12 +106,13 @@ function copyFileName(btn) {
 }
 var webLinksClickable={{(settings.WebLinksClickable?"true":"false")}};
 function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function decodeUni(s){return s.replace(/\\u([0-9a-fA-F]{4})/g,function(_,h){return String.fromCharCode(parseInt(h,16));});}
 function trimUrl(u){for(;;){if(!u.length)break;var l=u[u.length-1];if(l==='.'||l===','||l===';'||l===':'){u=u.slice(0,-1);continue;}if(l===')'){var a=(u.match(/\(/g)||[]).length,b=(u.match(/\)/g)||[]).length;if(b>a){u=u.slice(0,-1);continue;} }if(l===']'){var c=(u.match(/\[/g)||[]).length,d=(u.match(/\]/g)||[]).length;if(d>c){u=u.slice(0,-1);continue;} }break;}return u;}
 function linkifyInStr(raw){var re=/(https?:\/\/[^\s"\\]+)/g,out='',last=0,m;while((m=re.exec(raw))!==null){out+=esc(raw.slice(last,m.index));var u=trimUrl(m[1]);out+='<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">'+esc(u)+'</a>'+esc(m[1].slice(u.length));last=m.index+m[0].length;}return out+esc(raw.slice(last));}
 function highlightJson(el){
   var t=el.textContent;
   el.innerHTML=t.replace(/("(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){
-    if(/^"/.test(m)){if(/:$/.test(m))return'<span class="jk">'+esc(m)+'</span>';var inner=m.slice(1,m.length-1);return'<span class="js">"'+(webLinksClickable?linkifyInStr(inner):esc(inner))+'"</span>';}
+    if(/^"/.test(m)){if(/:$/.test(m))return'<span class="jk">'+esc(m)+'</span>';var inner=decodeUni(m.slice(1,m.length-1));return'<span class="js">"'+(webLinksClickable?linkifyInStr(inner):esc(inner))+'"</span>';}
     if(m==='true'||m==='false')return'<span class="jb">'+m+'</span>';
     if(m==='null')return'<span class="jz">'+m+'</span>';
     return'<span class="jn">'+m+'</span>';
@@ -436,6 +437,30 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 RowIfSet(sb, "Year",      vid.Year);
                 RowIfSet(sb, "Genre",     vid.Genre);
                 RowIfSet(sb, "Copyright", vid.Copyright);
+                sb.AppendLine("  </table>");
+            }
+
+            if (vid.Tracks.Count > 0)
+            {
+                sb.AppendLine("""  <div class="card-header" style="border-top:1px solid #e8eaf0">📼 Embedded Tracks</div><table>""");
+                foreach (var tr in vid.Tracks.OrderBy(t => t.Number))
+                {
+                    var codec   = string.IsNullOrEmpty(tr.CodecId) ? "" : MatroskaTrackReader.CodecDisplay(tr.CodecId);
+                    var lang    = string.IsNullOrEmpty(tr.Language) ? "" : MatroskaTrackReader.LanguageDisplay(tr.Language);
+                    var details = new List<string>();
+                    if (!string.IsNullOrEmpty(lang))    details.Add(lang);
+                    if (!string.IsNullOrEmpty(tr.Name)) details.Add(tr.Name);
+                    if (tr.SampleRate > 0)  details.Add($"{tr.SampleRate / 1000:F1} kHz");
+                    if (tr.Channels > 0)    details.Add(tr.Channels == 1 ? "mono" : tr.Channels == 2 ? "stereo" : $"{tr.Channels} ch");
+                    if (tr.BitDepth > 0)    details.Add($"{tr.BitDepth}-bit");
+                    if (tr.TrackWidth > 0 && tr.TrackHeight > 0) details.Add($"{tr.TrackWidth}×{tr.TrackHeight}");
+                    if (tr.IsDefault) details.Add("default");
+                    if (tr.IsForced)  details.Add("forced");
+                    var badges = string.Join(" · ", details);
+                    var label  = $"#{tr.Number} {tr.Type}";
+                    var value  = string.IsNullOrEmpty(codec) ? badges : (string.IsNullOrEmpty(badges) ? codec : $"{codec} — {badges}");
+                    Row(sb, label, H(value), raw: true);
+                }
                 sb.AppendLine("  </table>");
             }
 

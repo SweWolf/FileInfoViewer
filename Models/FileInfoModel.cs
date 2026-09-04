@@ -155,8 +155,30 @@ public class VideoInfoModel
     public string CoverArtPictureType { get; set; } = "";
     public string CoverArtDescription { get; set; } = "";
 
+    // Embedded stream tracks (from Matroska/EBML parser)
+    public List<MediaTrackInfo> Tracks { get; set; } = [];
+
     // All raw metadata tags
     public Dictionary<string, string> AllTags { get; set; } = [];
+}
+
+public class MediaTrackInfo
+{
+    public int    Number      { get; set; }
+    public string Type        { get; set; } = "";   // "Video", "Audio", "Subtitle"
+    public string Name        { get; set; } = "";
+    public string Language    { get; set; } = "";
+    public string CodecId     { get; set; } = "";
+    public string CodecName   { get; set; } = "";
+    public bool   IsDefault   { get; set; } = true;
+    public bool   IsForced    { get; set; }
+    // Audio
+    public double SampleRate  { get; set; }
+    public int    Channels    { get; set; }
+    public int    BitDepth    { get; set; }
+    // Video
+    public int    TrackWidth  { get; set; }
+    public int    TrackHeight { get; set; }
 }
 
 public class AssemblyInfoModel
