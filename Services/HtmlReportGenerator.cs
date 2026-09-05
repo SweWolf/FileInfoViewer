@@ -112,7 +112,7 @@ function linkifyInStr(raw){var re=/(https?:\/\/[^\s"\\]+)/g,out='',last=0,m;whil
 function highlightJson(el){
   var t=el.textContent;
   el.innerHTML=t.replace(/("(?:\\u[0-9a-fA-F]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(?:true|false)\b|\bnull\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,function(m){
-    if(/^"/.test(m)){if(/:$/.test(m))return'<span class="jk">'+esc(m)+'</span>';var inner=decodeUni(m.slice(1,m.length-1));return'<span class="js">"'+(webLinksClickable?linkifyInStr(inner):esc(inner))+'"</span>';}
+    if(/^"/.test(m)){if(/:$/.test(m)){var ki=decodeUni(m.slice(1,m.length-2));return'<span class="jk">"'+esc(ki)+'":</span>';}var inner=decodeUni(m.slice(1,m.length-1));return'<span class="js">"'+(webLinksClickable?linkifyInStr(inner):esc(inner))+'"</span>';}
     if(m==='true'||m==='false')return'<span class="jb">'+m+'</span>';
     if(m==='null')return'<span class="jz">'+m+'</span>';
     return'<span class="jn">'+m+'</span>';

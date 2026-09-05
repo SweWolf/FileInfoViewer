@@ -50,6 +50,25 @@ Go to the [Releases](https://github.com/SweWolf/FileInfoViewer/releases) page an
 
 ---
 
+## Which download should I choose?
+
+**Standalone (single .exe file)** — Recommended for most users. One file, no installation required. Just download `FileInfoViewer.exe`, place it anywhere, and run it. The download is larger (~110 MB) because it bundles the .NET runtime inside.
+
+**Framework-dependent (multifile zip)** — Smaller download (~2.5 MB), but requires the [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) to be installed on your PC. A good choice if you already have .NET 9 installed or want to keep the file size small.
+
+## Where to put it
+
+The application is fully portable — there is no installer and nothing is written to the Windows registry. You can place it anywhere you like, including a USB drive or a cloud folder (OneDrive, Dropbox, etc.) to use it across multiple computers.
+
+Suggested locations:
+
+- **Standalone**: place the single `FileInfoViewer.exe` directly in `C:\Program Files\SweWolfSoftware` or any folder of your choice.
+- **Multifile**: extract the zip into a dedicated subfolder, e.g. `C:\Program Files\SweWolfSoftware\FileInfoViewer`, to keep all files together.
+
+Once placed, use the built-in **Setup → Create Shortcut** option inside the app to add it to the Windows **Send To** menu for quick access from Explorer.
+
+---
+
 ## Usage
 
 **GUI mode** — open the application, type or browse to a file path, then click **View File Info**.
