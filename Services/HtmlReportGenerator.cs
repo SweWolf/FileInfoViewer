@@ -445,7 +445,9 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 sb.AppendLine("""  <div class="card-header" style="border-top:1px solid #e8eaf0">📼 Embedded Tracks</div><table>""");
                 foreach (var tr in vid.Tracks.OrderBy(t => t.Number))
                 {
-                    var codec   = string.IsNullOrEmpty(tr.CodecId) ? "" : MatroskaTrackReader.CodecDisplay(tr.CodecId);
+                    var codec   = !string.IsNullOrEmpty(tr.CodecName) ? tr.CodecName
+                                : string.IsNullOrEmpty(tr.CodecId)   ? ""
+                                : MatroskaTrackReader.CodecDisplay(tr.CodecId);
                     var lang    = string.IsNullOrEmpty(tr.Language) ? "" : MatroskaTrackReader.LanguageDisplay(tr.Language);
                     var details = new List<string>();
                     if (!string.IsNullOrEmpty(lang))    details.Add(lang);

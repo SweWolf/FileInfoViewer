@@ -532,10 +532,12 @@ public static class FileInfoCollector
         }
         catch { }
 
-        // Matroska track list (MKV / WebM only)
+        // Embedded track list
         var ext = Path.GetExtension(filePath).ToLowerInvariant();
         if (ext is ".mkv" or ".mka" or ".mks" or ".webm")
             video.Tracks = MatroskaTrackReader.ReadTracks(filePath);
+        else if (ext is ".mp4" or ".m4v" or ".m4a" or ".mov" or ".3gp")
+            video.Tracks = Mp4TrackReader.ReadTracks(filePath);
 
         model.VideoInfo = video;
     }
