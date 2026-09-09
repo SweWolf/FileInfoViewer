@@ -34,4 +34,7 @@ public class AppSettings
 
     /// <summary>Unit for the custom content width: "px" or "%".</summary>
     public string CustomContentWidthUnit { get; set; } = "px";
+
+    /// <summary>Application window color scheme: "Light", "Dark", or "System".</summary>
+    public string AppStyle { get; set; } = "System";
 }

@@ -8,6 +8,7 @@ static class Program
     static void Main(string[] args)
     {
         ApplicationConfiguration.Initialize();
+        SettingsService.ApplyStyle(SettingsService.Current.AppStyle);
 
         // args[0] is the first real argument when using static Main(string[] args)
         if (args.Length >= 1)

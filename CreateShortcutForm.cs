@@ -10,6 +10,7 @@ public partial class CreateShortcutForm : Form
     public CreateShortcutForm(string exePath)
     {
         InitializeComponent();
+        Services.SettingsService.FixButtonStyles(this);
         _exePath = exePath;
         _appName = Application.ProductName ?? System.IO.Path.GetFileNameWithoutExtension(exePath);
     }

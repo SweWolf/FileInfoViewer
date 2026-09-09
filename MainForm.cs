@@ -10,6 +10,7 @@ public partial class MainForm : Form
         _ = Common.CheckForUpdatesAsync("SweWolf", "FileInfoViewer");
 
         InitializeComponent();
+        SettingsService.FixButtonStyles(this);
         AllowDrop = true;
         DragEnter += MainForm_DragEnter;
         DragDrop += MainForm_DragDrop;

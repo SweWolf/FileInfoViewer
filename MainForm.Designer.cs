@@ -58,7 +58,7 @@ partial class MainForm
         // createShortcutToolStripMenuItem
         // 
         createShortcutToolStripMenuItem.Name = "createShortcutToolStripMenuItem";
-        createShortcutToolStripMenuItem.Size = new Size(180, 22);
+        createShortcutToolStripMenuItem.Size = new Size(165, 22);
         createShortcutToolStripMenuItem.Text = "Create Shortcut...";
         createShortcutToolStripMenuItem.Click += btnCreateShortcut_Click;
         // 
@@ -88,6 +88,7 @@ partial class MainForm
         // 
         // btnSettings
         // 
+        btnSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnSettings.BackColor = Color.FromArgb(240, 242, 248);
         btnSettings.Cursor = Cursors.Hand;
         btnSettings.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);
@@ -103,6 +104,7 @@ partial class MainForm
         // 
         // btnAbout
         // 
+        btnAbout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnAbout.BackColor = Color.FromArgb(240, 242, 248);
         btnAbout.Cursor = Cursors.Hand;
         btnAbout.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);

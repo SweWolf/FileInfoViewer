@@ -7,6 +7,7 @@ public partial class AboutForm : Form
     public AboutForm()
     {
         InitializeComponent();
+        Services.SettingsService.FixButtonStyles(this);
 
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         lblVersion.Text = version != null

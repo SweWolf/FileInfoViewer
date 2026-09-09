@@ -7,6 +7,7 @@ public partial class SettingsForm : Form
     public SettingsForm()
     {
         InitializeComponent();
+        SettingsService.FixButtonStyles(this);
         LoadSettings();
     }
 
@@ -37,6 +38,9 @@ public partial class SettingsForm : Form
         optCustContWidthPx.Checked   = settings.CustomContentWidthUnit != "%";
         optCustContWidthPerc.Checked = settings.CustomContentWidthUnit == "%";
         UpdateCustomWidthVisibility();
+
+        var styleIndex = cboStyle.Items.IndexOf(settings.AppStyle);
+        cboStyle.SelectedIndex = styleIndex >= 0 ? styleIndex : cboStyle.Items.IndexOf("System");
     }
 
     private void UpdateCustomWidthVisibility()
@@ -62,6 +66,7 @@ public partial class SettingsForm : Form
             ContentMaxWidth          = cboContentWidth.SelectedItem?.ToString() ?? "Normal (1100px)",
             CustomContentWidth       = txtCustomContentWidth.Text.Trim(),
             CustomContentWidthUnit   = optCustContWidthPerc.Checked ? "%" : "px",
+            AppStyle                 = cboStyle.SelectedItem?.ToString() ?? "System",
         });
     }
 
@@ -90,6 +95,12 @@ public partial class SettingsForm : Form
     private void txtCustomContentWidth_TextChanged(object sender, EventArgs e) => SaveSettings();
 
     private void optCustContWidthUnit_CheckedChanged(object sender, EventArgs e) => SaveSettings();
+
+    private void cboStyle_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        SaveSettings();
+        SettingsService.ApplyStyle(cboStyle.SelectedItem?.ToString() ?? "System");
+    }
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {

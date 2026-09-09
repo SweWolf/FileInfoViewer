@@ -42,17 +42,21 @@ namespace FileInfoViewer
             cboShowCopyButton = new ComboBox();
             label2 = new Label();
             grpLayout = new GroupBox();
+            optCustContWidthPerc = new RadioButton();
+            optCustContWidthPx = new RadioButton();
+            txtCustomContentWidth = new TextBox();
             cboContentWidth = new ComboBox();
             label4 = new Label();
             groupBox1 = new GroupBox();
             chkWebLinksClickable = new CheckBox();
-            txtCustomContentWidth = new TextBox();
-            optCustContWidthPx = new RadioButton();
-            optCustContWidthPerc = new RadioButton();
+            groupBox2 = new GroupBox();
+            label5 = new Label();
+            cboStyle = new ComboBox();
             grpFileDate.SuspendLayout();
             grpShow.SuspendLayout();
             grpLayout.SuspendLayout();
             groupBox1.SuspendLayout();
+            groupBox2.SuspendLayout();
             SuspendLayout();
             // 
             // grpFileDate
@@ -60,7 +64,7 @@ namespace FileInfoViewer
             grpFileDate.Controls.Add(cboTimeZone);
             grpFileDate.Controls.Add(label1);
             grpFileDate.Controls.Add(chkShowSeconds);
-            grpFileDate.Location = new Point(12, 12);
+            grpFileDate.Location = new Point(12, 97);
             grpFileDate.Name = "grpFileDate";
             grpFileDate.Size = new Size(360, 101);
             grpFileDate.TabIndex = 0;
@@ -107,7 +111,7 @@ namespace FileInfoViewer
             grpShow.Controls.Add(label3);
             grpShow.Controls.Add(cboShowCopyButton);
             grpShow.Controls.Add(label2);
-            grpShow.Location = new Point(12, 128);
+            grpShow.Location = new Point(12, 213);
             grpShow.Name = "grpShow";
             grpShow.Size = new Size(360, 187);
             grpShow.TabIndex = 1;
@@ -196,12 +200,47 @@ namespace FileInfoViewer
             grpLayout.Controls.Add(txtCustomContentWidth);
             grpLayout.Controls.Add(cboContentWidth);
             grpLayout.Controls.Add(label4);
-            grpLayout.Location = new Point(14, 396);
+            grpLayout.Location = new Point(14, 481);
             grpLayout.Name = "grpLayout";
             grpLayout.Size = new Size(360, 114);
             grpLayout.TabIndex = 2;
             grpLayout.TabStop = false;
             grpLayout.Text = "Layout";
+            // 
+            // optCustContWidthPerc
+            // 
+            optCustContWidthPerc.AutoSize = true;
+            optCustContWidthPerc.Location = new Point(188, 86);
+            optCustContWidthPerc.Name = "optCustContWidthPerc";
+            optCustContWidthPerc.Size = new Size(65, 19);
+            optCustContWidthPerc.TabIndex = 3;
+            optCustContWidthPerc.Text = "Percent";
+            optCustContWidthPerc.UseVisualStyleBackColor = true;
+            optCustContWidthPerc.Visible = false;
+            optCustContWidthPerc.CheckedChanged += optCustContWidthUnit_CheckedChanged;
+            // 
+            // optCustContWidthPx
+            // 
+            optCustContWidthPx.AutoSize = true;
+            optCustContWidthPx.Checked = true;
+            optCustContWidthPx.Location = new Point(111, 86);
+            optCustContWidthPx.Name = "optCustContWidthPx";
+            optCustContWidthPx.Size = new Size(54, 19);
+            optCustContWidthPx.TabIndex = 3;
+            optCustContWidthPx.TabStop = true;
+            optCustContWidthPx.Text = "Pixels";
+            optCustContWidthPx.UseVisualStyleBackColor = true;
+            optCustContWidthPx.Visible = false;
+            optCustContWidthPx.CheckedChanged += optCustContWidthUnit_CheckedChanged;
+            // 
+            // txtCustomContentWidth
+            // 
+            txtCustomContentWidth.Location = new Point(106, 57);
+            txtCustomContentWidth.Name = "txtCustomContentWidth";
+            txtCustomContentWidth.Size = new Size(202, 23);
+            txtCustomContentWidth.TabIndex = 2;
+            txtCustomContentWidth.Visible = false;
+            txtCustomContentWidth.TextChanged += txtCustomContentWidth_TextChanged;
             // 
             // cboContentWidth
             // 
@@ -226,7 +265,7 @@ namespace FileInfoViewer
             // groupBox1
             // 
             groupBox1.Controls.Add(chkWebLinksClickable);
-            groupBox1.Location = new Point(14, 330);
+            groupBox1.Location = new Point(14, 415);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(362, 54);
             groupBox1.TabIndex = 2;
@@ -246,46 +285,43 @@ namespace FileInfoViewer
             chkWebLinksClickable.UseVisualStyleBackColor = true;
             chkWebLinksClickable.CheckedChanged += chkWebLinksClickable_CheckedChanged;
             // 
-            // txtCustomContentWidth
+            // groupBox2
             // 
-            txtCustomContentWidth.Location = new Point(106, 57);
-            txtCustomContentWidth.Name = "txtCustomContentWidth";
-            txtCustomContentWidth.Size = new Size(202, 23);
-            txtCustomContentWidth.TabIndex = 2;
-            txtCustomContentWidth.Visible = false;
-            txtCustomContentWidth.TextChanged += txtCustomContentWidth_TextChanged;
+            groupBox2.Controls.Add(cboStyle);
+            groupBox2.Controls.Add(label5);
+            groupBox2.Location = new Point(12, 5);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(359, 88);
+            groupBox2.TabIndex = 3;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Appearance";
             // 
-            // optCustContWidthPx
+            // label5
             // 
-            optCustContWidthPx.AutoSize = true;
-            optCustContWidthPx.Checked = true;
-            optCustContWidthPx.Location = new Point(111, 86);
-            optCustContWidthPx.Name = "optCustContWidthPx";
-            optCustContWidthPx.Size = new Size(54, 19);
-            optCustContWidthPx.TabIndex = 3;
-            optCustContWidthPx.TabStop = true;
-            optCustContWidthPx.Text = "Pixels";
-            optCustContWidthPx.UseVisualStyleBackColor = true;
-            optCustContWidthPx.Visible = false;
-            optCustContWidthPx.CheckedChanged += optCustContWidthUnit_CheckedChanged;
+            label5.AutoSize = true;
+            label5.Location = new Point(12, 28);
+            label5.Name = "label5";
+            label5.Size = new Size(32, 15);
+            label5.TabIndex = 0;
+            label5.Text = "Style";
             // 
-            // optCustContWidthPerc
+            // cboStyle
             // 
-            optCustContWidthPerc.AutoSize = true;
-            optCustContWidthPerc.Location = new Point(188, 86);
-            optCustContWidthPerc.Name = "optCustContWidthPerc";
-            optCustContWidthPerc.Size = new Size(65, 19);
-            optCustContWidthPerc.TabIndex = 3;
-            optCustContWidthPerc.Text = "Percent";
-            optCustContWidthPerc.UseVisualStyleBackColor = true;
-            optCustContWidthPerc.Visible = false;
-            optCustContWidthPerc.CheckedChanged += optCustContWidthUnit_CheckedChanged;
+            cboStyle.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboStyle.FormattingEnabled = true;
+            cboStyle.Items.AddRange(new object[] { "Light", "Dark", "System" });
+            cboStyle.Location = new Point(108, 25);
+            cboStyle.Name = "cboStyle";
+            cboStyle.Size = new Size(200, 23);
+            cboStyle.TabIndex = 0;
+            cboStyle.SelectedIndexChanged += cboStyle_SelectedIndexChanged;
             // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(388, 522);
+            ClientSize = new Size(388, 600);
+            Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(grpLayout);
             Controls.Add(grpShow);
@@ -305,6 +341,8 @@ namespace FileInfoViewer
             grpLayout.PerformLayout();
             groupBox1.ResumeLayout(false);
             groupBox1.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -330,5 +368,8 @@ namespace FileInfoViewer
         private RadioButton optCustContWidthPx;
         private TextBox txtCustomContentWidth;
         private RadioButton optCustContWidthPerc;
+        private GroupBox groupBox2;
+        private ComboBox cboStyle;
+        private Label label5;
     }
 }

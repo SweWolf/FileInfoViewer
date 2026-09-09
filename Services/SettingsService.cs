@@ -46,4 +46,31 @@ public static class SettingsService
         }
         catch { }
     }
+
+#pragma warning disable WFO5001
+    public static void ApplyStyle(string style)
+    {
+        Application.SetColorMode(style switch
+        {
+            "Dark"  => SystemColorMode.Dark,
+            "Light" => SystemColorMode.Classic,
+            _       => SystemColorMode.System,
+        });
+        foreach (Form form in Application.OpenForms)
+        {
+            FixButtonStyles(form);
+            form.Invalidate(true);
+            form.Refresh();
+        }
+    }
+#pragma warning restore WFO5001
+
+    // Switches all buttons to FlatStyle.System so they render correctly in dark mode.
+    // FlatStyle.System uses native OS rendering which handles dark mode; Standard does not.
+    public static void FixButtonStyles(Control root)
+    {
+        if (root is Button btn) btn.FlatStyle = FlatStyle.System;
+        foreach (Control child in root.Controls)
+            FixButtonStyles(child);
+    }
 }
