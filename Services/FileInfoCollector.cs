@@ -8,6 +8,8 @@ using System.Text;
 using FileInfoViewer.Models;
 using MetadataExtractor;
 using MetadataExtractor.Formats.Exif;
+using SharpCompress.Archives;
+using SharpCompress.Common;
 
 namespace FileInfoViewer.Services;
 
@@ -24,14 +26,24 @@ public static class FileInfoCollector
 
     private static readonly HashSet<string> AssemblyExtensions = [".exe", ".dll"];
 
+    private static readonly HashSet<string> SqliteExtensions =
+        [".db", ".sqlite", ".sqlite3", ".db3", ".s3db"];
+
     private static readonly HashSet<string> AudioExtensions =
         [".mp3", ".flac", ".ogg", ".m4a", ".aac", ".wav", ".wma", ".opus", ".ape", ".aiff", ".aif"];
 
     private static readonly HashSet<string> VideoExtensions =
         [".mp4", ".avi", ".mkv", ".mov", ".wmv", ".flv", ".webm", ".m4v", ".mpg", ".mpeg", ".3gp", ".ts", ".mts", ".m2ts"];
 
+    private static readonly HashSet<string> ArchiveExtensions =
+        [".zip", ".rar", ".7z", ".tar", ".tgz", ".tbz2", ".txz"];
+
+    private static readonly HashSet<string> ArchiveDoubleExtensions =
+        [".tar.gz", ".tar.bz2", ".tar.xz", ".tar.zst"];
+
     private static readonly Dictionary<string, string> MimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
+        { ".torrent", "application/x-bittorrent" },
         { ".jpg", "image/jpeg" }, { ".jpeg", "image/jpeg" }, { ".png", "image/png" },
         { ".gif", "image/gif" }, { ".bmp", "image/bmp" }, { ".tiff", "image/tiff" },
         { ".tif", "image/tiff" }, { ".webp", "image/webp" }, { ".ico", "image/x-icon" },
@@ -130,6 +142,10 @@ public static class FileInfoCollector
                     Copyright = fvi.LegalCopyright ?? "",
                     OriginalFilename = fvi.OriginalFilename ?? "",
                     InternalName = fvi.InternalName ?? "",
+                    Comments = fvi.Comments ?? "",
+                    LegalTrademarks = fvi.LegalTrademarks ?? "",
+                    PrivateBuild = fvi.PrivateBuild ?? "",
+                    SpecialBuild = fvi.SpecialBuild ?? "",
                     IsDebug = fvi.IsDebug,
                     IsPatched = fvi.IsPatched,
                     IsPreRelease = fvi.IsPreRelease,
@@ -204,7 +220,114 @@ public static class FileInfoCollector
             }
         }
 
+        // SQLite database info — check magic bytes first since .db is used by many non-SQLite apps
+        if (SqliteExtensions.Contains(model.Extension) && SqliteInfoReader.IsSqliteFile(filePath))
+        {
+            try
+            {
+                model.SqliteInfo = SqliteInfoReader.Read(filePath);
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read SQLite info: {ex.Message}");
+            }
+        }
+
+        // PDF file info
+        if (model.Extension == ".pdf")
+        {
+            try
+            {
+                model.PdfInfo = PdfInfoReader.Read(filePath);
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read PDF info: {ex.Message}");
+            }
+        }
+
+        // Torrent file info
+        if (model.Extension == ".torrent")
+        {
+            try
+            {
+                model.TorrentInfo = TorrentInfoReader.Read(filePath);
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read torrent info: {ex.Message}");
+            }
+        }
+
+        // Archive file info
+        var doubleExt = GetDoubleExtension(filePath);
+        if (ArchiveExtensions.Contains(model.Extension) || ArchiveDoubleExtensions.Contains(doubleExt))
+        {
+            try
+            {
+                CollectArchiveInfo(filePath, model);
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read archive info: {ex.Message}");
+            }
+        }
+
         return model;
+    }
+
+    private static string GetDoubleExtension(string filePath)
+    {
+        var ext   = Path.GetExtension(filePath).ToLowerInvariant();
+        var inner = Path.GetExtension(Path.GetFileNameWithoutExtension(filePath)).ToLowerInvariant();
+        return inner + ext;
+    }
+
+    private static void CollectArchiveInfo(string filePath, FileInfoModel model)
+    {
+        var info = new ArchiveInfoModel();
+
+        using var archive = ArchiveFactory.OpenArchive(filePath, null);
+
+        info.Format = archive.Type switch
+        {
+            ArchiveType.Zip      => "ZIP",
+            ArchiveType.Rar      => "RAR",
+            ArchiveType.SevenZip => "7-Zip",
+            ArchiveType.Tar      => "TAR",
+            ArchiveType.GZip     => "GZip",
+            _                    => archive.Type.ToString(),
+        };
+
+        foreach (var entry in archive.Entries)
+        {
+            if (entry.IsDirectory)
+            {
+                info.FolderCount++;
+            }
+            else
+            {
+                info.FileCount++;
+                info.TotalUncompressedBytes += entry.Size;
+                if (entry.CompressedSize > 0)
+                    info.TotalCompressedBytes += entry.CompressedSize;
+                if (entry.IsEncrypted)
+                    info.IsEncrypted = true;
+            }
+        }
+
+        // ZIP archive-level comment — SharpCompress doesn't expose it; use System.IO.Compression
+        if (archive.Type == ArchiveType.Zip)
+        {
+            try
+            {
+                using var zip = System.IO.Compression.ZipFile.OpenRead(filePath);
+                info.Comment = zip.Comment ?? "";
+            }
+            catch { }
+        }
+
+        model.ArchiveInfo = info;
     }
 
     private static void CollectImageInfo(string filePath, FileInfoModel model)

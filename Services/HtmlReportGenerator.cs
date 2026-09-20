@@ -209,8 +209,12 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             RowIfSet(sb, "Company", vi.CompanyName);
             RowIfSet(sb, "Description", vi.FileDescription);
             RowIfSet(sb, "Copyright", vi.Copyright);
+            RowIfSet(sb, "Trademarks", vi.LegalTrademarks);
+            RowIfSet(sb, "Comments", vi.Comments);
             RowIfSet(sb, "Original Filename", vi.OriginalFilename);
             RowIfSet(sb, "Internal Name", vi.InternalName);
+            RowIfSet(sb, "Private Build", vi.PrivateBuild);
+            RowIfSet(sb, "Special Build", vi.SpecialBuild);
             RowIfSet(sb, "Language", vi.Language);
             Row(sb, "Is Debug", vi.IsDebug ? "Yes" : "No");
             Row(sb, "Is Pre-Release", vi.IsPreRelease ? "Yes" : "No");
@@ -509,6 +513,192 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("</div>");
         }
 
+        // SQLite info card
+        if (model.SqliteInfo is { } sq)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🗄️ SQLite Database</div>
+  <table>
+""");
+            if (!string.IsNullOrEmpty(sq.SqliteVersion)) Row(sb, "SQLite Version", sq.SqliteVersion);
+
+            var schemaLine = new List<string>();
+            if (sq.TableCount > 0) schemaLine.Add($"{sq.TableCount:N0} table{(sq.TableCount == 1 ? "" : "s")}");
+            if (sq.ViewCount  > 0) schemaLine.Add($"{sq.ViewCount:N0} view{(sq.ViewCount == 1 ? "" : "s")}");
+            if (sq.IndexCount > 0) schemaLine.Add($"{sq.IndexCount:N0} index{(sq.IndexCount == 1 ? "" : "es")}");
+            if (schemaLine.Count > 0) Row(sb, "Schema", string.Join(", ", schemaLine));
+
+            if (sq.PageSizeBytes > 0 && sq.PageCount > 0)
+            {
+                Row(sb, "Page Size",  FormatSize(sq.PageSizeBytes));
+                var usedPages = sq.PageCount - sq.FreePageCount;
+                var freeStr   = sq.FreePageCount > 0 ? $" ({FormatSize(sq.FreePageCount * sq.PageSizeBytes)} free)" : "";
+                Row(sb, "DB Size",    $"{FormatSize(usedPages * sq.PageSizeBytes)} used of {FormatSize(sq.PageCount * sq.PageSizeBytes)}{freeStr}");
+            }
+
+            if (!string.IsNullOrEmpty(sq.TextEncoding)) Row(sb, "Encoding",     sq.TextEncoding);
+            if (!string.IsNullOrEmpty(sq.JournalMode))  Row(sb, "Journal Mode", sq.JournalMode);
+            if (sq.UserVersion   != 0) Row(sb, "User Version",    sq.UserVersion.ToString());
+            if (sq.ApplicationId != 0) Row(sb, "Application ID",  $"{sq.ApplicationId} (0x{sq.ApplicationId:X8})");
+
+            sb.AppendLine("  </table>");
+
+            if (sq.Tables.Count > 0)
+            {
+                var shown  = sq.Tables.Count < sq.TableCount ? sq.Tables.Count : sq.TableCount;
+                var header = shown < sq.TableCount
+                    ? $"📋 Tables (showing {shown} of {sq.TableCount:N0})"
+                    : "📋 Tables";
+                sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">{header}</div><table class="tag-table">""");
+                foreach (var t in sq.Tables)
+                {
+                    var rowStr = t.RowCountFailed ? "—" : $"{t.RowCount:N0} row{(t.RowCount == 1 ? "" : "s")}";
+                    Row(sb, H(t.Name), rowStr, raw: true);
+                }
+                sb.AppendLine("  </table>");
+            }
+
+            sb.AppendLine("</div>");
+        }
+
+        // PDF info card
+        if (model.PdfInfo is { } pdf)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">📄 PDF Information</div>
+  <table>
+""");
+            Row(sb, "Pages", pdf.IsEncrypted ? "Encrypted — cannot read" : pdf.PageCount.ToString("N0"));
+            if (!string.IsNullOrEmpty(pdf.PdfVersion)) Row(sb, "Version", pdf.PdfVersion);
+            if (pdf.IsEncrypted)
+            {
+                Row(sb, "Encrypted", "Yes — document is password-protected");
+            }
+            else
+            {
+                RowIfSetCopy(sb, "Title",    pdf.Title,    copyDisplay);
+                RowIfSetCopy(sb, "Author",   pdf.Author,   copyDisplay);
+                RowIfSet(sb, "Subject",      pdf.Subject);
+                RowIfSetCopy(sb, "Keywords", pdf.Keywords, copyDisplay);
+                RowIfSet(sb, "Creator",      pdf.Creator);
+                RowIfSet(sb, "Producer",     pdf.Producer);
+                if (pdf.CreationDate.HasValue)
+                {
+                    var fmt = settings.ShowSeconds ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd HH:mm";
+                    Row(sb, "Created",  pdf.CreationDate.Value.ToString(fmt) + " UTC");
+                }
+                if (pdf.ModifiedDate.HasValue)
+                {
+                    var fmt = settings.ShowSeconds ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd HH:mm";
+                    Row(sb, "Modified", pdf.ModifiedDate.Value.ToString(fmt) + " UTC");
+                }
+            }
+            sb.AppendLine("  </table></div>");
+        }
+
+        // Torrent info card
+        if (model.TorrentInfo is { } tor)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">📡 Torrent Information</div>
+  <table>
+""");
+            if (tor.IsMagnetLink)
+            {
+                Row(sb, "Type", "Magnet link (saved as .torrent)");
+                if (!string.IsNullOrEmpty(tor.MagnetLink))
+                    Row(sb, "Magnet Link",
+                        $"""<a href="{H(tor.MagnetLink)}">{H(tor.MagnetLink.Length > 80 ? tor.MagnetLink[..80] + "…" : tor.MagnetLink)}</a>""" + CopyBtn(tor.MagnetLink, copyDisplay),
+                        raw: true);
+            }
+            else
+            {
+                RowIfSet(sb, "Name", tor.Name);
+                RowIfSetCopy(sb, "Comment", tor.Comment, copyDisplay);
+                RowIfSet(sb, "Created By", tor.CreatedBy);
+                if (tor.CreationDate.HasValue)
+                {
+                    var cd = tor.CreationDate.Value;
+                    var fmt = settings.ShowSeconds ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd HH:mm";
+                    Row(sb, "Created", cd.ToString(fmt) + " UTC");
+                }
+                if (!string.IsNullOrEmpty(tor.InfoHash))
+                    Row(sb, "Info Hash", $"""<span class="hash">{H(tor.InfoHash)}</span>""" + CopyBtn(tor.InfoHash, copyDisplay), raw: true);
+                if (!string.IsNullOrEmpty(tor.MagnetLink))
+                    Row(sb, "Magnet Link",
+                        $"""<a href="{H(tor.MagnetLink)}">{H(tor.MagnetLink.Length > 70 ? tor.MagnetLink[..70] + "…" : tor.MagnetLink)}</a>""" + CopyBtn(tor.MagnetLink, copyDisplay),
+                        raw: true);
+                if (tor.TotalSizeBytes > 0) Row(sb, "Total Size", FormatSize(tor.TotalSizeBytes));
+                if (tor.FileCount > 0) Row(sb, "File Count", $"{tor.FileCount:N0}");
+                if (tor.PieceSizeBytes > 0) Row(sb, "Piece Size", FormatSize(tor.PieceSizeBytes));
+                if (tor.IsPrivate) Row(sb, "Private", "Yes");
+                RowIfSet(sb, "Source", tor.Source);
+                RowIfSet(sb, "Publisher", tor.Publisher);
+                if (!string.IsNullOrEmpty(tor.PublisherUrl))
+                    Row(sb, "Publisher URL", $"""<a href="{H(tor.PublisherUrl)}" target="_blank" rel="noopener noreferrer">{H(tor.PublisherUrl)}</a>""", raw: true);
+                if (tor.Trackers.Count == 1)
+                    Row(sb, "Tracker", H(tor.PrimaryTracker), raw: true);
+                else if (tor.Trackers.Count > 1)
+                    Row(sb, "Trackers", $"{tor.Trackers.Count}: " + H(string.Join(", ", tor.Trackers.Take(10))), raw: true);
+            }
+            sb.AppendLine("  </table>");
+
+            // File list sub-section (multi-file torrents)
+            if (!tor.IsMagnetLink && tor.Files.Count > 1)
+            {
+                const int MaxFiles = 100;
+                var sorted = tor.Files.OrderBy(f => f.Path).ToList();
+                var shown  = sorted.Take(MaxFiles).ToList();
+                var header = shown.Count < tor.Files.Count
+                    ? $"📂 Files (showing {shown.Count} of {tor.Files.Count:N0})"
+                    : "📂 Files";
+                sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">{header}</div><table class="tag-table">""");
+                foreach (var f in shown)
+                    Row(sb, H(f.Path), FormatSize(f.SizeBytes), raw: true);
+                sb.AppendLine("  </table>");
+            }
+
+            sb.AppendLine("</div>");
+        }
+
+        // Archive info card
+        if (model.ArchiveInfo is { } arc)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">📦 Archive Contents</div>
+  <table>
+""");
+            Row(sb, "Format", arc.Format);
+
+            var countParts = new List<string>();
+            if (arc.FileCount > 0)   countParts.Add($"{arc.FileCount:N0} file{(arc.FileCount == 1 ? "" : "s")}");
+            if (arc.FolderCount > 0) countParts.Add($"{arc.FolderCount:N0} folder{(arc.FolderCount == 1 ? "" : "s")}");
+            if (countParts.Count > 0) Row(sb, "Contents", string.Join(", ", countParts));
+
+            if (arc.TotalUncompressedBytes > 0)
+            {
+                if (arc.TotalCompressedBytes > 0 && arc.TotalCompressedBytes < arc.TotalUncompressedBytes)
+                {
+                    var ratio = (1.0 - (double)arc.TotalCompressedBytes / arc.TotalUncompressedBytes) * 100;
+                    Row(sb, "Uncompressed size", FormatSize(arc.TotalUncompressedBytes));
+                    Row(sb, "Compressed size",   $"{FormatSize(arc.TotalCompressedBytes)} ({ratio:F1}% saved)");
+                }
+                else
+                {
+                    Row(sb, "Uncompressed size", FormatSize(arc.TotalUncompressedBytes));
+                }
+            }
+
+            if (arc.IsEncrypted) Row(sb, "Encrypted", "Yes");
+            if (!string.IsNullOrEmpty(arc.Comment)) Row(sb, "Comment", arc.Comment);
+
+            sb.AppendLine("  </table></div>");
+        }
+
         // Warnings
         if (model.Warnings.Count > 0)
         {
@@ -586,6 +776,14 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
     }
 
     private static string H(string s) => HttpUtility.HtmlEncode(s);
+
+    private static string FormatSize(long bytes)
+    {
+        if (bytes < 1024) return $"{bytes} B";
+        if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F2} KB";
+        if (bytes < 1024L * 1024 * 1024) return $"{bytes / (1024.0 * 1024):F2} MB";
+        return $"{bytes / (1024.0 * 1024 * 1024):F2} GB";
+    }
 
     private static readonly Regex _urlRx =
         new(@"https?://[^\s""'<>\\]+", RegexOptions.IgnoreCase | RegexOptions.Compiled);

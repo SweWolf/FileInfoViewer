@@ -40,6 +40,18 @@ public class FileInfoModel
     // Video file info
     public VideoInfoModel? VideoInfo { get; set; }
 
+    // Archive file info
+    public ArchiveInfoModel? ArchiveInfo { get; set; }
+
+    // Torrent file info
+    public TorrentInfoModel? TorrentInfo { get; set; }
+
+    // PDF file info
+    public PdfInfoModel? PdfInfo { get; set; }
+
+    // SQLite database info
+    public SqliteInfoModel? SqliteInfo { get; set; }
+
     // Errors/warnings encountered during collection
     public List<string> Warnings { get; set; } = [];
 }
@@ -54,6 +66,10 @@ public class VersionInfoModel
     public string Copyright { get; set; } = "";
     public string OriginalFilename { get; set; } = "";
     public string InternalName { get; set; } = "";
+    public string Comments { get; set; } = "";
+    public string LegalTrademarks { get; set; } = "";
+    public string PrivateBuild { get; set; } = "";
+    public string SpecialBuild { get; set; } = "";
     public bool IsDebug { get; set; }
     public bool IsPatched { get; set; }
     public bool IsPreRelease { get; set; }
@@ -179,6 +195,82 @@ public class MediaTrackInfo
     // Video
     public int    TrackWidth  { get; set; }
     public int    TrackHeight { get; set; }
+}
+
+public class SqliteInfoModel
+{
+    public string SqliteVersion { get; set; } = "";
+    public long PageSizeBytes { get; set; }
+    public long PageCount { get; set; }
+    public long FreePageCount { get; set; }
+    public string TextEncoding { get; set; } = "";
+    public string JournalMode { get; set; } = "";
+    public int UserVersion { get; set; }
+    public int ApplicationId { get; set; }
+    public int TableCount { get; set; }
+    public int ViewCount { get; set; }
+    public int IndexCount { get; set; }
+    public List<SqliteTableInfo> Tables { get; set; } = [];
+}
+
+public class SqliteTableInfo
+{
+    public string Name { get; set; } = "";
+    public long RowCount { get; set; }
+    public bool RowCountFailed { get; set; }
+}
+
+public class PdfInfoModel
+{
+    public int PageCount { get; set; }
+    public string PdfVersion { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Author { get; set; } = "";
+    public string Subject { get; set; } = "";
+    public string Keywords { get; set; } = "";
+    public string Creator { get; set; } = "";
+    public string Producer { get; set; } = "";
+    public DateTime? CreationDate { get; set; }
+    public DateTime? ModifiedDate { get; set; }
+    public bool IsEncrypted { get; set; }
+}
+
+public class TorrentInfoModel
+{
+    public bool IsMagnetLink { get; set; }
+    public string Name { get; set; } = "";
+    public string Comment { get; set; } = "";
+    public string CreatedBy { get; set; } = "";
+    public DateTime? CreationDate { get; set; }
+    public string InfoHash { get; set; } = "";
+    public string MagnetLink { get; set; } = "";
+    public long TotalSizeBytes { get; set; }
+    public int FileCount { get; set; }
+    public long PieceSizeBytes { get; set; }
+    public bool IsPrivate { get; set; }
+    public string Source { get; set; } = "";
+    public string Publisher { get; set; } = "";
+    public string PublisherUrl { get; set; } = "";
+    public string PrimaryTracker { get; set; } = "";
+    public List<string> Trackers { get; set; } = [];
+    public List<TorrentFileEntry> Files { get; set; } = [];
+}
+
+public class TorrentFileEntry
+{
+    public string Path { get; set; } = "";
+    public long SizeBytes { get; set; }
+}
+
+public class ArchiveInfoModel
+{
+    public string Format { get; set; } = "";
+    public int FileCount { get; set; }
+    public int FolderCount { get; set; }
+    public long TotalUncompressedBytes { get; set; }
+    public long TotalCompressedBytes { get; set; }
+    public bool IsEncrypted { get; set; }
+    public string Comment { get; set; } = "";
 }
 
 public class AssemblyInfoModel
