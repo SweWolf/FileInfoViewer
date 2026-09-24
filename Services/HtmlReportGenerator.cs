@@ -337,10 +337,12 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                     Row(sb, "Audio Source", H(aud.AudioSourceUrl) + CopyBtn(aud.AudioSourceUrl, copyDisplay), raw: true);
             }
             RowIfSet(sb, "Duration", aud.Duration);
+            RowIfSet(sb, "Encoding", aud.Encoding);
             RowIfSet(sb, "Bit Rate", aud.BitRate);
             RowIfSet(sb, "Sample Rate", aud.SampleRate);
             RowIfSet(sb, "Channels", aud.Channels);
             RowIfSet(sb, "Bit Depth", aud.BitDepth);
+            RowIfSet(sb, "Software", aud.Software);
             sb.AppendLine("  </table>");
 
             if (aud.HasCoverArt && aud.CoverArtBase64 != null)

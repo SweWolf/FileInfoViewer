@@ -112,10 +112,12 @@ public class AudioInfoModel
 
     // Technical
     public string Duration { get; set; } = "";
+    public string Encoding { get; set; } = "";
     public string BitRate { get; set; } = "";
     public string SampleRate { get; set; } = "";
     public string Channels { get; set; } = "";
     public string BitDepth { get; set; } = "";
+    public string Software { get; set; } = "";
 
     // Special
     public bool HasCoverArt { get; set; }

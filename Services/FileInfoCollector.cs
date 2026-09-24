@@ -513,14 +513,15 @@ public static class FileInfoCollector
         var props = tagFile.Properties;
         if (props != null)
         {
-            audio.Duration   = props.Duration.TotalSeconds > 0
-                ? $"{(int)props.Duration.TotalMinutes}:{props.Duration.Seconds:D2} ({props.Duration.TotalSeconds:F1}s)"
-                : "";
+            audio.Duration   = FormatDuration(props.Duration);
+            audio.Encoding   = props.Description?.Trim() ?? "";
             audio.BitRate    = props.AudioBitrate > 0 ? $"{props.AudioBitrate} kbps" : "";
             audio.SampleRate = props.AudioSampleRate > 0 ? $"{props.AudioSampleRate} Hz" : "";
             audio.Channels   = props.AudioChannels > 0 ? props.AudioChannels.ToString() : "";
             audio.BitDepth   = props.BitsPerSample > 0 ? $"{props.BitsPerSample} bit" : "";
         }
+
+        audio.Software = ReadEncoderSoftware(tagFile);
 
         // MetadataExtractor — supplementary raw tags (EXIF-style extended metadata)
         try
@@ -561,6 +562,42 @@ public static class FileInfoCollector
         model.AudioInfo = audio;
     }
 
+    // "m:ss (123.4s)", with the m:ss part rounded to the nearest second (like ExifTool)
+    private static string FormatDuration(TimeSpan duration)
+    {
+        if (duration.TotalSeconds <= 0) return "";
+        var rounded = TimeSpan.FromSeconds(Math.Round(duration.TotalSeconds, MidpointRounding.AwayFromZero));
+        return $"{(int)rounded.TotalMinutes}:{rounded.Seconds:D2} ({duration.TotalSeconds:F1}s)";
+    }
+
+    // The software that wrote the file: RIFF INFO "ISFT" (WAV), ID3v2 "TSSE" (MP3), Xiph "ENCODER" (FLAC/Ogg)
+    private static string ReadEncoderSoftware(TagLib.File tagFile)
+    {
+        try
+        {
+            if (tagFile.GetTag(TagLib.TagTypes.RiffInfo) is TagLib.Riff.InfoTag info)
+            {
+                var isft = info.GetValuesAsStrings("ISFT").FirstOrDefault(s => !string.IsNullOrWhiteSpace(s));
+                if (isft != null) return isft.Trim('\0', ' ');
+            }
+            if (tagFile.GetTag(TagLib.TagTypes.Id3v2) is TagLib.Id3v2.Tag id3v2)
+            {
+                var tsse = id3v2.GetTextAsString("TSSE");
+                if (!string.IsNullOrWhiteSpace(tsse)) return tsse.Trim();
+            }
+            if (tagFile.GetTag(TagLib.TagTypes.Xiph) is TagLib.Ogg.XiphComment xiph)
+            {
+                var encoder = xiph.GetFirstField("ENCODER");
+                if (!string.IsNullOrWhiteSpace(encoder)) return encoder.Trim();
+            }
+        }
+        catch
+        {
+            // Non-critical
+        }
+        return "";
+    }
+
     private static void CollectVideoInfo(string filePath, FileInfoModel model)
     {
         var video = new VideoInfoModel();
@@ -573,8 +610,7 @@ public static class FileInfoCollector
         video.Tags    = shell.Tags.Length > 0 ? string.Join("; ", shell.Tags) : "";
         video.Rating  = FormatRating(shell.Rating);
 
-        if (shell.Duration.TotalSeconds > 0)
-            video.Duration = $"{(int)shell.Duration.TotalMinutes}:{shell.Duration.Seconds:D2} ({shell.Duration.TotalSeconds:F1}s)";
+        video.Duration = FormatDuration(shell.Duration);
         if (shell.FrameWidth > 0)  video.Width  = shell.FrameWidth;
         if (shell.FrameHeight > 0) video.Height = shell.FrameHeight;
         if (shell.FrameRate > 0)    video.FrameRate    = $"{shell.FrameRate:F2} fps";
