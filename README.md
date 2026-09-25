@@ -1,6 +1,6 @@
 # 📁 File Info Viewer
 
-A .NET 9 WinForms application that collects as much metadata as possible about any file and presents it as a clean, self-contained HTML report opened in your default browser.
+A .NET 10 WinForms application that collects as much metadata as possible about any file and presents it as a clean, self-contained HTML report opened in your default browser.
 
 **[https://github.com/SweWolf/FileInfoViewer](https://github.com/SweWolf/FileInfoViewer)**
 
@@ -35,7 +35,7 @@ A .NET 9 WinForms application that collects as much metadata as possible about a
 ## Requirements
 
 - Windows 10 (1607 or later) or Windows 11
-- [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) — for the framework-dependent release only
+- [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) — for the framework-dependent release only
 
 ---
 
@@ -45,7 +45,7 @@ Go to the [Releases](https://github.com/SweWolf/FileInfoViewer/releases) page an
 
 | Release | Description |
 |---|---|
-| **FrameworkDependent** (multifile) | Small download — requires .NET 9 Desktop Runtime to be installed |
+| **FrameworkDependent** (multifile) | Small download — requires .NET 10 Desktop Runtime to be installed |
 | **Standalone** (single exe) | Larger download — no .NET installation required |
 
 ---
@@ -54,7 +54,7 @@ Go to the [Releases](https://github.com/SweWolf/FileInfoViewer/releases) page an
 
 **Standalone (single .exe file)** — Recommended for most users. One file, no installation required. Just download `FileInfoViewer.exe`, place it anywhere, and run it. The download is larger (~110 MB) because it bundles the .NET runtime inside.
 
-**Framework-dependent (multifile zip)** — Smaller download (~2.5 MB), but requires the [.NET 9 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/9.0) to be installed on your PC. A good choice if you already have .NET 9 installed or want to keep the file size small.
+**Framework-dependent (multifile zip)** — Smaller download (~2.5 MB), but requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) to be installed on your PC. A good choice if you already have .NET 10 installed or want to keep the file size small.
 
 ## Where to put it
 
@@ -125,7 +125,7 @@ dotnet run
 
 To publish:
 ```bash
-# Framework-dependent (small, requires .NET 9)
+# Framework-dependent (small, requires .NET 10)
 dotnet publish -p:PublishProfile=FrameworkDependent
 
 # Standalone (single exe, no .NET required)
@@ -136,7 +136,7 @@ dotnet publish -p:PublishProfile=Standalone
 
 ## Built With
 
-- [.NET 9 / Windows Forms](https://dotnet.microsoft.com/)
+- [.NET 10 / Windows Forms](https://dotnet.microsoft.com/)
 - [MetadataExtractor](https://github.com/drewnoakes/metadata-extractor-dotnet) 2.9.0
 - [TagLibSharp](https://github.com/mono/taglib-sharp) 2.3.0
 - [System.Reflection.Metadata](https://www.nuget.org/packages/System.Reflection.Metadata) 10.0.5
