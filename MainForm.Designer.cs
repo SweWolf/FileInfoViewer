@@ -149,6 +149,7 @@ partial class MainForm
         txtFilePath.BackColor = Color.FromArgb(248, 249, 252);
         txtFilePath.BorderStyle = BorderStyle.FixedSingle;
         txtFilePath.Font = new Font("Consolas", 9.5F);
+        txtFilePath.ForeColor = Color.FromArgb(30, 30, 30);
         txtFilePath.Location = new Point(82, 20);
         txtFilePath.Name = "txtFilePath";
         txtFilePath.Size = new Size(690, 22);
