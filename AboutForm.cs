@@ -22,6 +22,27 @@ public partial class AboutForm : Form
                 picIcon.Image = Image.FromStream(stream);
         }
         catch { }
+
+        Shown += AboutForm_Shown;
+    }
+
+    private async void AboutForm_Shown(object? sender, EventArgs e)
+    {
+        var currentVersion = Assembly.GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
+        var result = await GitHubUpdateChecker.CheckAsync("SweWolf", "FileInfoViewer", currentVersion);
+
+        if (result == null || IsDisposed) return; // network error or form already closed
+
+        if (result.IsUpdateAvailable)
+        {
+            lblUpdateStatus.Text = $"↑ Version {result.LatestVersion} available";
+            lblUpdateStatus.ForeColor = Color.FromArgb(255, 210, 80); // warm yellow
+        }
+        else
+        {
+            lblUpdateStatus.Text = "✓ This is the latest version";
+            lblUpdateStatus.ForeColor = Color.FromArgb(120, 210, 120); // light green
+        }
     }
 
     private void btnClose_Click(object sender, EventArgs e) => Close();
