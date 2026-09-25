@@ -141,7 +141,22 @@ public partial class MainForm : Form
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-        if (keyData == Keys.Escape) { Application.Exit(); return true; }
+        switch (keyData)
+        {
+            case Keys.Escape:
+                Application.Exit();
+                return true;
+            case Keys.F6:
+                txtFilePath.Focus();
+                txtFilePath.SelectAll();
+                return true;
+            case Keys.Alt | Keys.B:
+                if (btnBrowse.Enabled) btnBrowse.PerformClick();
+                return true;
+            case Keys.Control | Keys.E:
+                if (btnView.Enabled) btnView.PerformClick();
+                return true;
+        }
         return base.ProcessCmdKey(ref msg, keyData);
     }
 }
