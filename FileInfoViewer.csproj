@@ -9,7 +9,7 @@
     <ApplicationIcon>Resources\FileInfoViewer.ico</ApplicationIcon>
     <Version>1.2.0</Version>
     <Authors>SweWolf</Authors>
-    <Title>File Info Viewer</Title>
+    <AssemblyTitle>File Info Viewer</AssemblyTitle>
     <Description>Collects and displays detailed metadata about files in a rich, self-contained HTML report.</Description>
     <Company>SweWolf Software</Company>
     <Product>File Info Viewer</Product>
