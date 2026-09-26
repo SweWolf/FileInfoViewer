@@ -247,14 +247,22 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
   <div class="card-header">🖼️ Image Information</div>
   <table>
 """);
-            Row(sb, "Dimensions", $"{img.Width} × {img.Height} pixels");
-            if (!string.IsNullOrEmpty(img.PixelFormat)) // not set for WebP (no GDI+ decoder)
+            if (img.IsVector)
             {
-                Row(sb, "DPI", $"{img.HorizontalDpi:F1} × {img.VerticalDpi:F1}");
-                Row(sb, "Pixel Format", img.PixelFormat);
-                Row(sb, "Bit Depth", img.BitDepth.ToString());
+                if (img.Width > 0)
+                    Row(sb, "Dimensions", $"{img.Width} × {img.Height} pixels (scalable)");
             }
-            Row(sb, "Megapixels", $"{img.Width * (long)img.Height / 1_000_000.0:F2} MP");
+            else
+            {
+                Row(sb, "Dimensions", $"{img.Width} × {img.Height} pixels");
+                if (!string.IsNullOrEmpty(img.PixelFormat)) // not set for WebP/HEIC/AVIF (no GDI+ decoder)
+                {
+                    Row(sb, "DPI", $"{img.HorizontalDpi:F1} × {img.VerticalDpi:F1}");
+                    Row(sb, "Pixel Format", img.PixelFormat);
+                    Row(sb, "Bit Depth", img.BitDepth.ToString());
+                }
+                Row(sb, "Megapixels", $"{img.Width * (long)img.Height / 1_000_000.0:F2} MP");
+            }
             foreach (var (key, value) in img.FormatDetails)
                 Row(sb, key, value);
             sb.AppendLine("  </table>");
@@ -873,7 +881,7 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
 
     private static string GetFileIcon(string ext) => ext.ToLowerInvariant() switch
     {
-        ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".tiff" or ".tif" or ".webp" or ".ico" or ".heic" or ".svg" => "🖼️",
+        ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".tiff" or ".tif" or ".webp" or ".ico" or ".heic" or ".heif" or ".avif" or ".svg" => "🖼️",
         ".mp4" or ".avi" or ".mkv" or ".mov" or ".wmv" or ".flv" => "🎬",
         ".mp3" or ".wav" or ".flac" or ".ogg" or ".aac" or ".m4a" => "🎵",
         ".pdf" => "📕",

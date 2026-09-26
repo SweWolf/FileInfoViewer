@@ -26,7 +26,8 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 
 | Type | What is collected |
 |---|---|
-| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic) | Dimensions, DPI, pixel format, bit depth, full EXIF and XMP metadata, embedded textual/JSON data. WebP: format (lossy/lossless/extended), alpha, animation frames, loop count and duration |
+| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic, heif, avif) | Dimensions, DPI, pixel format, bit depth, full EXIF and XMP metadata, embedded textual/JSON data. WebP: format (lossy/lossless/extended), alpha, animation frames, loop count and duration |
+| **Vector images** (svg) | Width, height, view box, SVG version, title, description, creating program (Illustrator, Inkscape), element count, embedded images, scripts |
 | **Audio** (mp3, flac, ogg, m4a, aac, wav, wma, opus, ape, aiff) | ID3/Vorbis tags, lyrics, embedded cover art, duration, bitrate, sample rate, encoding, encoder software |
 | **Video** (mp4, mkv, avi, mov, wmv, flv, webm, m4v, mpg, 3gp, ts, m2ts) | Duration, dimensions, frame rate, codec, audio streams, video streams, embedded MP4 tracks, full tag metadata |
 | **PDF** (.pdf) | Page count, PDF version, title, author, subject, keywords, creator, producer, creation/modified dates, encryption |

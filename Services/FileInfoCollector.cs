@@ -16,7 +16,10 @@ namespace FileInfoViewer.Services;
 public static class FileInfoCollector
 {
     private static readonly HashSet<string> ImageExtensions =
-        [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico", ".heic", ".heif"];
+        [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico", ".heic", ".heif", ".avif", ".svg"];
+
+    // Formats GDI+ can't decode: dimensions come from MetadataExtractor instead
+    private static readonly HashSet<string> HeifExtensions = [".heic", ".heif", ".avif"];
 
     private static readonly HashSet<string> TextExtensions =
         [".txt", ".log", ".csv", ".xml", ".json", ".md", ".htm", ".html", ".css", ".js",
@@ -47,7 +50,7 @@ public static class FileInfoCollector
         { ".jpg", "image/jpeg" }, { ".jpeg", "image/jpeg" }, { ".png", "image/png" },
         { ".gif", "image/gif" }, { ".bmp", "image/bmp" }, { ".tiff", "image/tiff" },
         { ".tif", "image/tiff" }, { ".webp", "image/webp" }, { ".ico", "image/x-icon" },
-        { ".heic", "image/heic" }, { ".heif", "image/heif" },
+        { ".heic", "image/heic" }, { ".heif", "image/heif" }, { ".avif", "image/avif" },
         { ".pdf", "application/pdf" }, { ".zip", "application/zip" },
         { ".7z", "application/x-7z-compressed" }, { ".rar", "application/vnd.rar" },
         { ".tar", "application/x-tar" }, { ".gz", "application/gzip" },
@@ -339,7 +342,14 @@ public static class FileInfoCollector
             // GDI+ can't decode WebP: read the RIFF chunks instead
             WebpInfoReader.Read(filePath, imageInfo);
         }
-        else
+        else if (model.Extension == ".svg")
+        {
+            // Vector image: no pixels, read the XML instead (MetadataExtractor doesn't support SVG)
+            SvgInfoReader.Read(filePath, imageInfo);
+            model.ImageInfo = imageInfo;
+            return;
+        }
+        else if (!HeifExtensions.Contains(model.Extension))
         {
             using var img = System.Drawing.Image.FromFile(filePath);
             imageInfo.Width = img.Width;
@@ -380,6 +390,16 @@ public static class FileInfoCollector
 
                 foreach (var tag in directory.Tags)
                     AddTag($"{directory.Name} / {tag.Name}", tag.Description);
+            }
+
+            // HEIC/HEIF/AVIF: no GDI+ decoder, so take the size of the primary image from its properties
+            if (HeifExtensions.Contains(model.Extension)
+                && directories.OfType<MetadataExtractor.Formats.Heif.HeicImagePropertiesDirectory>().FirstOrDefault() is { } heif
+                && heif.TryGetInt32(MetadataExtractor.Formats.Heif.HeicImagePropertiesDirectory.TagImageWidth, out var w)
+                && heif.TryGetInt32(MetadataExtractor.Formats.Heif.HeicImagePropertiesDirectory.TagImageHeight, out var h))
+            {
+                imageInfo.Width = w;
+                imageInfo.Height = h;
             }
         }
         catch
