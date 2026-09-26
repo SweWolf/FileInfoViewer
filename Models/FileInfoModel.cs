@@ -86,6 +86,7 @@ public class ImageInfoModel
     public int BitDepth { get; set; }
     public Dictionary<string, string> ExifTags { get; set; } = [];
     public Dictionary<string, string> PngTextChunks { get; set; } = [];
+    public Dictionary<string, string> FormatDetails { get; set; } = []; // WebP: RIFF chunk info, in file order
 }
 
 public class TextInfoModel

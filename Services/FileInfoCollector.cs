@@ -332,38 +332,54 @@ public static class FileInfoCollector
 
     private static void CollectImageInfo(string filePath, FileInfoModel model)
     {
-        using var img = System.Drawing.Image.FromFile(filePath);
-        var pixelFormat = img.PixelFormat;
-        var bitDepth = System.Drawing.Image.GetPixelFormatSize(pixelFormat);
+        var imageInfo = new ImageInfoModel();
 
-        var imageInfo = new ImageInfoModel
+        if (model.Extension == ".webp")
         {
-            Width = img.Width,
-            Height = img.Height,
-            HorizontalDpi = img.HorizontalResolution,
-            VerticalDpi = img.VerticalResolution,
-            PixelFormat = pixelFormat.ToString(),
-            BitDepth = bitDepth,
-        };
+            // GDI+ can't decode WebP: read the RIFF chunks instead
+            WebpInfoReader.Read(filePath, imageInfo);
+        }
+        else
+        {
+            using var img = System.Drawing.Image.FromFile(filePath);
+            imageInfo.Width = img.Width;
+            imageInfo.Height = img.Height;
+            imageInfo.HorizontalDpi = img.HorizontalResolution;
+            imageInfo.VerticalDpi = img.VerticalResolution;
+            imageInfo.PixelFormat = img.PixelFormat.ToString();
+            imageInfo.BitDepth = System.Drawing.Image.GetPixelFormatSize(img.PixelFormat);
+        }
 
         // EXIF via MetadataExtractor
         try
         {
             var directories = ImageMetadataReader.ReadMetadata(filePath);
+            void AddTag(string baseKey, string? value)
+            {
+                if (string.IsNullOrWhiteSpace(value)) return;
+                // Deduplicate keys (e.g. multiple PNG-tEXt / Textual Data entries)
+                var key = baseKey;
+                var n = 2;
+                while (imageInfo.ExifTags.ContainsKey(key))
+                    key = $"{baseKey} ({n++})";
+                imageInfo.ExifTags[key] = value;
+            }
+
             foreach (var directory in directories)
             {
-                foreach (var tag in directory.Tags)
+                // WebpInfoReader already shows this (in more detail)
+                if (directory is MetadataExtractor.Formats.WebP.WebPDirectory) continue;
+
+                // The XMP directory's only tag is a value count: list the properties themselves
+                if (directory is MetadataExtractor.Formats.Xmp.XmpDirectory xmp)
                 {
-                    var baseKey = $"{directory.Name} / {tag.Name}";
-                    var value = tag.Description ?? "";
-                    if (string.IsNullOrWhiteSpace(value)) continue;
-                    // Deduplicate keys (e.g. multiple PNG-tEXt / Textual Data entries)
-                    var key = baseKey;
-                    var n = 2;
-                    while (imageInfo.ExifTags.ContainsKey(key))
-                        key = $"{baseKey} ({n++})";
-                    imageInfo.ExifTags[key] = value;
+                    foreach (var (path, value) in xmp.GetXmpProperties())
+                        AddTag($"XMP / {path}", value);
+                    continue;
                 }
+
+                foreach (var tag in directory.Tags)
+                    AddTag($"{directory.Name} / {tag.Name}", tag.Description);
             }
         }
         catch

@@ -248,10 +248,15 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
   <table>
 """);
             Row(sb, "Dimensions", $"{img.Width} × {img.Height} pixels");
-            Row(sb, "DPI", $"{img.HorizontalDpi:F1} × {img.VerticalDpi:F1}");
-            Row(sb, "Pixel Format", img.PixelFormat);
-            Row(sb, "Bit Depth", img.BitDepth.ToString());
+            if (!string.IsNullOrEmpty(img.PixelFormat)) // not set for WebP (no GDI+ decoder)
+            {
+                Row(sb, "DPI", $"{img.HorizontalDpi:F1} × {img.VerticalDpi:F1}");
+                Row(sb, "Pixel Format", img.PixelFormat);
+                Row(sb, "Bit Depth", img.BitDepth.ToString());
+            }
             Row(sb, "Megapixels", $"{img.Width * (long)img.Height / 1_000_000.0:F2} MP");
+            foreach (var (key, value) in img.FormatDetails)
+                Row(sb, key, value);
             sb.AppendLine("  </table>");
 
             var textualMode = SettingsService.Current.TextualDataDisplay;
