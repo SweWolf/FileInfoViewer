@@ -16,7 +16,12 @@ namespace FileInfoViewer.Services;
 public static class FileInfoCollector
 {
     private static readonly HashSet<string> ImageExtensions =
-        [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico", ".heic", ".heif", ".avif", ".svg"];
+        [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico", ".heic", ".heif", ".avif", ".svg",
+         ".nef", ".nrw", ".cr2", ".arw", ".dng", ".orf", ".rw2", ".raf", ".pef", ".srw"];
+
+    // Camera RAW files (mostly TIFF-based): the pixel data is unreadable for GDI+, but the EXIF is fine
+    private static readonly HashSet<string> RawExtensions =
+        [".nef", ".nrw", ".cr2", ".arw", ".dng", ".orf", ".rw2", ".raf", ".pef", ".srw"];
 
     // Formats GDI+ can't decode: dimensions come from MetadataExtractor instead
     private static readonly HashSet<string> HeifExtensions = [".heic", ".heif", ".avif"];
@@ -51,6 +56,10 @@ public static class FileInfoCollector
         { ".gif", "image/gif" }, { ".bmp", "image/bmp" }, { ".tiff", "image/tiff" },
         { ".tif", "image/tiff" }, { ".webp", "image/webp" }, { ".ico", "image/x-icon" },
         { ".heic", "image/heic" }, { ".heif", "image/heif" }, { ".avif", "image/avif" },
+        { ".nef", "image/x-nikon-nef" }, { ".nrw", "image/x-nikon-nrw" }, { ".cr2", "image/x-canon-cr2" },
+        { ".arw", "image/x-sony-arw" }, { ".dng", "image/x-adobe-dng" }, { ".orf", "image/x-olympus-orf" },
+        { ".rw2", "image/x-panasonic-rw2" }, { ".raf", "image/x-fuji-raf" }, { ".pef", "image/x-pentax-pef" },
+        { ".srw", "image/x-samsung-srw" },
         { ".pdf", "application/pdf" }, { ".zip", "application/zip" },
         { ".7z", "application/x-7z-compressed" }, { ".rar", "application/vnd.rar" },
         { ".tar", "application/x-tar" }, { ".gz", "application/gzip" },
@@ -356,7 +365,7 @@ public static class FileInfoCollector
             model.ImageInfo = imageInfo;
             return;
         }
-        else if (!HeifExtensions.Contains(model.Extension))
+        else if (!HeifExtensions.Contains(model.Extension) && !RawExtensions.Contains(model.Extension))
         {
             using var img = System.Drawing.Image.FromFile(filePath);
             imageInfo.Width = img.Width;
@@ -407,6 +416,22 @@ public static class FileInfoCollector
             {
                 imageInfo.Width = w;
                 imageInfo.Height = h;
+            }
+
+            // RAW: the first IFD is usually a small thumbnail, so the picture size is the largest
+            // image found in any EXIF directory
+            if (RawExtensions.Contains(model.Extension))
+            {
+                foreach (var dir in directories.OfType<ExifDirectoryBase>())
+                {
+                    if (dir.TryGetInt32(ExifDirectoryBase.TagImageWidth, out var rw)
+                        && dir.TryGetInt32(ExifDirectoryBase.TagImageHeight, out var rh)
+                        && (long)rw * rh > (long)imageInfo.Width * imageInfo.Height)
+                    {
+                        imageInfo.Width = rw;
+                        imageInfo.Height = rh;
+                    }
+                }
             }
         }
         catch

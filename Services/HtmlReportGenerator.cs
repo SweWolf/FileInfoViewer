@@ -913,7 +913,8 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
 
     private static string GetFileIcon(string ext) => ext.ToLowerInvariant() switch
     {
-        ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".tiff" or ".tif" or ".webp" or ".ico" or ".heic" or ".heif" or ".avif" or ".svg" => "🖼️",
+        ".jpg" or ".jpeg" or ".png" or ".gif" or ".bmp" or ".tiff" or ".tif" or ".webp" or ".ico" or ".heic" or ".heif" or ".avif" or ".svg"
+            or ".nef" or ".nrw" or ".cr2" or ".arw" or ".dng" or ".orf" or ".rw2" or ".raf" or ".pef" or ".srw" => "🖼️",
         ".mp4" or ".avi" or ".mkv" or ".mov" or ".wmv" or ".flv" => "🎬",
         ".mp3" or ".wav" or ".flac" or ".ogg" or ".aac" or ".m4a" => "🎵",
         ".pdf" => "📕",
