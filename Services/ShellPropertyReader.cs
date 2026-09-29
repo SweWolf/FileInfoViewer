@@ -28,8 +28,8 @@ internal static class ShellPropertyReader
             p.FrameHeight = (int)GetU32(store, PKEY_Video_FrameHeight);
             uint fr = GetU32(store, PKEY_Video_FrameRate);
             if (fr > 0) p.FrameRate = fr / 1000.0;
-            p.TotalBitrate    = GetU32(store, PKEY_Video_TotalBitrate);
-            p.DataRate        = GetU32(store, PKEY_Video_DataRate);
+            p.TotalBitrate    = GetU32(store, PKEY_Video_TotalBitrate) / 1000u; // bits/s → kbps
+            p.DataRate        = GetU32(store, PKEY_Video_DataRate) / 1000u;
             p.AudioBitrate    = GetU32(store, PKEY_Audio_EncodingBitrate) / 1000u;
             p.AudioChannels   = (int)GetU32(store, PKEY_Audio_ChannelCount);
             p.AudioSampleRate = GetU32(store, PKEY_Audio_SampleRate);
@@ -136,7 +136,7 @@ internal static class ShellPropertyReader
     private static readonly PROPKEY PKEY_Comment  = Pk("F29F85E0-4FF9-1068-AB91-08002B27B3D9", 6);
     private static readonly PROPKEY PKEY_Rating   = Pk("64440492-4C8B-11D1-8B70-080036B11A03", 9);
     private static readonly PROPKEY PKEY_Media_Duration       = Pk("64440490-4C8B-11D1-8B70-080036B11A03", 3);
-    private static readonly PROPKEY PKEY_Video_FrameWidth     = Pk("64440491-4C8B-11D1-8B70-080036B11A03", 42);
+    private static readonly PROPKEY PKEY_Video_FrameWidth     = Pk("64440491-4C8B-11D1-8B70-080036B11A03", 3);
     private static readonly PROPKEY PKEY_Video_FrameHeight    = Pk("64440491-4C8B-11D1-8B70-080036B11A03", 4);
     private static readonly PROPKEY PKEY_Video_FrameRate      = Pk("64440491-4C8B-11D1-8B70-080036B11A03", 6);
     private static readonly PROPKEY PKEY_Video_TotalBitrate   = Pk("64440491-4C8B-11D1-8B70-080036B11A03", 43);

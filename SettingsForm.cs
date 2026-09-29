@@ -30,6 +30,7 @@ public partial class SettingsForm : Form
         cboTextualData.SelectedIndex = tdIndex >= 0 ? tdIndex : 1; // default: "Formatted"
 
         chkWebLinksClickable.Checked = settings.WebLinksClickable;
+        chkWarnWrongExtension.Checked = settings.WarnWrongExtension;
 
         var cwIndex = cboContentWidth.Items.IndexOf(settings.ContentMaxWidth);
         cboContentWidth.SelectedIndex = cwIndex >= 0 ? cwIndex : 1; // default: "Normal (1100px)"
@@ -63,6 +64,7 @@ public partial class SettingsForm : Form
             ShowFileHashes       = chkShowFileHashes.Checked,
             TextualDataDisplay   = cboTextualData.SelectedItem?.ToString() ?? "Formatted",
             WebLinksClickable    = chkWebLinksClickable.Checked,
+            WarnWrongExtension   = chkWarnWrongExtension.Checked,
             ContentMaxWidth          = cboContentWidth.SelectedItem?.ToString() ?? "Normal (1100px)",
             CustomContentWidth       = txtCustomContentWidth.Text.Trim(),
             CustomContentWidthUnit   = optCustContWidthPerc.Checked ? "%" : "px",
@@ -85,6 +87,8 @@ public partial class SettingsForm : Form
     private void cboTextualData_SelectedIndexChanged(object sender, EventArgs e) => SaveSettings();
 
     private void chkWebLinksClickable_CheckedChanged(object sender, EventArgs e) => SaveSettings();
+
+    private void chkWarnWrongExtension_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
     private void cboContentWidth_SelectedIndexChanged(object sender, EventArgs e)
     {

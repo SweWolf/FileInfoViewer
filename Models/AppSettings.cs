@@ -26,6 +26,9 @@ public class AppSettings
     /// <summary>Whether to render values starting with http:// or https:// as clickable hyperlinks.</summary>
     public bool WebLinksClickable { get; set; } = true;
 
+    /// <summary>Whether to warn when the file content doesn't match its extension (e.g. an MP4 file named .mkv).</summary>
+    public bool WarnWrongExtension { get; set; } = true;
+
     /// <summary>Max width of the HTML report content area: "Narrow (800px)", "Normal (1100px)", "Wide (1400px)", "Very wide (1800px)", "Full width", "Custom".</summary>
     public string ContentMaxWidth { get; set; } = "Normal (1100px)";
 

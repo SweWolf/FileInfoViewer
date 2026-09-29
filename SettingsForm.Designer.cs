@@ -52,11 +52,14 @@ namespace FileInfoViewer
             groupBox2 = new GroupBox();
             label5 = new Label();
             cboStyle = new ComboBox();
+            grpWarnings = new GroupBox();
+            chkWarnWrongExtension = new CheckBox();
             grpFileDate.SuspendLayout();
             grpShow.SuspendLayout();
             grpLayout.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
+            grpWarnings.SuspendLayout();
             SuspendLayout();
             // 
             // grpFileDate
@@ -315,12 +318,36 @@ namespace FileInfoViewer
             cboStyle.Size = new Size(200, 23);
             cboStyle.TabIndex = 0;
             cboStyle.SelectedIndexChanged += cboStyle_SelectedIndexChanged;
-            // 
+            //
+            // grpWarnings
+            //
+            grpWarnings.Controls.Add(chkWarnWrongExtension);
+            grpWarnings.Location = new Point(14, 607);
+            grpWarnings.Name = "grpWarnings";
+            grpWarnings.Size = new Size(360, 54);
+            grpWarnings.TabIndex = 4;
+            grpWarnings.TabStop = false;
+            grpWarnings.Text = "Warnings";
+            //
+            // chkWarnWrongExtension
+            //
+            chkWarnWrongExtension.AutoSize = true;
+            chkWarnWrongExtension.Checked = true;
+            chkWarnWrongExtension.CheckState = CheckState.Checked;
+            chkWarnWrongExtension.Location = new Point(110, 22);
+            chkWarnWrongExtension.Name = "chkWarnWrongExtension";
+            chkWarnWrongExtension.Size = new Size(140, 19);
+            chkWarnWrongExtension.TabIndex = 0;
+            chkWarnWrongExtension.Text = "Wrong File Extension";
+            chkWarnWrongExtension.UseVisualStyleBackColor = true;
+            chkWarnWrongExtension.CheckedChanged += chkWarnWrongExtension_CheckedChanged;
+            //
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(388, 600);
+            ClientSize = new Size(388, 672);
+            Controls.Add(grpWarnings);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
             Controls.Add(grpLayout);
@@ -343,6 +370,8 @@ namespace FileInfoViewer
             groupBox1.PerformLayout();
             groupBox2.ResumeLayout(false);
             groupBox2.PerformLayout();
+            grpWarnings.ResumeLayout(false);
+            grpWarnings.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -371,5 +400,7 @@ namespace FileInfoViewer
         private GroupBox groupBox2;
         private ComboBox cboStyle;
         private Label label5;
+        private GroupBox grpWarnings;
+        private CheckBox chkWarnWrongExtension;
     }
 }

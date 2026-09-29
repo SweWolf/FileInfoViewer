@@ -91,6 +91,13 @@ public static class FileInfoCollector
         model.FileAttributes = FormatAttributes(fi.Attributes);
         model.MimeType = MimeTypes.TryGetValue(model.Extension, out var mime) ? mime : "application/octet-stream";
 
+        // Content doesn't match the extension (e.g. an MP4 renamed to .mkv)
+        if (SettingsService.Current.WarnWrongExtension)
+        {
+            model.ExtensionWarning = FileSignature.WrongExtensionWarning(FileSignature.Detect(filePath), model.Extension);
+            if (model.ExtensionWarning != null) model.Warnings.Add(model.ExtensionWarning);
+        }
+
         // Timestamps
         model.CreatedUtc = fi.CreationTimeUtc;
         model.ModifiedUtc = fi.LastWriteTimeUtc;
@@ -563,32 +570,20 @@ public static class FileInfoCollector
         try
         {
             var directories = ImageMetadataReader.ReadMetadata(filePath);
-            foreach (var directory in directories)
+            AddMetadataTags(directories, audio.AllTags, audio.MoreTags, (tagName, value) =>
             {
-                foreach (var rawTag in directory.Tags)
-                {
-                    var value = rawTag.Description ?? "";
-                    if (string.IsNullOrWhiteSpace(value)) continue;
+                // Skip binary picture data
+                if (tagName.Contains("picture", StringComparison.OrdinalIgnoreCase) ||
+                    tagName.Contains("cover", StringComparison.OrdinalIgnoreCase) ||
+                    tagName.Contains("artwork", StringComparison.OrdinalIgnoreCase))
+                    return "(binary data)";
 
-                    var tagName = rawTag.Name.Trim();
-                    var fullKey = $"{directory.Name.Trim()} / {tagName}";
+                // Skip lyrics — already captured via TagLib#
+                if (tagName.Contains("lyric", StringComparison.OrdinalIgnoreCase))
+                    return null;
 
-                    // Skip binary picture data
-                    if (tagName.Contains("picture", StringComparison.OrdinalIgnoreCase) ||
-                        tagName.Contains("cover", StringComparison.OrdinalIgnoreCase) ||
-                        tagName.Contains("artwork", StringComparison.OrdinalIgnoreCase))
-                    {
-                        audio.AllTags[fullKey] = "(binary data)";
-                        continue;
-                    }
-
-                    // Skip lyrics — already captured via TagLib#
-                    if (tagName.Contains("lyric", StringComparison.OrdinalIgnoreCase))
-                        continue;
-
-                    audio.AllTags[fullKey] = value;
-                }
-            }
+                return value;
+            });
         }
         catch
         {
@@ -714,28 +709,164 @@ public static class FileInfoCollector
         try
         {
             var directories = ImageMetadataReader.ReadMetadata(filePath);
-            foreach (var directory in directories)
-            {
-                foreach (var rawTag in directory.Tags)
-                {
-                    var value = rawTag.Description ?? "";
-                    if (string.IsNullOrWhiteSpace(value)) continue;
-                    var fullKey = $"{directory.Name.Trim()} / {rawTag.Name.Trim()}";
-                    video.AllTags[fullKey] = value;
-                }
-            }
+            AddMetadataTags(directories, video.AllTags, video.MoreTags);
+            ReadQuickTimeSummary(directories, video);
         }
         catch { }
 
-        // Embedded track list
+        // Embedded track list: pick the reader from the file content, since files are
+        // sometimes renamed (e.g. an MP4 saved as .mkv); fall back to the extension
         var ext = Path.GetExtension(filePath).ToLowerInvariant();
-        if (ext is ".mkv" or ".mka" or ".mks" or ".webm")
+        var container = FileSignature.Detect(filePath);
+        if (container == FileSignature.Matroska || (container == null && ext is ".mkv" or ".mka" or ".mks" or ".webm"))
             video.Tracks = MatroskaTrackReader.ReadTracks(filePath);
-        else if (ext is ".mp4" or ".m4v" or ".m4a" or ".mov" or ".3gp")
+        else if (container == FileSignature.Mp4 || (container == null && ext is ".mp4" or ".m4v" or ".m4a" or ".mov" or ".3gp"))
             video.Tracks = Mp4TrackReader.ReadTracks(filePath);
+
+        if (video.Container == "" && container != null) video.Container = container.DisplayName;
 
         model.VideoInfo = video;
     }
+
+    // QuickTime/MP4 dates count from 1904-01-01, so a 0 (= not set) shows as that date
+    private static readonly DateTime QuickTimeEpoch = new(1904, 1, 1);
+
+    /// <summary>
+    /// Adds MetadataExtractor tags as "Directory / Tag" rows. Repeated directories (e.g. one
+    /// QuickTime Track Header per track) are numbered so they don't overwrite each other.
+    /// Rarely useful tags and unset dates go to <paramref name="more"/> (shown collapsed).
+    /// <paramref name="transform"/> can change a value (tag name, value) or skip it (null).
+    /// </summary>
+    private static void AddMetadataTags(IReadOnlyList<MetadataExtractor.Directory> directories,
+        Dictionary<string, string> tags, Dictionary<string, string> more,
+        Func<string, string, string?>? transform = null)
+    {
+        var totals  = directories.GroupBy(d => d.Name.Trim()).ToDictionary(g => g.Key, g => g.Count());
+        var counter = new Dictionary<string, int>();
+
+        // Track Header durations are in the movie's time units: Time Scale units per second
+        long timeScale = 0;
+        directories.OfType<MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory>().FirstOrDefault()
+            ?.TryGetInt64(MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory.TagTimeScale, out timeScale);
+
+        foreach (var directory in directories)
+        {
+            var dirName = directory.Name.Trim();
+            if (totals[dirName] > 1)
+            {
+                counter[dirName] = counter.GetValueOrDefault(dirName) + 1;
+                dirName = $"{dirName} {counter[dirName]}";
+            }
+
+            foreach (var rawTag in directory.Tags)
+            {
+                var value = rawTag.Description ?? "";
+                if (string.IsNullOrWhiteSpace(value)) continue;
+                var tagName = rawTag.Name.Trim();
+
+                if (transform != null)
+                {
+                    if (transform(tagName, value) is not { } changed) continue;
+                    value = changed;
+                }
+
+                bool isMore = IsTechnicalTag(directory, rawTag.Type);
+                var raw = directory.GetObject(rawTag.Type);
+
+                if (raw is DateTime dt && dt == QuickTimeEpoch)
+                {
+                    value  = "Not set";
+                    isMore = true;
+                }
+                else if (directory is MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory)
+                {
+                    // MetadataExtractor calls the time scale "TrackId"
+                    if (rawTag.Type == MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory.TagTimeScale)
+                        tagName = "Time Scale";
+                    else if (raw is TimeSpan ts)
+                        value = FormatTimecode(ts);
+                }
+                else if (directory is MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory
+                         && rawTag.Type == MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagDuration
+                         && timeScale > 0 && directory.TryGetInt64(rawTag.Type, out var units))
+                {
+                    value = FormatTimecode(TimeSpan.FromSeconds((double)units / timeScale));
+                }
+
+                (isMore ? more : tags)[$"{dirName} / {tagName}"] = value;
+            }
+        }
+    }
+
+    // File-structure details that hardly anyone needs (shown collapsed in the report)
+    private static bool IsTechnicalTag(MetadataExtractor.Directory directory, int tagType)
+    {
+        switch (directory)
+        {
+            case MetadataExtractor.Formats.FileSystem.FileMetadataDirectory:
+                return true; // file name, size and date: already in Basic Information
+            case MetadataExtractor.Formats.QuickTime.QuickTimeFileTypeDirectory:
+                return tagType == MetadataExtractor.Formats.QuickTime.QuickTimeFileTypeDirectory.TagMinorVersion;
+            case MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory:
+                return tagType is not (MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory.TagCreated
+                                    or MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory.TagModified
+                                    or MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory.TagDuration);
+            case MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory:
+                return tagType is MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagVersion
+                               or MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagFlags
+                               or MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagLayer
+                               or MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagAlternateGroup
+                               or MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagVolume
+                               or MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagMatrix;
+            default:
+                return false;
+        }
+    }
+
+    // "1:30:11.456" (or "5.506" s → "0:00:05.506")
+    private static string FormatTimecode(TimeSpan ts) => $"{(int)ts.TotalHours}:{ts:mm\\:ss\\.fff}";
+
+    // Recording date, rotation and container brand from the QuickTime/MP4 headers
+    private static void ReadQuickTimeSummary(IReadOnlyList<MetadataExtractor.Directory> directories, VideoInfoModel video)
+    {
+        if (directories.OfType<MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory>().FirstOrDefault() is { } mvhd
+            && mvhd.GetObject(MetadataExtractor.Formats.QuickTime.QuickTimeMovieHeaderDirectory.TagCreated) is DateTime created
+            && created > QuickTimeEpoch)
+            video.MediaCreated = created;
+
+        // The video track is the one with a frame size
+        foreach (var tkhd in directories.OfType<MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory>())
+        {
+            if (tkhd.TryGetDouble(MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagWidth, out var w) && w > 0)
+            {
+                if (tkhd.TryGetDouble(MetadataExtractor.Formats.QuickTime.QuickTimeTrackHeaderDirectory.TagRotation, out var rot))
+                    video.Rotation = ((int)Math.Round(rot) % 360 + 360) % 360;
+                break;
+            }
+        }
+
+        var brand = directories.OfType<MetadataExtractor.Formats.QuickTime.QuickTimeFileTypeDirectory>().FirstOrDefault()
+            ?.GetString(MetadataExtractor.Formats.QuickTime.QuickTimeFileTypeDirectory.TagMajorBrand)?.Trim();
+        if (!string.IsNullOrEmpty(brand))
+            video.Container = $"{BrandDisplay(brand)} ({brand})";
+    }
+
+    // Friendly name for an MP4/QuickTime major brand ("ftyp" box)
+    private static string BrandDisplay(string brand) => brand.ToLowerInvariant() switch
+    {
+        "qt"                                              => "QuickTime movie",
+        "isom" or "iso2" or "iso4" or "iso5" or "iso6"
+            or "mp41" or "mp42" or "avc1" or "dash"       => "MP4",
+        "m4v" or "m4vh" or "m4vp"                         => "MP4 video (Apple M4V)",
+        "m4a"                                             => "MPEG-4 audio (M4A)",
+        "m4b"                                             => "MPEG-4 audiobook (M4B)",
+        "3gp4" or "3gp5" or "3gp6" or "3ge6" or "3gg6"    => "3GPP",
+        "3g2a" or "3g2b" or "3g2c"                        => "3GPP2",
+        "xavc"                                            => "Sony XAVC",
+        "msnv"                                            => "Sony MP4",
+        "f4v"                                             => "Flash Video (F4V)",
+        _                                                 => "MP4",
+    };
 
     private static string FormatRating(uint rating) => rating switch
     {

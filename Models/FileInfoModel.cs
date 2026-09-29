@@ -54,6 +54,9 @@ public class FileInfoModel
 
     // Errors/warnings encountered during collection
     public List<string> Warnings { get; set; } = [];
+
+    // Content doesn't match the extension; also in Warnings, but shown at the top of the report too
+    public string? ExtensionWarning { get; set; }
 }
 
 public class VersionInfoModel
@@ -132,6 +135,9 @@ public class AudioInfoModel
 
     // All raw metadata tags (for anything not mapped above)
     public Dictionary<string, string> AllTags { get; set; } = [];
+
+    // Rarely useful raw tags (file-structure details, unset dates): shown collapsed
+    public Dictionary<string, string> MoreTags { get; set; } = [];
 }
 
 public class VideoInfoModel
@@ -165,6 +171,12 @@ public class VideoInfoModel
     // Codec string from TagLib# properties
     public string VideoCodec { get; set; } = "";
 
+    // From the QuickTime/MP4 headers: recording date (null if not set), rotation of the video
+    // track in degrees, and container format (e.g. "MP4 (isom)")
+    public DateTime? MediaCreated { get; set; }
+    public int       Rotation     { get; set; }
+    public string    Container    { get; set; } = "";
+
     // Lyrics (from ID3v2 USLT or similar)
     public string Lyrics { get; set; } = "";
 
@@ -180,6 +192,9 @@ public class VideoInfoModel
 
     // All raw metadata tags
     public Dictionary<string, string> AllTags { get; set; } = [];
+
+    // Rarely useful raw tags (file-structure details, unset dates): shown collapsed
+    public Dictionary<string, string> MoreTags { get; set; } = [];
 }
 
 public class MediaTrackInfo

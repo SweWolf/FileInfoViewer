@@ -80,6 +80,10 @@ public static class HtmlReportGenerator
   .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   @media (max-width: 700px) { .section-grid { grid-template-columns: 1fr; } td:first-child { width: auto; } }
   .tag-table td:first-child { width: 280px; font-family: 'Consolas', monospace; font-size: 0.82rem; }
+  .more-tags { border-top: 1px solid #f0f2f5; }
+  .more-tags summary { padding: 0.6rem 1.4rem; font-size: 0.85rem; color: #1a73e8; cursor: pointer; }
+  .more-tags summary:hover { background: #fafbff; }
+  .more-tags[open] summary { border-bottom: 1px solid #f0f2f5; }
   .size-big { font-size: 1.2rem; font-weight: 700; color: #0f3460; }
   .copy-btn { background: none; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;
               font-size: .75rem; padding: .1rem .35rem; margin-left: .5rem; color: #aaa;
@@ -170,6 +174,14 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
         sb.AppendLine("    </table></div>");
 
         sb.AppendLine("</div>"); // end section-grid
+
+        // Wrong-extension warning: shown here near the top as well as in the Warnings card at the bottom
+        if (model.ExtensionWarning != null)
+        {
+            sb.AppendLine("""<div class="card"><div class="card-header">⚠️ Warning</div><div style="padding:1rem 1.4rem">""");
+            sb.AppendLine($"""<span class="attr-chip warn-chip">{H(model.ExtensionWarning)}</span>""");
+            sb.AppendLine("</div></div>");
+        }
 
         // Attributes card
         if (showAttribs && !string.IsNullOrEmpty(model.FileAttributes))
@@ -384,12 +396,13 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 sb.AppendLine("""  </div>""");
             }
 
-            if (aud.AllTags.Count > 0)
+            if (aud.AllTags.Count > 0 || aud.MoreTags.Count > 0)
             {
                 sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">🏷️ All Metadata Tags</div><table class="tag-table">""");
                 foreach (var (key, value) in aud.AllTags.OrderBy(x => x.Key))
                     Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
                 sb.AppendLine("  </table>");
+                MoreTagsSection(sb, aud.MoreTags, copyDisplay);
             }
 
             sb.AppendLine("</div>");
@@ -420,17 +433,24 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             // Video group
             bool hasVideo = !string.IsNullOrEmpty(vid.Duration) || vid.Width > 0 || !string.IsNullOrEmpty(vid.FrameRate)
                          || !string.IsNullOrEmpty(vid.DataRate) || !string.IsNullOrEmpty(vid.TotalBitrate)
-                         || !string.IsNullOrEmpty(vid.VideoCodec);
+                         || !string.IsNullOrEmpty(vid.VideoCodec) || vid.MediaCreated != null
+                         || !string.IsNullOrEmpty(vid.Container);
             if (hasVideo)
             {
                 sb.AppendLine("""  <div class="card-header" style="font-size:.82rem;color:#888;padding:.4rem 1.4rem;background:#fafbff;border-top:1px solid #e8eaf0;border-bottom:1px solid #f0f2f5">Video</div><table>""");
+                // As stored: meant to be UTC, but many cameras write their local time
+                if (vid.MediaCreated is { } mediaCreated)
+                    Row(sb, "Media created", mediaCreated.ToString(tsFmt));
                 RowIfSet(sb, "Length",       vid.Duration);
                 if (vid.Width > 0 && vid.Height > 0)
                     Row(sb, "Frame size", $"{vid.Width} × {vid.Height}");
+                if (vid.Rotation != 0)
+                    Row(sb, "Rotation", $"{vid.Rotation}°");
                 RowIfSet(sb, "Frame rate",    vid.FrameRate);
                 RowIfSet(sb, "Data rate",     vid.DataRate);
                 RowIfSet(sb, "Total bitrate", vid.TotalBitrate);
                 RowIfSet(sb, "Codec",         vid.VideoCodec);
+                RowIfSet(sb, "Container",     vid.Container);
                 sb.AppendLine("  </table>");
             }
 
@@ -511,7 +531,7 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 sb.AppendLine("""  </div>""");
             }
 
-            if (vid.AllTags.Count > 0)
+            if (vid.AllTags.Count > 0 || vid.MoreTags.Count > 0)
             {
                 sb.AppendLine($"""  <div class="card-header" style="border-top:1px solid #e8eaf0">🏷️ All Metadata Tags</div><table class="tag-table">""");
                 foreach (var (key, value) in vid.AllTags.OrderBy(x => x.Key))
@@ -523,6 +543,7 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                         Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
                 }
                 sb.AppendLine("  </table>");
+                MoreTagsSection(sb, vid.MoreTags, copyDisplay);
             }
 
             sb.AppendLine("</div>");
@@ -732,6 +753,17 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
     {
         var val = raw ? value : H(value);
         sb.AppendLine($"      <tr><td>{H(label)}</td><td>{val}</td></tr>");
+    }
+
+    // Rarely useful tags, collapsed under the "All Metadata Tags" table
+    private static void MoreTagsSection(StringBuilder sb, Dictionary<string, string> tags, string copyDisplay)
+    {
+        if (tags.Count == 0) return;
+        var noun = tags.Count == 1 ? "tag" : "tags";
+        sb.AppendLine($"""  <details class="more-tags"><summary>Show {tags.Count} more technical {noun}</summary><table class="tag-table">""");
+        foreach (var (key, value) in tags.OrderBy(x => x.Key))
+            Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
+        sb.AppendLine("  </table></details>");
     }
 
     private static void RowIfSet(StringBuilder sb, string label, string value)
