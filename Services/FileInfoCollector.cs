@@ -125,24 +125,38 @@ public static class FileInfoCollector
             model.Warnings.Add($"Could not read file owner: {ex.Message}");
         }
 
-        // Hashes (skip for large files > 500 MB to avoid long waits)
-        if (fi.Length <= 500 * 1024 * 1024)
+        // Hashes: not computed when hidden in the report, or for files above the size limit (long waits)
+        var settings = SettingsService.Current;
+        if (settings.ShowFileHashes)
         {
-            try
+            var maxBytes = settings.HashMaxSizeMb * 1024L * 1024L;
+            if (maxBytes > 0 && fi.Length > maxBytes)
             {
-                using var stream = fi.OpenRead();
-                model.Md5 = Convert.ToHexString(MD5.HashData(stream)).ToLowerInvariant();
-                stream.Position = 0;
-                model.Sha256 = Convert.ToHexString(SHA256.HashData(stream)).ToLowerInvariant();
+                model.Warnings.Add($"File is larger than {settings.HashMaxSizeMb} MB — hashes skipped (see Settings).");
             }
-            catch (Exception ex)
+            else
             {
-                model.Warnings.Add($"Could not compute hashes: {ex.Message}");
+                try
+                {
+                    // One pass over the file for both hashes
+                    using var stream = new FileStream(fi.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, 1 << 20);
+                    using var md5 = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+                    using var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+                    var buffer = new byte[1 << 20];
+                    int read;
+                    while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
+                    {
+                        md5.AppendData(buffer, 0, read);
+                        sha256.AppendData(buffer, 0, read);
+                    }
+                    model.Md5 = Convert.ToHexString(md5.GetHashAndReset()).ToLowerInvariant();
+                    model.Sha256 = Convert.ToHexString(sha256.GetHashAndReset()).ToLowerInvariant();
+                }
+                catch (Exception ex)
+                {
+                    model.Warnings.Add($"Could not compute hashes: {ex.Message}");
+                }
             }
-        }
-        else
-        {
-            model.Warnings.Add("File is larger than 500 MB — hashes skipped.");
         }
 
         // Version info

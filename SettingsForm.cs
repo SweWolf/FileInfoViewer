@@ -7,6 +7,8 @@ public partial class SettingsForm : Form
     public SettingsForm()
     {
         InitializeComponent();
+        // The Designer sets ClientSize before FixedDialog/ControlBox, which leaves the client area too short
+        ClientSize = new Size(ClientSize.Width, grpWarnings.Bottom + LogicalToDeviceUnits(12));
         SettingsService.FixButtonStyles(this);
         LoadSettings();
     }
@@ -24,7 +26,10 @@ public partial class SettingsForm : Form
 
         chkOwner.Checked          = settings.ShowOwner;
         chkFileAttributes.Checked = settings.ShowFileAttributes;
+        // Number first: setting the checkbox can fire a save that would otherwise store the designer default
+        numHashMaxSizeMb.Value    = Math.Clamp(settings.HashMaxSizeMb, (int)numHashMaxSizeMb.Minimum, (int)numHashMaxSizeMb.Maximum);
         chkShowFileHashes.Checked = settings.ShowFileHashes;
+        UpdateHashLimitEnabled();
 
         var tdIndex = cboTextualData.Items.IndexOf(settings.TextualDataDisplay);
         cboTextualData.SelectedIndex = tdIndex >= 0 ? tdIndex : 1; // default: "Formatted"
@@ -52,6 +57,12 @@ public partial class SettingsForm : Form
         optCustContWidthPerc.Visible  = custom;
     }
 
+    private void UpdateHashLimitEnabled()
+    {
+        bool on = chkShowFileHashes.Checked;
+        lblHashSkip.Enabled = numHashMaxSizeMb.Enabled = lblHashMb.Enabled = lblHashHint.Enabled = on;
+    }
+
     private void SaveSettings()
     {
         SettingsService.Save(new Models.AppSettings
@@ -62,6 +73,7 @@ public partial class SettingsForm : Form
             ShowOwner            = chkOwner.Checked,
             ShowFileAttributes   = chkFileAttributes.Checked,
             ShowFileHashes       = chkShowFileHashes.Checked,
+            HashMaxSizeMb        = (int)numHashMaxSizeMb.Value,
             TextualDataDisplay   = cboTextualData.SelectedItem?.ToString() ?? "Formatted",
             WebLinksClickable    = chkWebLinksClickable.Checked,
             WarnWrongExtension   = chkWarnWrongExtension.Checked,
@@ -82,7 +94,13 @@ public partial class SettingsForm : Form
 
     private void chkFileAttributes_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
-    private void chkShowFileHashes_CheckedChanged(object sender, EventArgs e) => SaveSettings();
+    private void chkShowFileHashes_CheckedChanged(object sender, EventArgs e)
+    {
+        UpdateHashLimitEnabled();
+        SaveSettings();
+    }
+
+    private void numHashMaxSizeMb_ValueChanged(object sender, EventArgs e) => SaveSettings();
 
     private void cboTextualData_SelectedIndexChanged(object sender, EventArgs e) => SaveSettings();
 
@@ -108,7 +126,12 @@ public partial class SettingsForm : Form
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
     {
-        if (keyData == Keys.Escape) { Close(); return true; }
+        if (keyData == Keys.Escape)
+        {
+            ValidateChildren(); // commits a number that is still being typed
+            Close();
+            return true;
+        }
         return base.ProcessCmdKey(ref msg, keyData);
     }
 }

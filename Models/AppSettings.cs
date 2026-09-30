@@ -20,6 +20,9 @@ public class AppSettings
     /// <summary>Whether to show the File Hashes section in the HTML report.</summary>
     public bool ShowFileHashes { get; set; } = true;
 
+    /// <summary>Files larger than this many MB get no hashes (hashing a huge file takes long). 0 = no limit.</summary>
+    public int HashMaxSizeMb { get; set; } = 500;
+
     /// <summary>How to display textual/JSON metadata: "None", "Formatted", "Raw data", or "Both Formatted and Raw Data".</summary>
     public string TextualDataDisplay { get; set; } = "Formatted";
 

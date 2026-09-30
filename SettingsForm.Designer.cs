@@ -35,6 +35,10 @@ namespace FileInfoViewer
             chkShowSeconds = new CheckBox();
             grpShow = new GroupBox();
             chkShowFileHashes = new CheckBox();
+            lblHashSkip = new Label();
+            numHashMaxSizeMb = new NumericUpDown();
+            lblHashMb = new Label();
+            lblHashHint = new Label();
             chkFileAttributes = new CheckBox();
             chkOwner = new CheckBox();
             cboTextualData = new ComboBox();
@@ -56,6 +60,7 @@ namespace FileInfoViewer
             chkWarnWrongExtension = new CheckBox();
             grpFileDate.SuspendLayout();
             grpShow.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numHashMaxSizeMb).BeginInit();
             grpLayout.SuspendLayout();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
@@ -107,6 +112,10 @@ namespace FileInfoViewer
             // 
             // grpShow
             // 
+            grpShow.Controls.Add(lblHashHint);
+            grpShow.Controls.Add(lblHashMb);
+            grpShow.Controls.Add(numHashMaxSizeMb);
+            grpShow.Controls.Add(lblHashSkip);
             grpShow.Controls.Add(chkShowFileHashes);
             grpShow.Controls.Add(chkFileAttributes);
             grpShow.Controls.Add(chkOwner);
@@ -116,7 +125,7 @@ namespace FileInfoViewer
             grpShow.Controls.Add(label2);
             grpShow.Location = new Point(12, 213);
             grpShow.Name = "grpShow";
-            grpShow.Size = new Size(360, 187);
+            grpShow.Size = new Size(360, 237);
             grpShow.TabIndex = 1;
             grpShow.TabStop = false;
             grpShow.Text = "Show";
@@ -133,7 +142,45 @@ namespace FileInfoViewer
             chkShowFileHashes.Text = "File Hashes";
             chkShowFileHashes.UseVisualStyleBackColor = true;
             chkShowFileHashes.CheckedChanged += chkShowFileHashes_CheckedChanged;
-            // 
+            //
+            // lblHashSkip
+            //
+            lblHashSkip.AutoSize = true;
+            lblHashSkip.Location = new Point(126, 144);
+            lblHashSkip.Name = "lblHashSkip";
+            lblHashSkip.Size = new Size(64, 15);
+            lblHashSkip.TabIndex = 9;
+            lblHashSkip.Text = "Skip Above";
+            //
+            // numHashMaxSizeMb
+            //
+            numHashMaxSizeMb.Location = new Point(196, 141);
+            numHashMaxSizeMb.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            numHashMaxSizeMb.Name = "numHashMaxSizeMb";
+            numHashMaxSizeMb.Size = new Size(70, 23);
+            numHashMaxSizeMb.TabIndex = 5;
+            numHashMaxSizeMb.TextAlign = HorizontalAlignment.Right;
+            numHashMaxSizeMb.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            numHashMaxSizeMb.ValueChanged += numHashMaxSizeMb_ValueChanged;
+            //
+            // lblHashMb
+            //
+            lblHashMb.AutoSize = true;
+            lblHashMb.Location = new Point(270, 144);
+            lblHashMb.Name = "lblHashMb";
+            lblHashMb.Size = new Size(24, 15);
+            lblHashMb.TabIndex = 10;
+            lblHashMb.Text = "MB";
+            //
+            // lblHashHint
+            //
+            lblHashHint.AutoSize = true;
+            lblHashHint.Location = new Point(126, 168);
+            lblHashHint.Name = "lblHashHint";
+            lblHashHint.Size = new Size(139, 15);
+            lblHashHint.TabIndex = 11;
+            lblHashHint.Text = "(0 = Hash Every File)";
+            //
             // chkFileAttributes
             // 
             chkFileAttributes.AutoSize = true;
@@ -161,16 +208,16 @@ namespace FileInfoViewer
             cboTextualData.DropDownStyle = ComboBoxStyle.DropDownList;
             cboTextualData.FormattingEnabled = true;
             cboTextualData.Items.AddRange(new object[] { "None", "Formatted", "Raw data", "Both Formatted and Raw Data" });
-            cboTextualData.Location = new Point(108, 150);
+            cboTextualData.Location = new Point(108, 200);
             cboTextualData.Name = "cboTextualData";
             cboTextualData.Size = new Size(200, 23);
-            cboTextualData.TabIndex = 5;
+            cboTextualData.TabIndex = 6;
             cboTextualData.SelectedIndexChanged += cboTextualData_SelectedIndexChanged;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(20, 153);
+            label3.Location = new Point(20, 203);
             label3.Name = "label3";
             label3.Size = new Size(71, 15);
             label3.TabIndex = 1;
@@ -203,7 +250,7 @@ namespace FileInfoViewer
             grpLayout.Controls.Add(txtCustomContentWidth);
             grpLayout.Controls.Add(cboContentWidth);
             grpLayout.Controls.Add(label4);
-            grpLayout.Location = new Point(14, 481);
+            grpLayout.Location = new Point(14, 531);
             grpLayout.Name = "grpLayout";
             grpLayout.Size = new Size(360, 114);
             grpLayout.TabIndex = 2;
@@ -268,7 +315,7 @@ namespace FileInfoViewer
             // groupBox1
             // 
             groupBox1.Controls.Add(chkWebLinksClickable);
-            groupBox1.Location = new Point(14, 415);
+            groupBox1.Location = new Point(14, 465);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(362, 54);
             groupBox1.TabIndex = 2;
@@ -322,7 +369,7 @@ namespace FileInfoViewer
             // grpWarnings
             //
             grpWarnings.Controls.Add(chkWarnWrongExtension);
-            grpWarnings.Location = new Point(14, 607);
+            grpWarnings.Location = new Point(14, 657);
             grpWarnings.Name = "grpWarnings";
             grpWarnings.Size = new Size(360, 54);
             grpWarnings.TabIndex = 4;
@@ -346,7 +393,7 @@ namespace FileInfoViewer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(388, 672);
+            ClientSize = new Size(388, 722);
             Controls.Add(grpWarnings);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -364,6 +411,7 @@ namespace FileInfoViewer
             grpFileDate.PerformLayout();
             grpShow.ResumeLayout(false);
             grpShow.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numHashMaxSizeMb).EndInit();
             grpLayout.ResumeLayout(false);
             grpLayout.PerformLayout();
             groupBox1.ResumeLayout(false);
@@ -387,6 +435,10 @@ namespace FileInfoViewer
         private CheckBox chkFileAttributes;
         private CheckBox chkOwner;
         private CheckBox chkShowFileHashes;
+        private Label lblHashSkip;
+        private NumericUpDown numHashMaxSizeMb;
+        private Label lblHashMb;
+        private Label lblHashHint;
         private ComboBox cboTextualData;
         private Label label3;
         private GroupBox grpLayout;
