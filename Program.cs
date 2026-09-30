@@ -14,16 +14,29 @@ static class Program
         if (args.Length >= 1)
         {
             var filePath = args[0];
-            try
+            // No main window here: run the work inside a message loop so the progress window can be shown
+            var context = new ApplicationContext();
+            Application.Idle += OnIdle;
+            Application.Run(context);
+
+            async void OnIdle(object? sender, EventArgs e)
             {
-                var model = FileInfoCollector.Collect(filePath);
-                var htmlPath = HtmlReportGenerator.Generate(model);
-                BrowserLauncher.OpenInBrowser(htmlPath);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error processing file:\n\n{ex.Message}", "FileInfoViewer",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Application.Idle -= OnIdle;
+                try
+                {
+                    var model = await CollectRunner.RunAsync(filePath, null);
+                    var htmlPath = HtmlReportGenerator.Generate(model);
+                    BrowserLauncher.OpenInBrowser(htmlPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error processing file:\n\n{ex.Message}", "FileInfoViewer",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    context.ExitThread();
+                }
             }
         }
         else

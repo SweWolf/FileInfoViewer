@@ -73,7 +73,7 @@ public partial class MainForm : Form
         }
     }
 
-    private void ProcessFile(string path)
+    private async void ProcessFile(string path)
     {
         if (string.IsNullOrWhiteSpace(path))
         {
@@ -89,11 +89,10 @@ public partial class MainForm : Form
 
         SetStatus("Collecting file information...", error: false);
         btnView.Enabled = false;
-        Application.DoEvents();
 
         try
         {
-            var model = FileInfoCollector.Collect(path);
+            var model = await CollectRunner.RunAsync(path, this);
             var htmlPath = HtmlReportGenerator.Generate(model);
             BrowserLauncher.OpenInBrowser(htmlPath);
             SetStatus($"Report opened in browser. ({model.Warnings.Count} warning(s))", error: false);

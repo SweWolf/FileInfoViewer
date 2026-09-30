@@ -82,7 +82,13 @@ public static class FileInfoCollector
         { ".woff", "font/woff" }, { ".woff2", "font/woff2" },
     };
 
-    public static FileInfoModel Collect(string filePath)
+    /// <summary>
+    /// Collects everything about a file. Safe to call on a background thread. <paramref name="hashProgress"/>
+    /// reports (bytes done, bytes total) while hashing; cancelling <paramref name="hashCancel"/> stops only the
+    /// hashing (the report is then made without hashes and with a warning).
+    /// </summary>
+    public static FileInfoModel Collect(string filePath, IProgress<(long Done, long Total)>? hashProgress = null,
+                                        CancellationToken hashCancel = default)
     {
         var model = new FileInfoModel();
 
@@ -143,14 +149,27 @@ public static class FileInfoCollector
                     using var md5 = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
                     using var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
                     var buffer = new byte[1 << 20];
+                    var clock = Stopwatch.StartNew();
+                    long lastReport = 0, done = 0;
                     int read;
                     while ((read = stream.Read(buffer, 0, buffer.Length)) > 0)
                     {
+                        hashCancel.ThrowIfCancellationRequested();
                         md5.AppendData(buffer, 0, read);
                         sha256.AppendData(buffer, 0, read);
+                        done += read;
+                        if (hashProgress != null && clock.ElapsedMilliseconds - lastReport >= 100)
+                        {
+                            lastReport = clock.ElapsedMilliseconds;
+                            hashProgress.Report((done, fi.Length));
+                        }
                     }
                     model.Md5 = Convert.ToHexString(md5.GetHashAndReset()).ToLowerInvariant();
                     model.Sha256 = Convert.ToHexString(sha256.GetHashAndReset()).ToLowerInvariant();
+                }
+                catch (OperationCanceledException)
+                {
+                    model.Warnings.Add("Hash calculation was cancelled — hashes not shown.");
                 }
                 catch (Exception ex)
                 {
@@ -1047,7 +1066,7 @@ public static class FileInfoCollector
         return count;
     }
 
-    private static string FormatSize(long bytes)
+    internal static string FormatSize(long bytes)
     {
         if (bytes < 1024) return $"{bytes} B";
         if (bytes < 1024 * 1024) return $"{bytes / 1024.0:F2} KB";
