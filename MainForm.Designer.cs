@@ -25,6 +25,8 @@ partial class MainForm
         menuStrip = new MenuStrip();
         toolsToolStripMenuItem = new ToolStripMenuItem();
         createShortcutToolStripMenuItem = new ToolStripMenuItem();
+        templatesToolStripMenuItem = new ToolStripMenuItem();
+        template1ToolStripMenuItem = new ToolStripMenuItem();
         pnlHeader = new Panel();
         lblTitle = new Label();
         btnSettings = new Button();
@@ -42,7 +44,7 @@ partial class MainForm
         // 
         // menuStrip
         // 
-        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem });
+        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem, templatesToolStripMenuItem });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
         menuStrip.Size = new Size(820, 24);
@@ -61,6 +63,20 @@ partial class MainForm
         createShortcutToolStripMenuItem.Size = new Size(165, 22);
         createShortcutToolStripMenuItem.Text = "Create Shortcut...";
         createShortcutToolStripMenuItem.Click += btnCreateShortcut_Click;
+        // 
+        // templatesToolStripMenuItem
+        // 
+        templatesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { template1ToolStripMenuItem });
+        templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
+        templatesToolStripMenuItem.Size = new Size(72, 20);
+        templatesToolStripMenuItem.Text = "Templates";
+        // 
+        // template1ToolStripMenuItem
+        // 
+        template1ToolStripMenuItem.Name = "template1ToolStripMenuItem";
+        template1ToolStripMenuItem.Size = new Size(200, 22);
+        template1ToolStripMenuItem.Text = "Prompt and Seed";
+        template1ToolStripMenuItem.Click += template1ToolStripMenuItem_Click;
         // 
         // pnlHeader
         // 
@@ -231,4 +247,6 @@ partial class MainForm
     private MenuStrip menuStrip;
     private ToolStripMenuItem toolsToolStripMenuItem;
     private ToolStripMenuItem createShortcutToolStripMenuItem;
+    private ToolStripMenuItem templatesToolStripMenuItem;
+    private ToolStripMenuItem template1ToolStripMenuItem;
 }

@@ -476,14 +476,15 @@ public static class FileInfoCollector
         // mis-encode large text chunks (e.g. ComfyUI prompt/workflow JSON).
         if (model.Extension == ".png")
         {
-            try { ReadPngTextChunks(filePath, imageInfo); }
+            try { ReadPngTextChunks(filePath, imageInfo.PngTextChunks); }
             catch { }
         }
 
         model.ImageInfo = imageInfo;
     }
 
-    private static void ReadPngTextChunks(string filePath, ImageInfoModel imageInfo)
+    /// <summary>Reads all tEXt/iTXt chunks of a PNG file into <paramref name="chunks"/> (keyword to text).</summary>
+    internal static void ReadPngTextChunks(string filePath, Dictionary<string, string> chunks)
     {
         using var fs = File.OpenRead(filePath);
         Span<byte> hdr = stackalloc byte[8];
@@ -526,7 +527,7 @@ public static class FileInfoCollector
                 }
 
                 if (!string.IsNullOrWhiteSpace(text))
-                    imageInfo.PngTextChunks[keyword] = text;
+                    chunks[keyword] = text;
             }
             else if (type == "IEND")
             {

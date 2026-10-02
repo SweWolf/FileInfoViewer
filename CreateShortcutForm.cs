@@ -17,7 +17,7 @@ public partial class CreateShortcutForm : Form
 
     private void btnOK_Click(object sender, EventArgs e)
     {
-        if (!chkDesktop.Checked && !chkStartMenu.Checked && !chkSendTo.Checked)
+        if (!chkDesktop.Checked && !chkStartMenu.Checked && !chkSendTo.Checked && !chkSendToTemplate1.Checked)
         {
             MessageBox.Show(
                 "Please select at least one location.",
@@ -54,6 +54,15 @@ public partial class CreateShortcutForm : Form
             TryCreate(System.IO.Path.Combine(sendToFolder, $"{_appName}.lnk"), created, failed);
         }
 
+        if (chkSendToTemplate1.Checked)
+        {
+            // Send To appends the selected file after the arguments: "FileInfoViewer.exe" -T1 "file"
+            var template = Services.Templates.Get(1)!;
+            string sendToFolder = Environment.GetFolderPath(Environment.SpecialFolder.SendTo);
+            TryCreate(System.IO.Path.Combine(sendToFolder, $"{_appName} - {template.Name}.lnk"), created, failed,
+                $"-T{template.Number}");
+        }
+
         if (failed.Count > 0)
         {
             string msg = "Could not create the following shortcut(s):\n\n"
@@ -73,7 +82,7 @@ public partial class CreateShortcutForm : Form
         }
     }
 
-    private void TryCreate(string shortcutPath, List<string> created, List<string> failed)
+    private void TryCreate(string shortcutPath, List<string> created, List<string> failed, string arguments = "")
     {
         try
         {
@@ -81,6 +90,7 @@ public partial class CreateShortcutForm : Form
             dynamic shell  = Activator.CreateInstance(shellType)!;
             dynamic lnk    = shell.CreateShortcut(shortcutPath);
             lnk.TargetPath       = _exePath;
+            lnk.Arguments        = arguments;
             lnk.WorkingDirectory = System.IO.Path.GetDirectoryName(_exePath);
             lnk.Description      = _appName;
             lnk.IconLocation     = _exePath;

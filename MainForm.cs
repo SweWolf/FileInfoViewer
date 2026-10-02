@@ -125,6 +125,17 @@ public partial class MainForm : Form
         form.ShowDialog(this);
     }
 
+    private void template1ToolStripMenuItem_Click(object? sender, EventArgs e)
+    {
+        var path = txtFilePath.Text.Trim();
+        if (string.IsNullOrWhiteSpace(path))
+        {
+            SetStatus("Please enter or browse to a file path.", error: true);
+            return;
+        }
+        TemplateRunner.Show(1, path, this);
+    }
+
     private void MainForm_Resize(object? sender, EventArgs e)
     {
         txtFilePath.Width = ClientSize.Width - 82 - 20 - 92;
