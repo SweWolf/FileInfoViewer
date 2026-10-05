@@ -10,7 +10,9 @@ static class Program
         ApplicationConfiguration.Initialize();
         SettingsService.ApplyStyle(SettingsService.Current.AppStyle);
 
-        // -T<n> <file>: show template n (e.g. -T1) for the file instead of the HTML report
+        // -T<n> <file>: show template n (e.g. -T1) for the file instead of the HTML report.
+        // Future feature: templates are still being worked on, so for now this is undocumented
+        // and the Templates menu and the Send To shortcut option are hidden.
         if (args.Length >= 2 && TryParseTemplateSwitch(args[0], out var templateNumber))
         {
             TemplateRunner.Show(templateNumber, args[1], null);

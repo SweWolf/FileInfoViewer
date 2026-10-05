@@ -35,7 +35,7 @@ namespace FileInfoViewer
             grpLocation.Controls.Add(chkSendToTemplate1);
             grpLocation.Location = new Point(12, 12);
             grpLocation.Name = "grpLocation";
-            grpLocation.Size = new Size(356, 132);
+            grpLocation.Size = new Size(356, 107);
             grpLocation.TabIndex = 0;
             grpLocation.TabStop = false;
             grpLocation.Text = "Create shortcut on:";
@@ -71,13 +71,16 @@ namespace FileInfoViewer
             chkSendToTemplate1.Location = new Point(15, 103);
             chkSendToTemplate1.Name = "chkSendToTemplate1";
             chkSendToTemplate1.TabIndex = 3;
+            // Future feature: templates are not ready for release yet, so this option is hidden
+            // (and the layout below is compacted). Set Visible = true and restore the layout to show it again.
+            chkSendToTemplate1.Visible = false;
             chkSendToTemplate1.Text = "Send To menu: Prompt and Seed (Template 1)";
             chkSendToTemplate1.UseVisualStyleBackColor = true;
 
             // grpFor
             grpFor.Controls.Add(rdoCurrentUser);
             grpFor.Controls.Add(rdoAllUsers);
-            grpFor.Location = new Point(12, 156);
+            grpFor.Location = new Point(12, 131);
             grpFor.Name = "grpFor";
             grpFor.Size = new Size(356, 82);
             grpFor.TabIndex = 1;
@@ -105,7 +108,7 @@ namespace FileInfoViewer
             // lblNote
             lblNote.AutoSize = true;
             lblNote.ForeColor = SystemColors.GrayText;
-            lblNote.Location = new Point(12, 252);
+            lblNote.Location = new Point(12, 227);
             lblNote.Name = "lblNote";
             lblNote.TabIndex = 2;
             lblNote.Text = "The shortcut will point to the currently running EXE.";
@@ -113,13 +116,13 @@ namespace FileInfoViewer
             // lblSendToNote
             lblSendToNote.AutoSize = true;
             lblSendToNote.ForeColor = SystemColors.GrayText;
-            lblSendToNote.Location = new Point(12, 269);
+            lblSendToNote.Location = new Point(12, 244);
             lblSendToNote.Name = "lblSendToNote";
             lblSendToNote.TabIndex = 3;
             lblSendToNote.Text = "* Send To shortcut is always for current user only.";
 
             // btnOK
-            btnOK.Location = new Point(212, 290);
+            btnOK.Location = new Point(212, 265);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(75, 28);
             btnOK.TabIndex = 4;
@@ -128,7 +131,7 @@ namespace FileInfoViewer
             btnOK.Click += btnOK_Click;
 
             // btnCancel
-            btnCancel.Location = new Point(293, 290);
+            btnCancel.Location = new Point(293, 265);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(75, 28);
             btnCancel.TabIndex = 5;
@@ -141,7 +144,7 @@ namespace FileInfoViewer
             CancelButton = btnCancel;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(380, 330);
+            ClientSize = new Size(380, 305);
             Controls.Add(lblNote);
             Controls.Add(lblSendToNote);
             Controls.Add(btnOK);

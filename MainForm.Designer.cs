@@ -70,6 +70,9 @@ partial class MainForm
         templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
         templatesToolStripMenuItem.Size = new Size(72, 20);
         templatesToolStripMenuItem.Text = "Templates";
+        // Future feature: templates are not ready for release yet, so the menu is hidden.
+        // They still work from the command line (-T1 <file>). Set Visible = true to show it again.
+        templatesToolStripMenuItem.Visible = false;
         // 
         // template1ToolStripMenuItem
         // 
