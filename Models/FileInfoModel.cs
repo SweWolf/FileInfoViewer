@@ -46,6 +46,9 @@ public class FileInfoModel
     // Torrent file info
     public TorrentInfoModel? TorrentInfo { get; set; }
 
+    // SID (Commodore 64 music) file info
+    public SidInfoModel? SidInfo { get; set; }
+
     // PDF file info
     public PdfInfoModel? PdfInfo { get; set; }
 
@@ -252,6 +255,30 @@ public class PdfInfoModel
     public DateTime? CreationDate { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public bool IsEncrypted { get; set; }
+}
+
+public class SidInfoModel
+{
+    public string Format { get; set; } = "";
+    public int Version { get; set; }
+    public string Title { get; set; } = "";
+    public string Author { get; set; } = "";
+    public string Released { get; set; } = "";
+    public int Songs { get; set; }
+    public int StartSong { get; set; }
+    public bool StartSongUsesCia { get; set; }
+    public int DataOffset { get; set; }
+    public int LoadAddress { get; set; }
+    public int InitAddress { get; set; }
+    public int PlayAddress { get; set; }
+    public int DataLength { get; set; }
+    public string Clock { get; set; } = "Unknown";
+    public string SidModel { get; set; } = "Unknown";
+    public int SidCount { get; set; } = 1;
+    public string SecondSidModel { get; set; } = "Unknown";
+    public int SecondSidAddress { get; set; }
+    public string ThirdSidModel { get; set; } = "Unknown";
+    public int ThirdSidAddress { get; set; }
 }
 
 public class TorrentInfoModel

@@ -33,11 +33,12 @@ internal static class FileSignature
     internal static readonly Format SevenZip = new("7-Zip",               [".7z"]);
     internal static readonly Format Gzip     = new("gzip",                [".gz", ".tgz"]);
     internal static readonly Format Pe       = new("Windows EXE/DLL",     [".exe", ".dll"]);
-    internal static readonly Format Sqlite   = new("SQLite",              [".sqlite", ".sqlite3", ".db3", ".s3db"]);
+    internal static readonly Format Sid      = new("SID (C64 music)",     [".sid"]);
+    internal static readonly Format Sqlite  = new("SQLite",              [".sqlite", ".sqlite3", ".db3", ".s3db"]);
 
     private static readonly Format[] All =
         [Matroska, Mp4, Heif, Avi, Wav, WebP, Asf, Flv, Flac, Ogg, Mp3, Jpeg, Png, Gif, Bmp, Tiff,
-         Pdf, Zip, Rar, SevenZip, Gzip, Pe, Sqlite];
+         Pdf, Zip, Rar, SevenZip, Gzip, Pe, Sid, Sqlite];
 
     // HEIF/AVIF use the same "ftyp" box as MP4; the major brand tells them apart
     private static readonly HashSet<string> HeifBrands =
@@ -78,6 +79,7 @@ internal static class FileSignature
             if (Starts(0x37, 0x7A, 0xBC, 0xAF, 0x27, 0x1C)) return SevenZip;
             if (Starts(0x1F, 0x8B)) return Gzip;
             if (Ascii(0, 2) == "MZ") return Pe;
+            if (Ascii(0, 4) is "PSID" or "RSID") return Sid;
             if (Ascii(0, 16) == "SQLite format 3\0") return Sqlite;
         }
         catch { }

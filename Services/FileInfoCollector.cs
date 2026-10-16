@@ -52,6 +52,7 @@ public static class FileInfoCollector
     private static readonly Dictionary<string, string> MimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         { ".torrent", "application/x-bittorrent" },
+        { ".sid", "audio/prs.sid" },
         { ".jpg", "image/jpeg" }, { ".jpeg", "image/jpeg" }, { ".png", "image/png" },
         { ".gif", "image/gif" }, { ".bmp", "image/bmp" }, { ".tiff", "image/tiff" },
         { ".tif", "image/tiff" }, { ".webp", "image/webp" }, { ".ico", "image/x-icon" },
@@ -295,6 +296,19 @@ public static class FileInfoCollector
             catch (Exception ex)
             {
                 model.Warnings.Add($"Could not read PDF info: {ex.Message}");
+            }
+        }
+
+        // SID (Commodore 64 music) file info
+        if (model.Extension == ".sid" && SidInfoReader.IsSidFile(filePath))
+        {
+            try
+            {
+                model.SidInfo = SidInfoReader.Read(filePath);
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read SID info: {ex.Message}");
             }
         }
 

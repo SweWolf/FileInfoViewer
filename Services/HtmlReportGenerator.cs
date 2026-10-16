@@ -634,6 +634,38 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("  </table></div>");
         }
 
+        // SID (Commodore 64 music) info card
+        if (model.SidInfo is { } sid)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🎵 SID Music Information</div>
+  <table>
+""");
+            RowIfSetCopy(sb, "Title", sid.Title, copyDisplay);
+            RowIfSet(sb, "Author", sid.Author);
+            RowIfSet(sb, "Released", sid.Released);
+            Row(sb, "Format", $"{sid.Format} version {sid.Version}" + (sid.Format == "RSID" ? " (needs a real C64 environment)" : ""));
+            Row(sb, "Songs", sid.Songs.ToString("N0"));
+            Row(sb, "Default Song", sid.StartSong.ToString("N0"));
+            if (sid.Version >= 2)
+            {
+                if (sid.Clock != "Unknown") Row(sb, "Video Standard", sid.Clock);
+                if (sid.SidModel != "Unknown") Row(sb, "SID Chip", sid.SidModel);
+                Row(sb, "SID Chips", sid.SidCount.ToString());
+                if (sid.SecondSidAddress != 0)
+                    Row(sb, "Second SID", $"${sid.SecondSidAddress:X4}" + (sid.SecondSidModel != "Unknown" ? $" ({sid.SecondSidModel})" : ""));
+                if (sid.ThirdSidAddress != 0)
+                    Row(sb, "Third SID", $"${sid.ThirdSidAddress:X4}" + (sid.ThirdSidModel != "Unknown" ? $" ({sid.ThirdSidModel})" : ""));
+            }
+            Row(sb, "Timing", sid.StartSongUsesCia ? "CIA timer" : "Vertical blank (screen refresh)");
+            Row(sb, "Load Address", $"${sid.LoadAddress:X4}");
+            Row(sb, "Init Address", $"${sid.InitAddress:X4}");
+            Row(sb, "Play Address", sid.PlayAddress == 0 ? "None (set by the tune)" : $"${sid.PlayAddress:X4}");
+            Row(sb, "Data Size", FormatSize(sid.DataLength));
+            sb.AppendLine("  </table></div>");
+        }
+
         // Torrent info card
         if (model.TorrentInfo is { } tor)
         {
