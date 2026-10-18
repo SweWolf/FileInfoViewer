@@ -79,7 +79,9 @@ public static class HtmlReportGenerator
   .warn-chip { background: #fff3cd; color: #856404; }
   .section-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
   @media (max-width: 700px) { .section-grid { grid-template-columns: 1fr; } td:first-child { width: auto; } }
-  .tag-table td:first-child { width: 280px; font-family: 'Consolas', monospace; font-size: 0.82rem; }
+  .tag-table { table-layout: fixed; }
+  .tag-table td:first-child { width: 34%; white-space: normal; overflow-wrap: anywhere; font-family: 'Consolas', monospace; font-size: 0.82rem; }
+  .tag-table td:last-child { overflow-wrap: anywhere; word-break: normal; }
   .more-tags { border-top: 1px solid #f0f2f5; }
   .more-tags summary { padding: 0.6rem 1.4rem; font-size: 0.85rem; color: #1a73e8; cursor: pointer; }
   .more-tags summary:hover { background: #fafbff; }
@@ -283,10 +285,16 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             var showRaw       = textualMode is "Raw data" or "Both Formatted and Raw Data";
             var showFormatted = textualMode is "Formatted" or "Both Formatted and Raw Data";
 
-            var exifEntries = img.ExifTags
+            var allExif = img.ExifTags
                 .Where(kv => showRaw || !kv.Key.StartsWith("PNG-tEXt", StringComparison.OrdinalIgnoreCase))
                 .OrderBy(kv => kv.Key)
                 .ToList();
+
+            // Bulk tags nobody reads (Lightroom saved-settings snapshots, local-adjustment masks,
+            // unknown DNG tags, strip/tile offsets) go in a collapsed section.
+            var exifEntries = allExif.Where(kv => !IsNoiseTag(kv.Key)).ToList();
+            var noiseTags = allExif.Where(kv => IsNoiseTag(kv.Key))
+                .ToDictionary(kv => kv.Key, kv => kv.Value);
 
             if (exifEntries.Count > 0)
             {
@@ -301,6 +309,7 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 }
                 sb.AppendLine("  </table>");
             }
+            MoreTagsSection(sb, noiseTags, copyDisplay);
 
             if (showFormatted && img.PngTextChunks.Count > 0)
             {
@@ -786,6 +795,15 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
         var val = raw ? value : H(value);
         sb.AppendLine($"      <tr><td>{H(label)}</td><td>{val}</td></tr>");
     }
+
+    private static bool IsNoiseTag(string key) =>
+        key.Contains("crss:SavedSettings", StringComparison.Ordinal)
+        || key.Contains("Corrections[", StringComparison.Ordinal)
+        || key.Contains("Unknown tag", StringComparison.Ordinal)
+        || key.Contains("Strip Offsets", StringComparison.Ordinal)
+        || key.Contains("Strip Byte Counts", StringComparison.Ordinal)
+        || key.Contains("Tile Offsets", StringComparison.Ordinal)
+        || key.Contains("Tile Byte Counts", StringComparison.Ordinal);
 
     // Rarely useful tags, collapsed under the "All Metadata Tags" table
     private static void MoreTagsSection(StringBuilder sb, Dictionary<string, string> tags, string copyDisplay)
