@@ -16,7 +16,7 @@ namespace FileInfoViewer.Services;
 public static class FileInfoCollector
 {
     private static readonly HashSet<string> ImageExtensions =
-        [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico", ".heic", ".heif", ".avif", ".svg",
+        [".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff", ".tif", ".webp", ".ico", ".heic", ".heif", ".avif", ".svg", ".psd", ".psb",
          ".nef", ".nrw", ".cr2", ".arw", ".dng", ".orf", ".rw2", ".raf", ".pef", ".srw"];
 
     // Camera RAW files (mostly TIFF-based): the pixel data is unreadable for GDI+, but the EXIF is fine
@@ -52,7 +52,7 @@ public static class FileInfoCollector
     private static readonly Dictionary<string, string> MimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
         { ".torrent", "application/x-bittorrent" },
-        { ".sid", "audio/prs.sid" },
+        { ".sid", "audio/prs.sid" }, { ".psd", "image/vnd.adobe.photoshop" }, { ".psb", "image/vnd.adobe.photoshop" },
         { ".jpg", "image/jpeg" }, { ".jpeg", "image/jpeg" }, { ".png", "image/png" },
         { ".gif", "image/gif" }, { ".bmp", "image/bmp" }, { ".tiff", "image/tiff" },
         { ".tif", "image/tiff" }, { ".webp", "image/webp" }, { ".ico", "image/x-icon" },
@@ -405,6 +405,11 @@ public static class FileInfoCollector
             // GDI+ can't decode WebP: read the RIFF chunks instead
             WebpInfoReader.Read(filePath, imageInfo);
         }
+        else if (model.Extension is ".psd" or ".psb")
+        {
+            // GDI+ can't decode Photoshop files: read the header, resources and layer count instead
+            PsdInfoReader.Read(filePath, imageInfo);
+        }
         else if (model.Extension == ".svg")
         {
             // Vector image: no pixels, read the XML instead (MetadataExtractor doesn't support SVG)
@@ -442,6 +447,18 @@ public static class FileInfoCollector
             {
                 // WebpInfoReader already shows this (in more detail)
                 if (directory is MetadataExtractor.Formats.WebP.WebPDirectory) continue;
+
+                // PSD: PsdInfoReader shows the header; the Photoshop resource tags are mostly binary internals
+                if (model.Extension is ".psd" or ".psb")
+                {
+                    if (directory is MetadataExtractor.Formats.Photoshop.PsdHeaderDirectory) continue;
+                    if (directory is MetadataExtractor.Formats.Photoshop.PhotoshopDirectory)
+                    {
+                        foreach (var t in directory.Tags.Where(t => t.Name == "Version Info"))
+                            AddTag($"{directory.Name} / {t.Name}", t.Description);
+                        continue;
+                    }
+                }
 
                 // The XMP directory's only tag is a value count: list the properties themselves
                 if (directory is MetadataExtractor.Formats.Xmp.XmpDirectory xmp)
