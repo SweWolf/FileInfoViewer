@@ -797,7 +797,13 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
     }
 
     private static bool IsNoiseTag(string key) =>
-        key.Contains("crss:SavedSettings", StringComparison.Ordinal)
+        key.StartsWith("XMP / crs:", StringComparison.Ordinal)            // Camera Raw edit settings
+        || key.StartsWith("XMP / xmpMM:", StringComparison.Ordinal)      // document IDs and edit history
+        || key.StartsWith("Exif Thumbnail /", StringComparison.Ordinal)
+        || (key.StartsWith("ICC Profile /", StringComparison.Ordinal)    // keep only the name and copyright
+            && !key.EndsWith("/ Profile Description", StringComparison.Ordinal)
+            && !key.EndsWith("/ Profile Copyright", StringComparison.Ordinal))
+        || key.Contains("crss:SavedSettings", StringComparison.Ordinal)
         || key.Contains("Corrections[", StringComparison.Ordinal)
         || key.Contains("Unknown tag", StringComparison.Ordinal)
         || key.Contains("Strip Offsets", StringComparison.Ordinal)
