@@ -16,8 +16,17 @@ internal static class Templates
 {
     public static readonly IReadOnlyList<Template> All =
     [
-        new(1, "Prompt and Seed", ComfyPromptReader.Read),
+        new(1, "Prompt and Seed", ReadPromptAndSeed),
     ];
+
+    /// <summary>Template 1: ComfyUI PNG files and Wan2GP MP4 files keep their prompt and seed in different places.</summary>
+    private static TemplateResult ReadPromptAndSeed(string filePath) =>
+        Path.GetExtension(filePath).ToLowerInvariant() switch
+        {
+            ".png" => ComfyPromptReader.Read(filePath),
+            ".mp4" or ".m4v" or ".mov" => Wan2GpReader.Read(filePath),
+            _ => TemplateResult.Fail("This template reads PNG files (ComfyUI) and MP4 files (Wan2GP) only."),
+        };
 
     public static Template? Get(int number) => All.FirstOrDefault(t => t.Number == number);
 }

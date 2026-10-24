@@ -12,15 +12,20 @@ internal static class ComfyPromptReader
 {
     private const int MaxDepth = 8;
 
-    // Input names that can hold the text, tried in this order (Text Encode, CLIPTextEncode, string/primitive nodes)
-    private static readonly string[] TextKeys = ["prompt", "text", "string", "value"];
+    // Input names that can hold the text, tried in this order (Text Encode, CLIPTextEncode, string/primitive nodes,
+    // and "source" for Preview Any, which only passes its input on)
+    private static readonly string[] TextKeys = ["prompt", "text", "string", "value", "source"];
     private static readonly string[] SeedKeys = ["seed", "noise_seed", "value"];
+
+    /// <summary>Notes what the prompt passed through on its way to the sampler.</summary>
+    private sealed class Trace
+    {
+        /// <summary>True when a text-generation (prompt enhancer) node sits in between: the text found is its input, not the final prompt.</summary>
+        public bool Enhanced;
+    }
 
     public static TemplateResult Read(string filePath)
     {
-        if (!string.Equals(Path.GetExtension(filePath), ".png", StringComparison.OrdinalIgnoreCase))
-            return TemplateResult.Fail("This template reads ComfyUI data from PNG files only.");
-
         var chunks = new Dictionary<string, string>();
         try { FileInfoCollector.ReadPngTextChunks(filePath, chunks); }
         catch (Exception ex) { return TemplateResult.Fail($"The file could not be read: {ex.Message}"); }
@@ -42,11 +47,12 @@ internal static class ComfyPromptReader
     private static TemplateResult Extract(JsonElement root)
     {
         string? prompt = null, negative = null, seed = null;
+        var trace = new Trace();
 
         if (root.ValueKind == JsonValueKind.Object && FindSampler(root) is { } sampler)
         {
-            if (ConditioningNode(root, sampler, negative: false) is { } pos) prompt = ReadText(root, pos, false, 0);
-            if (ConditioningNode(root, sampler, negative: true) is { } neg) negative = ReadText(root, neg, true, 0);
+            if (ConditioningNode(root, sampler, negative: false) is { } pos) prompt = ReadText(root, pos, false, 0, trace);
+            if (ConditioningNode(root, sampler, negative: true) is { } neg) negative = ReadText(root, neg, true, 0, new Trace());
             seed = ResolveScalar(root, sampler, SeedKeys, 0);
             if (seed == null && sampler.TryGetProperty("noise", out var noiseLink)
                 && TryFollow(root, noiseLink, out var noiseNode) && TryInputs(noiseNode, out var noiseInputs))
@@ -55,7 +61,7 @@ internal static class ComfyPromptReader
 
         return new TemplateResult(
         [
-            new("Prompt", prompt, MultiLine: true),
+            new(trace.Enhanced ? "Prompt (Before Enhancement)" : "Prompt", prompt, MultiLine: true),
             new("Negative Prompt", negative, MultiLine: true),
             new("Seed", seed, MultiLine: false),
         ]);
@@ -94,7 +100,7 @@ internal static class ComfyPromptReader
         return null;
     }
 
-    private static string? ReadText(JsonElement root, JsonElement node, bool negative, int depth)
+    private static string? ReadText(JsonElement root, JsonElement node, bool negative, int depth, Trace trace)
     {
         if (depth > MaxDepth || !TryInputs(node, out var inputs)) return null;
 
@@ -104,19 +110,19 @@ internal static class ComfyPromptReader
 
         // A node that holds both texts (Text Encode Qwen Image): which one is wanted depends on the role of the link
         if (inputs.TryGetProperty("negative_prompt", out _))
-            return ResolveScalar(root, inputs, [negative ? "negative_prompt" : "prompt"], depth);
+            return ResolveScalar(root, inputs, [negative ? "negative_prompt" : "prompt"], depth, trace);
 
-        var text = ResolveScalar(root, inputs, TextKeys, depth);
+        var text = ResolveScalar(root, inputs, TextKeys, depth, trace);
         if (text != null) return text;
 
         // Pass-through nodes (e.g. FluxGuidance) keep the text one step further back
         if (inputs.TryGetProperty("conditioning", out var link) && TryFollow(root, link, out var next))
-            return ReadText(root, next, negative, depth + 1);
+            return ReadText(root, next, negative, depth + 1, trace);
         return null;
     }
 
     /// <summary>Returns the first of <paramref name="keys"/> that has a text or number value, following links to string/primitive nodes.</summary>
-    private static string? ResolveScalar(JsonElement root, JsonElement inputs, string[] keys, int depth)
+    private static string? ResolveScalar(JsonElement root, JsonElement inputs, string[] keys, int depth, Trace? trace = null)
     {
         foreach (var key in keys)
         {
@@ -127,13 +133,33 @@ internal static class ComfyPromptReader
                     return value.GetString();
                 case JsonValueKind.Number:
                     return value.GetRawText();
-                case JsonValueKind.Array when depth < MaxDepth && TryFollow(root, value, out var target) && TryInputs(target, out var targetInputs):
-                    var resolved = ResolveScalar(root, targetInputs, keys, depth + 1);
+                case JsonValueKind.Array when depth < MaxDepth && TryFollow(root, value, out var target):
+                    var resolved = ResolveNode(root, target, keys, depth + 1, trace);
                     if (resolved != null) return resolved;
                     break;
             }
         }
         return null;
+    }
+
+    /// <summary>Resolves a linked node. A switch node (ComfySwitchNode) passes on only the branch its switch selects.</summary>
+    private static string? ResolveNode(JsonElement root, JsonElement node, string[] keys, int depth, Trace? trace)
+    {
+        if (!TryInputs(node, out var inputs)) return null;
+
+        if (inputs.TryGetProperty("switch", out var on) && on.ValueKind is JsonValueKind.True or JsonValueKind.False)
+        {
+            var branch = on.GetBoolean() ? "on_true" : "on_false";
+            return inputs.TryGetProperty(branch, out var link) && depth < MaxDepth && TryFollow(root, link, out var next)
+                ? ResolveNode(root, next, keys, depth + 1, trace)
+                : null;
+        }
+
+        var result = ResolveScalar(root, inputs, keys, depth, trace);
+        if (result != null && trace != null && node.TryGetProperty("class_type", out var classType)
+            && classType.GetString() == "TextGenerate")
+            trace.Enhanced = true;
+        return result;
     }
 
     /// <summary>A link in the prompt JSON is ["node id", output index].</summary>
