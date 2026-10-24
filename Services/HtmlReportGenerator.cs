@@ -194,6 +194,22 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("</div></div>");
         }
 
+        // Mark of the Web card (only when the file has one)
+        if (settings.ShowMarkOfTheWeb && model.WebOrigin is { } web)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🌐 Mark of the Web</div>
+  <table>
+""");
+            if (web.ZoneText != null) Row(sb, "Zone", web.ZoneText);
+            if (web.HostUrl != null) Row(sb, "Downloaded From", MaybeLinkify(web.HostUrl) + CopyBtn(web.HostUrl, copyDisplay), raw: true);
+            if (web.ReferrerUrl != null) Row(sb, "Referrer Page", MaybeLinkify(web.ReferrerUrl) + CopyBtn(web.ReferrerUrl, copyDisplay), raw: true);
+            foreach (var (key, value) in web.Extra)
+                Row(sb, key, MaybeLinkify(value) + CopyBtn(value, copyDisplay), raw: true);
+            sb.AppendLine("  </table></div>");
+        }
+
         // Hashes card
         if (showHashes && (!string.IsNullOrEmpty(model.Md5) || !string.IsNullOrEmpty(model.Sha256)))
         {

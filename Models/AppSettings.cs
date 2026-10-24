@@ -17,6 +17,9 @@ public class AppSettings
     /// <summary>Whether to show the File Attributes section in the HTML report.</summary>
     public bool ShowFileAttributes { get; set; } = false;
 
+    /// <summary>Whether to show the Mark of the Web section (where a downloaded file came from) in the HTML report.</summary>
+    public bool ShowMarkOfTheWeb { get; set; } = true;
+
     /// <summary>Whether to show the File Hashes section in the HTML report.</summary>
     public bool ShowFileHashes { get; set; } = true;
 

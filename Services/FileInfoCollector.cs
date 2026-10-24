@@ -132,8 +132,13 @@ public static class FileInfoCollector
             model.Warnings.Add($"Could not read file owner: {ex.Message}");
         }
 
-        // Hashes: not computed when hidden in the report, or for files above the size limit (long waits)
         var settings = SettingsService.Current;
+
+        // Mark of the Web: where a downloaded file came from (null when the file has none)
+        if (settings.ShowMarkOfTheWeb)
+            model.WebOrigin = MarkOfTheWeb.Read(fi.FullName);
+
+        // Hashes: not computed when hidden in the report, or for files above the size limit (long waits)
         if (settings.ShowFileHashes)
         {
             var maxBytes = settings.HashMaxSizeMb * 1024L * 1024L;

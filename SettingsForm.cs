@@ -26,6 +26,7 @@ public partial class SettingsForm : Form
 
         chkOwner.Checked          = settings.ShowOwner;
         chkFileAttributes.Checked = settings.ShowFileAttributes;
+        chkMarkOfTheWeb.Checked   = settings.ShowMarkOfTheWeb;
         // Number first: setting the checkbox can fire a save that would otherwise store the designer default
         numHashMaxSizeMb.Value    = Math.Clamp(settings.HashMaxSizeMb, (int)numHashMaxSizeMb.Minimum, (int)numHashMaxSizeMb.Maximum);
         chkShowFileHashes.Checked = settings.ShowFileHashes;
@@ -72,6 +73,7 @@ public partial class SettingsForm : Form
             CopyButtonDisplay    = cboShowCopyButton.SelectedItem?.ToString() ?? "No",
             ShowOwner            = chkOwner.Checked,
             ShowFileAttributes   = chkFileAttributes.Checked,
+            ShowMarkOfTheWeb     = chkMarkOfTheWeb.Checked,
             ShowFileHashes       = chkShowFileHashes.Checked,
             HashMaxSizeMb        = (int)numHashMaxSizeMb.Value,
             TextualDataDisplay   = cboTextualData.SelectedItem?.ToString() ?? "Formatted",
@@ -93,6 +95,8 @@ public partial class SettingsForm : Form
     private void chkOwner_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
     private void chkFileAttributes_CheckedChanged(object sender, EventArgs e) => SaveSettings();
+
+    private void chkMarkOfTheWeb_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
     private void chkShowFileHashes_CheckedChanged(object sender, EventArgs e)
     {

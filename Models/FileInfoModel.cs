@@ -22,6 +22,9 @@ public class FileInfoModel
     public string Md5 { get; set; } = "";
     public string Sha256 { get; set; } = "";
 
+    // Mark of the Web (null when the file has none)
+    public Services.WebOrigin? WebOrigin { get; set; }
+
     // Version info (exe/dll)
     public VersionInfoModel? VersionInfo { get; set; }
 
