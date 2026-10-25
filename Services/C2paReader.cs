@@ -285,7 +285,7 @@ public static class C2paReader
         _ => a,
     };
 
-    private static string FriendlySourceType(string uri)
+    internal static string FriendlySourceType(string uri)
     {
         var t = uri[(uri.LastIndexOf('/') + 1)..];
         return t switch

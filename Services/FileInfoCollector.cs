@@ -241,6 +241,12 @@ public static class FileInfoCollector
             // Content Credentials (C2PA): who or what made the image, as the file itself says
             if (model.Extension is ".jpg" or ".jpeg" or ".png")
                 model.ContentCredentials = C2paReader.Read(filePath);
+
+            // Many AI tools only write the plain IPTC tag (XMP) "Digital Source Type", with no signature
+            if (model.ContentCredentials == null
+                && model.ImageInfo?.ExifTags.FirstOrDefault(kv => kv.Key.EndsWith("DigitalSourceType", StringComparison.OrdinalIgnoreCase)).Value is { } dst
+                && dst.Contains("AlgorithmicMedia", StringComparison.OrdinalIgnoreCase))
+                model.AiSourceType = C2paReader.FriendlySourceType(dst);
         }
 
         // Text file info

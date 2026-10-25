@@ -344,6 +344,20 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("</div>");
         }
 
+        // AI origin card: only the unsigned XMP tag is there (no Content Credentials)
+        if (model.AiSourceType is { } aiType)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🤖 AI Origin</div>
+  <table>
+""");
+            Row(sb, "Origin", """<span class="attr-chip warn-chip">AI-generated</span>""", raw: true);
+            Row(sb, "Digital Source Type", aiType);
+            Row(sb, "Verification", "Not signed. The image's XMP metadata says so, but anyone can add or remove that tag.");
+            sb.AppendLine("  </table></div>");
+        }
+
         // Content Credentials (C2PA) card: its own group, after the image information
         if (model.ContentCredentials is { } c2pa)
         {

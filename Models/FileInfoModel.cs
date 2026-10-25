@@ -28,6 +28,9 @@ public class FileInfoModel
     // Content Credentials / C2PA (null when the file has none)
     public Services.C2paInfo? ContentCredentials { get; set; }
 
+    // AI origin from the plain XMP tag iptcExt:DigitalSourceType, for files with no Content Credentials (null when none)
+    public string? AiSourceType { get; set; }
+
     // Version info (exe/dll)
     public VersionInfoModel? VersionInfo { get; set; }
 
