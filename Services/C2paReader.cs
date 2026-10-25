@@ -24,6 +24,7 @@ public sealed class C2paInfo
 /// The signature is NOT checked (that needs a full C2PA library): the card says so. Nothing is written. Null when there is none.
 /// History:
 ///   2026-10-25  First version (JPEG and PNG).
+///   2026-10-25  MP4/MOV: the C2PA "uuid" box.
 /// </summary>
 public static class C2paReader
 {
@@ -49,6 +50,7 @@ public static class C2paReader
         var head = new byte[8];
         if (fs.Read(head, 0, 8) < 8) return null;
         if (head[0] == 0xFF && head[1] == 0xD8) return ReadJpeg(fs);
+        if (head[4] == 'f' && head[5] == 't' && head[6] == 'y' && head[7] == 'p') return ReadMp4(fs);
         if (head[0] == 0x89 && head[1] == 0x50 && head[2] == 0x4E && head[3] == 0x47) return ReadPng(fs);
         return null;
     }
@@ -90,6 +92,41 @@ public static class C2paReader
             firstPacket = false;
         }
         return ms.ToArray();
+    }
+
+    private static readonly byte[] C2paUuid = [0xD8, 0xFE, 0xC3, 0xD6, 0x1B, 0x0E, 0x48, 0x3C, 0x92, 0x97, 0x58, 0x28, 0x87, 0x7E, 0xC4, 0x81];
+
+    /// <summary>MP4/MOV: a top-level "uuid" box with the C2PA id: version+flags (4), the purpose "manifest" and a zero byte, an 8-byte offset, then the JUMBF.</summary>
+    private static byte[]? ReadMp4(FileStream fs)
+    {
+        fs.Position = 0;
+        var hdr = new byte[16];
+        long pos = 0;
+        while (pos + 8 <= fs.Length)
+        {
+            fs.Position = pos;
+            if (fs.Read(hdr, 0, 16) < 8) return null;
+            long size = (uint)((hdr[0] << 24) | (hdr[1] << 16) | (hdr[2] << 8) | hdr[3]);
+            int hdrLen = 8;
+            if (size == 1) { size = 0; for (int i = 8; i < 16; i++) size = (size << 8) | hdr[i]; hdrLen = 16; }
+            else if (size == 0) size = fs.Length - pos;
+            if (size < hdrLen) return null;
+            if (hdr[4] == 'u' && hdr[5] == 'u' && hdr[6] == 'i' && hdr[7] == 'd' && size <= 64 * 1024 * 1024 && size > hdrLen + 16 + 4 + 9 + 8)
+            {
+                var body = new byte[size - hdrLen];
+                fs.Position = pos + hdrLen;
+                if (fs.Read(body, 0, body.Length) < body.Length) return null;
+                if (body.AsSpan(0, 16).SequenceEqual(C2paUuid))
+                {
+                    int p = 20; // after uuid and version/flags
+                    int zero = Array.IndexOf(body, (byte)0, p);
+                    if (zero > 0 && Encoding.ASCII.GetString(body, p, zero - p) == "manifest")
+                        return body[(zero + 1 + 8)..];
+                }
+            }
+            pos += size;
+        }
+        return null;
     }
 
     private static byte[]? ReadPng(FileStream fs)
@@ -303,6 +340,7 @@ public static class C2paReader
     private static string AssertionName(string n) => n switch
     {
         "c2pa.hash.data" => "Hash of the image data",
+        "c2pa.hash.bmff" or "c2pa.hash.bmff.v2" or "c2pa.hash.bmff.v3" => "Hash of the video data",
         "c2pa.ingredient" or "c2pa.ingredient.v2" or "c2pa.ingredient.v3" => "Ingredient (source file)",
         "c2pa.thumbnail.claim.jpeg" => "Thumbnail",
         "c2pa.training-mining" => "Data mining / AI training permissions",

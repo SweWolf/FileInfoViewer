@@ -286,6 +286,10 @@ public static class FileInfoCollector
             {
                 model.Warnings.Add($"Could not read video info: {ex.Message}");
             }
+
+            // Content Credentials (C2PA), e.g. Google Veo / Gemini videos
+            if (model.Extension is ".mp4" or ".m4v" or ".mov")
+                model.ContentCredentials = C2paReader.Read(filePath);
         }
 
         // SQLite database info — check magic bytes first since .db is used by many non-SQLite apps
