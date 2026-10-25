@@ -25,6 +25,7 @@ public sealed class C2paInfo
 /// History:
 ///   2026-10-25  First version (JPEG and PNG).
 ///   2026-10-25  MP4/MOV: the C2PA "uuid" box.
+///   2026-10-25  CBOR with indefinite lengths (Microsoft); action times and agent versions; watermark names.
 /// </summary>
 public static class C2paReader
 {
@@ -237,7 +238,11 @@ public static class C2paReader
                             foreach (var action in Items(Get(value, "actions")))
                                 AddAction(info, action, seenActions);
                         }
-                        else if (seenOther.Add(name)) info.OtherAssertions.Add(AssertionName(name));
+                        else if (seenOther.Add(name))
+                        {
+                            var alg = name == "c2pa.soft-binding" ? Text(Get(value, "alg")) : null;
+                            info.OtherAssertions.Add(alg != null ? $"Invisible watermark ({alg})" : AssertionName(name));
+                        }
                     }
                 }
                 else if (label.StartsWith("c2pa.claim") && cbor != null)
@@ -288,6 +293,9 @@ public static class C2paReader
         var desc = Text(Get(action, "description"));
         var agent = Get(action, "softwareAgent");
         var agentText = agent is string s ? s : Text(Get(agent, "name"));
+        if (agent is not string && agentText != null && Text(Get(agent, "version")) is { } agentVer) agentText += " " + agentVer;
+        var whenText = Text(Get(action, "when")) is { } w && DateTimeOffset.TryParse(w, out var when)
+            ? when.UtcDateTime.ToString("yyyy-MM-dd HH:mm:ss") + " UTC" : null;
 
         if (sourceType != null)
         {
@@ -300,6 +308,7 @@ public static class C2paReader
         var extras = new List<string>();
         if (sourceType != null) extras.Add(FriendlySourceType(sourceType));
         if (agentText != null) extras.Add("by " + agentText);
+        if (whenText != null) extras.Add(whenText);
         if (extras.Count > 0) sb.Append(" (").Append(string.Join(", ", extras)).Append(')');
         var text = sb.ToString();
         if (seen.Add(text)) info.Actions.Add(text);
@@ -308,6 +317,7 @@ public static class C2paReader
     private static string FriendlyAction(string a) => a switch
     {
         "c2pa.created" => "Created",
+        "c2pa.watermarked" => "Watermarked",
         "c2pa.edited" => "Edited",
         "c2pa.opened" => "Opened",
         "c2pa.placed" => "Placed",
@@ -342,7 +352,8 @@ public static class C2paReader
         "c2pa.hash.data" => "Hash of the image data",
         "c2pa.hash.bmff" or "c2pa.hash.bmff.v2" or "c2pa.hash.bmff.v3" => "Hash of the video data",
         "c2pa.ingredient" or "c2pa.ingredient.v2" or "c2pa.ingredient.v3" => "Ingredient (source file)",
-        "c2pa.thumbnail.claim.jpeg" => "Thumbnail",
+        "c2pa.thumbnail.claim.jpeg" or "c2pa.thumbnail.ingredient" => "Thumbnail",
+        "c2pa.soft-binding" => "Invisible watermark",
         "c2pa.training-mining" => "Data mining / AI training permissions",
         "stds.exif" => "EXIF data",
         "stds.schema-org.CreativeWork" => "Creative work (author info)",
@@ -436,6 +447,8 @@ public static class C2paReader
                 }
             }
 
+            if (info == 31) return ReadIndefinite(d, ref pos, major, depth);
+
             long arg = info < 24 ? info : info switch
             {
                 24 => d[pos++],
@@ -468,6 +481,47 @@ public static class C2paReader
                         return map;
                     }
                 default: return Read(d, ref pos, depth + 1); // tag: use the value inside
+            }
+        }
+
+        /// <summary>Indefinite length (0x1F): items follow until a 0xFF "break" byte.</summary>
+        private static object? ReadIndefinite(byte[] d, ref int pos, int major, int depth)
+        {
+            switch (major)
+            {
+                case 2:
+                    {
+                        var bytes = new List<byte>();
+                        while (d[pos] != 0xFF) if (Read(d, ref pos, depth + 1) is byte[] chunk) bytes.AddRange(chunk);
+                        pos++;
+                        return bytes.ToArray();
+                    }
+                case 3:
+                    {
+                        var sb = new StringBuilder();
+                        while (d[pos] != 0xFF) if (Read(d, ref pos, depth + 1) is string chunk) sb.Append(chunk);
+                        pos++;
+                        return sb.ToString();
+                    }
+                case 4:
+                    {
+                        var list = new List<object?>();
+                        while (d[pos] != 0xFF) list.Add(Read(d, ref pos, depth + 1));
+                        pos++;
+                        return list;
+                    }
+                case 5:
+                    {
+                        var map = new List<KeyValuePair<object, object?>>();
+                        while (d[pos] != 0xFF)
+                        {
+                            var k = Read(d, ref pos, depth + 1) ?? "";
+                            map.Add(new(k, Read(d, ref pos, depth + 1)));
+                        }
+                        pos++;
+                        return map;
+                    }
+                default: throw new InvalidDataException("indefinite length not allowed here");
             }
         }
 
