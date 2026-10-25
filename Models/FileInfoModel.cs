@@ -31,6 +31,9 @@ public class FileInfoModel
     // AI origin from the plain XMP tag iptcExt:DigitalSourceType, for files with no Content Credentials (null when none)
     public string? AiSourceType { get; set; }
 
+    // Chinese "AIGC" label in MP4/MOV metadata (null when none)
+    public Services.AigcLabel? AigcLabel { get; set; }
+
     // Version info (exe/dll)
     public VersionInfoModel? VersionInfo { get; set; }
 

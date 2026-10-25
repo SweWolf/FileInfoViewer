@@ -358,6 +358,21 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("  </table></div>");
         }
 
+        // AIGC label card (Chinese AI services)
+        if (model.AigcLabel is { } aigc)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🤖 AI Origin (AIGC Label)</div>
+  <table>
+""");
+            Row(sb, "Origin", $"""<span class="attr-chip warn-chip">{H(aigc.LabelText)}</span>""", raw: true);
+            foreach (var (key, value) in aigc.Fields.Where(f => f.Key != "Label"))
+                Row(sb, key, value);
+            Row(sb, "Verification", "Not checked. This is the label the AI service wrote into the file; anyone can remove or change it.");
+            sb.AppendLine("  </table></div>");
+        }
+
         // Content Credentials (C2PA) card: its own group, after the image information
         if (model.ContentCredentials is { } c2pa)
         {
