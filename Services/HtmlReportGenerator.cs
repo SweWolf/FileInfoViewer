@@ -344,6 +344,26 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("</div>");
         }
 
+        // Content Credentials (C2PA) card: its own group, after the image information
+        if (model.ContentCredentials is { } c2pa)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🔏 Content Credentials (C2PA)</div>
+  <table>
+""");
+            if (c2pa.IsAiGenerated)
+                Row(sb, "Origin", """<span class="attr-chip warn-chip">AI-generated</span>""", raw: true);
+            foreach (var (key, value) in c2pa.Summary)
+                Row(sb, key, value);
+            if (c2pa.Actions.Count > 0)
+                Row(sb, "Actions", string.Join("<br>", c2pa.Actions.Select(H)), raw: true);
+            if (c2pa.OtherAssertions.Count > 0)
+                Row(sb, "Also Contains", string.Join("<br>", c2pa.OtherAssertions.Select(H)), raw: true);
+            Row(sb, "Verification", "Not checked. This is what the file claims; the signature itself is not verified here.");
+            sb.AppendLine("  </table></div>");
+        }
+
         // Text info card
         if (model.TextInfo is { } ti)
         {

@@ -25,6 +25,9 @@ public class FileInfoModel
     // Mark of the Web (null when the file has none)
     public Services.WebOrigin? WebOrigin { get; set; }
 
+    // Content Credentials / C2PA (null when the file has none)
+    public Services.C2paInfo? ContentCredentials { get; set; }
+
     // Version info (exe/dll)
     public VersionInfoModel? VersionInfo { get; set; }
 

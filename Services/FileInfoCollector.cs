@@ -237,6 +237,10 @@ public static class FileInfoCollector
             {
                 model.Warnings.Add($"Could not read image info: {ex.Message}");
             }
+
+            // Content Credentials (C2PA): who or what made the image, as the file itself says
+            if (model.Extension is ".jpg" or ".jpeg" or ".png")
+                model.ContentCredentials = C2paReader.Read(filePath);
         }
 
         // Text file info
