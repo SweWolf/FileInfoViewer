@@ -14,6 +14,9 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 - **Wide file type support** — images, audio, video, executables, text files, and more (see below)
 - **Clickable web links** — URLs inside any metadata value are rendered as clickable hyperlinks in the report, including inside syntax-highlighted JSON blocks
 - **Copy buttons** — copy any metadata value to the clipboard with one click; optionally shown on hover only
+- **AI-generated content detection** — shows when a file says it was made by AI: Content Credentials (C2PA, e.g. Google Gemini, Microsoft Designer), the IPTC "Digital Source Type" tag and the AIGC label of Chinese AI services, with the signer, the generator and watermarks such as SynthID. The signatures are shown, not verified
+- **Mark of the Web** — where a downloaded file came from (zone, download address, referrer page); long temporary download links are shortened
+- **Wrong extension warning** — warns when a file's content doesn't match its extension (for example an MP4 named .mkv)
 - **Syntax-highlighted JSON** — structured metadata (e.g. embedded workflow data in AI-generated images) is pretty-printed with color coding
 - **Configurable** — control timestamp format, timezone, copy buttons, content width, web links, and which sections to show
 - **Dark mode** — Light, Dark, or follow the Windows setting (System)
@@ -26,17 +29,20 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 
 | Type | What is collected |
 |---|---|
-| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic, heif, avif) | Dimensions, DPI, pixel format, bit depth, full EXIF and XMP metadata, embedded textual/JSON data. WebP: format (lossy/lossless/extended), alpha, animation frames, loop count and duration |
+| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic, heif, avif) | Dimensions, DPI, pixel format, bit depth, full EXIF and XMP metadata, embedded textual/JSON data. WebP: format (lossy/lossless/extended), alpha, animation frames, loop count and duration. JPEG and PNG: Content Credentials (C2PA) and the AI-generated tag, when present |
+| **Photoshop** (psd, psb) | Size, color mode, bit depth, DPI, channels, layer count, compression, ICC profile, EXIF/IPTC/XMP, saving program |
+| **Camera RAW** (nef, nrw, cr2, arw, dng, orf, rw2, raf, pef, srw) | Image size and all EXIF and maker-note tags (camera, lens, exposure, ISO and more) |
 | **Vector images** (svg) | Width, height, view box, SVG version, title, description, creating program (Illustrator, Inkscape), element count, embedded images, scripts |
 | **Audio** (mp3, flac, ogg, m4a, aac, wav, wma, opus, ape, aiff) | ID3/Vorbis tags, lyrics, embedded cover art, duration, bitrate, sample rate, encoding, encoder software |
-| **Video** (mp4, mkv, avi, mov, wmv, flv, webm, m4v, mpg, 3gp, ts, m2ts) | Duration, dimensions, frame rate, codec, audio streams, video streams, embedded MP4 tracks, full tag metadata |
+| **Video** (mp4, mkv, avi, mov, wmv, flv, webm, m4v, mpg, 3gp, ts, m2ts) | Duration, dimensions, frame rate, codec, container, media created, rotation, audio streams, video streams, embedded tracks (e.g. subtitles), chapters (MKV, WebM, MP4, MOV), full tag metadata. MP4/MOV: Content Credentials (C2PA) and the AIGC label, when present |
 | **PDF** (.pdf) | Page count, PDF version, title, author, subject, keywords, creator, producer, creation/modified dates, encryption |
 | **Archives** (zip, rar, 7z, tar, tar.gz, tar.bz2, tar.xz) | Format, file and folder count, compressed and uncompressed size, encryption, ZIP comment |
 | **SQLite databases** (.db, .sqlite, .sqlite3, .db3, .s3db) | SQLite version, page size and count, encoding, journal mode, tables, views and indexes, row count per table |
 | **Torrents** (.torrent) | Name, trackers, file list, total size, piece size, info hash, magnet link, private flag, creator, creation date |
+| **SID music** (.sid) | Title, author, released, songs, video standard, SID chip model, load/init/play addresses |
 | **Executables / DLLs** (.exe, .dll) | File version info, .NET assembly info, target framework, architecture, referenced assemblies |
 | **Text files** (.txt, .log, .cs, .json, .xml, etc.) | Line, word and character count, encoding detection, BOM presence |
-| **All files** | Size, timestamps, MD5 + SHA-256 hashes, MIME type, file attributes, owner |
+| **All files** | Size, timestamps, Mark of the Web, MD5 + SHA-256 hashes, MIME type, file attributes, owner |
 
 ---
 
@@ -107,7 +113,8 @@ Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` 
 | Copy button | Show a clipboard copy button next to metadata values (No / Yes / Yes on hover) |
 | Owner | Include the file owner row in the report |
 | File attributes | Include the file attributes section in the report |
-| File hashes | Include MD5 and SHA-256 hashes in the report |
+| Mark of the Web | Include where a downloaded file came from (zone, download address, referrer page); only shown for files that have it |
+| File hashes | Include MD5 and SHA-256 hashes in the report. "Skip Above" sets the file size in MB above which hashing is skipped (default 500, 0 = hash every file) |
 | Textual data | How to display structured/JSON metadata: None, Formatted, Raw data, or Both |
 
 ### Layout
@@ -124,6 +131,11 @@ Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` 
 | Setting | Description |
 |---|---|
 | Style | Light, Dark, or System (follows the Windows setting) |
+
+### Warnings
+| Setting | Description |
+|---|---|
+| Wrong File Extension | Warn when the content of a file doesn't match its extension (on by default) |
 
 ---
 
