@@ -525,7 +525,23 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 RowIfSet(sb, "Total bitrate", vid.TotalBitrate);
                 RowIfSet(sb, "Codec",         vid.VideoCodec);
                 RowIfSet(sb, "Container",     vid.Container);
+                if (vid.ChaptersKnown)
+                    Row(sb, "Has chapters", vid.Chapters.Count > 0 ? $"Yes ({vid.Chapters.Count})" : "No");
                 sb.AppendLine("  </table>");
+            }
+
+            // The chapter list is collapsed (same arrow as the technical tags)
+            if (vid.Chapters.Count > 0)
+            {
+                var noun = vid.Chapters.Count == 1 ? "chapter" : "chapters";
+                sb.AppendLine($"""  <details class="more-tags"><summary>Show {vid.Chapters.Count} {noun}</summary><table class="tag-table">""");
+                int n = 1;
+                foreach (var ch in vid.Chapters)
+                {
+                    var at = ch.Start.TotalHours >= 1 ? ch.Start.ToString(@"h\:mm\:ss") : ch.Start.ToString(@"m\:ss");
+                    Row(sb, $"#{n++}  {at}", string.IsNullOrWhiteSpace(ch.Title) ? "(no title)" : ch.Title);
+                }
+                sb.AppendLine("  </table></details>");
             }
 
             // Audio group

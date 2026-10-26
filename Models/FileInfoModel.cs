@@ -205,6 +205,10 @@ public class VideoInfoModel
     // Embedded stream tracks (from Matroska/EBML parser)
     public List<MediaTrackInfo> Tracks { get; set; } = [];
 
+    // Chapters (empty when the file has none)
+    public List<Services.ChapterInfo> Chapters { get; set; } = [];
+    public bool ChaptersKnown { get; set; } // true when the container is one we can read chapters from (so "No" means no)
+
     // All raw metadata tags
     public Dictionary<string, string> AllTags { get; set; } = [];
 

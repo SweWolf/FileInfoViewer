@@ -835,6 +835,15 @@ public static class FileInfoCollector
         else if (container == FileSignature.Mp4 || (container == null && ext is ".mp4" or ".m4v" or ".m4a" or ".mov" or ".3gp"))
             video.Tracks = Mp4TrackReader.ReadTracks(filePath);
 
+        // Chapters: read from the container itself, no FFmpeg needed
+        bool isMkv = container == FileSignature.Matroska || (container == null && ext is ".mkv" or ".mka" or ".mks" or ".webm");
+        bool isMp4 = container == FileSignature.Mp4 || (container == null && ext is ".mp4" or ".m4v" or ".m4a" or ".mov" or ".3gp");
+        if (isMkv || isMp4)
+        {
+            video.Chapters = ChapterReader.Read(filePath, isMkv, isMp4);
+            video.ChaptersKnown = true;
+        }
+
         if (video.Container == "" && container != null) video.Container = container.DisplayName;
 
         model.VideoInfo = video;
