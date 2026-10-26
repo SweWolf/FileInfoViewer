@@ -203,10 +203,10 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
   <table>
 """);
             if (web.ZoneText != null) Row(sb, "Zone", web.ZoneText);
-            if (web.HostUrl != null) Row(sb, "Downloaded From", MaybeLinkify(web.HostUrl) + CopyBtn(web.HostUrl, copyDisplay), raw: true);
-            if (web.ReferrerUrl != null) Row(sb, "Referrer Page", MaybeLinkify(web.ReferrerUrl) + CopyBtn(web.ReferrerUrl, copyDisplay), raw: true);
+            if (web.HostUrl != null) Row(sb, "Downloaded From", WebAddress(web.HostUrl) + CopyBtn(web.HostUrl, copyDisplay), raw: true);
+            if (web.ReferrerUrl != null) Row(sb, "Referrer Page", WebAddress(web.ReferrerUrl) + CopyBtn(web.ReferrerUrl, copyDisplay), raw: true);
             foreach (var (key, value) in web.Extra)
-                Row(sb, key, MaybeLinkify(value) + CopyBtn(value, copyDisplay), raw: true);
+                Row(sb, key, WebAddress(value) + CopyBtn(value, copyDisplay), raw: true);
             sb.AppendLine("  </table></div>");
         }
 
@@ -1003,6 +1003,28 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                 { url = url[..^1]; changed = true; }
         } while (changed);
         return url;
+    }
+
+    private static readonly string[] SensitiveQueryKeys = ["expires", "sig", "signature", "token", "key", "client_ip", "ip=", "auth", "password", "secret"];
+
+    /// <summary>
+    /// A web address for display. Download links are often temporary, signed links with a very long query that holds an expiry
+    /// time, a signature, sometimes the user's own IP address: such a link is dead soon and not nice to show or share. When the
+    /// query is long or looks like that, only the address up to the "?" is shown (not clickable), with the full address as
+    /// the tooltip and in the copy button. Short, harmless queries (e.g. a video page "?v=...") stay as a normal link.
+    /// </summary>
+    private static string WebAddress(string value)
+    {
+        int q = value.IndexOf('?');
+        if (q < 0 || !value.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+            return MaybeLinkify(value);
+
+        var query = value[(q + 1)..];
+        bool hide = query.Length > 80
+            || SensitiveQueryKeys.Any(k => query.Contains(k, StringComparison.OrdinalIgnoreCase));
+        if (!hide) return MaybeLinkify(value);
+
+        return $"""<span title="{H(value)}">{H(value[..q])}<span style="color:#999;font-size:.85rem"> ? … (temporary link: query hidden)</span></span>""";
     }
 
     private static string MaybeLinkify(string value)
