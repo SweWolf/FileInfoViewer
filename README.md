@@ -20,6 +20,7 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 - **Syntax-highlighted JSON** — structured metadata (e.g. embedded workflow data in AI-generated images) is pretty-printed with color coding
 - **Configurable** — control timestamp format, timezone, copy buttons, content width, web links, and which sections to show
 - **Dark mode** — Light, Dark, or follow the Windows setting (System)
+- **Prompt and Seed template** — for AI images and videos made with ComfyUI (PNG) or Wan2GP (MP4): a small window with the prompt, seed and a few more values, instead of the full report. Start it from the **Templates** menu or from a Send To shortcut
 - **Keyboard shortcuts** — F6 = file path box, Alt+B = Browse, Ctrl+E = View File Info
 - **Update check** — the About box shows whether a newer version is available on GitHub
 
@@ -88,6 +89,8 @@ Once placed, use the built-in **Setup → Create Shortcut** option inside the ap
 **GUI mode** — open the application, type or browse to a file path, then click **View File Info**.
 
 **Drag and drop** — drag any file directly onto the application window.
+
+**Templates** — **Templates → Prompt and Seed** shows only the prompt, seed and a few other values of a ComfyUI PNG or a Wan2GP MP4 in a small window, instead of the HTML report. To use it from Explorer, choose **Setup → Create Shortcut** and tick **Send To menu: Prompt and Seed (Template 1)**. From the command line: `FileInfoViewer.exe -T1 "C:\path\to\file.png"`.
 
 **Command line / Send To** — pass the file path as an argument:
 ```
