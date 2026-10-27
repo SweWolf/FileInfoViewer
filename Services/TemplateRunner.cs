@@ -3,7 +3,7 @@ namespace FileInfoViewer.Services;
 /// <summary>Reads a file with a template and shows the result window, or a message when that isn't possible.</summary>
 internal static class TemplateRunner
 {
-    private const string Caption = "File Info Viewer";
+    private const string Caption = Common.AppName;
 
     /// <param name="owner">The window to show the template window on top of (null: run it as the application's own window).</param>
     public static void Show(int templateNumber, string filePath, Form? owner)

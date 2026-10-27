@@ -59,6 +59,8 @@ namespace FileInfoViewer
             cboStyle = new ComboBox();
             grpWarnings = new GroupBox();
             chkWarnWrongExtension = new CheckBox();
+            grpUpdates = new GroupBox();
+            chkCheckForUpdates = new CheckBox();
             grpFileDate.SuspendLayout();
             grpShow.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numHashMaxSizeMb).BeginInit();
@@ -66,6 +68,7 @@ namespace FileInfoViewer
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             grpWarnings.SuspendLayout();
+            grpUpdates.SuspendLayout();
             SuspendLayout();
             // 
             // grpFileDate
@@ -404,11 +407,35 @@ namespace FileInfoViewer
             chkWarnWrongExtension.UseVisualStyleBackColor = true;
             chkWarnWrongExtension.CheckedChanged += chkWarnWrongExtension_CheckedChanged;
             //
+            // grpUpdates
+            //
+            grpUpdates.Controls.Add(chkCheckForUpdates);
+            grpUpdates.Location = new Point(14, 748);
+            grpUpdates.Name = "grpUpdates";
+            grpUpdates.Size = new Size(360, 54);
+            grpUpdates.TabIndex = 5;
+            grpUpdates.TabStop = false;
+            grpUpdates.Text = "Updates";
+            //
+            // chkCheckForUpdates
+            //
+            chkCheckForUpdates.AutoSize = true;
+            chkCheckForUpdates.Checked = true;
+            chkCheckForUpdates.CheckState = CheckState.Checked;
+            chkCheckForUpdates.Location = new Point(110, 22);
+            chkCheckForUpdates.Name = "chkCheckForUpdates";
+            chkCheckForUpdates.Size = new Size(200, 19);
+            chkCheckForUpdates.TabIndex = 0;
+            chkCheckForUpdates.Text = "Check for Updates on Startup";
+            chkCheckForUpdates.UseVisualStyleBackColor = true;
+            chkCheckForUpdates.CheckedChanged += chkCheckForUpdates_CheckedChanged;
+            //
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(388, 747);
+            ClientSize = new Size(388, 814);
+            Controls.Add(grpUpdates);
             Controls.Add(grpWarnings);
             Controls.Add(groupBox2);
             Controls.Add(groupBox1);
@@ -435,6 +462,8 @@ namespace FileInfoViewer
             groupBox2.PerformLayout();
             grpWarnings.ResumeLayout(false);
             grpWarnings.PerformLayout();
+            grpUpdates.ResumeLayout(false);
+            grpUpdates.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -470,5 +499,7 @@ namespace FileInfoViewer
         private Label label5;
         private GroupBox grpWarnings;
         private CheckBox chkWarnWrongExtension;
+        private GroupBox grpUpdates;
+        private CheckBox chkCheckForUpdates;
     }
 }

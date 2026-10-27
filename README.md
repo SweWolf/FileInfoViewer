@@ -23,7 +23,7 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 - **Prompt and Seed template** — for AI images and videos made with ComfyUI (PNG) or Wan2GP (MP4): a small window with the prompt, seed and a few more values, instead of the full report. Start it from a Send To shortcut
 - **Built-in help** — **Help > File Info Viewer Help** (F1) opens a help page that is included with the program, so it works without an internet connection
 - **Keyboard shortcuts** — F1 = Help, F6 = file path box, Alt+B = Browse, Ctrl+E = View File Info
-- **Update check** — the About box shows whether a newer version is available on GitHub
+- **Update check** — a green **New Version Available** item appears in the menu bar when a newer version is on GitHub (can be turned off in Settings), and the About box shows the same
 
 ---
 
@@ -135,6 +135,11 @@ Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` 
 | Setting | Description |
 |---|---|
 | Style | Light, Dark, or System (follows the Windows setting) |
+
+### Updates
+| Setting | Description |
+|---|---|
+| Check for Updates on Startup | Look for a newer version on GitHub when the program starts and show **New Version Available** in the menu bar (on by default) |
 
 ### Warnings
 | Setting | Description |

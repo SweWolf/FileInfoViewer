@@ -21,7 +21,7 @@ public partial class CreateShortcutForm : Form
         {
             MessageBox.Show(
                 "Please select at least one location.",
-                "No location selected", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                Common.AppName, MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
 
@@ -69,14 +69,14 @@ public partial class CreateShortcutForm : Form
                        + string.Join("\n", failed);
             if (allUsers)
                 msg += "\n\nCreating shortcuts for all users requires administrator privileges.";
-            MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            MessageBox.Show(msg, Common.AppName, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
         if (created.Count > 0)
         {
             MessageBox.Show(
                 "Shortcut(s) created successfully:\n\n" + string.Join("\n", created),
-                "Done", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Common.AppName, MessageBoxButtons.OK, MessageBoxIcon.Information);
             DialogResult = DialogResult.OK;
             Close();
         }

@@ -109,7 +109,7 @@ internal sealed class TemplateForm : Form
         catch (Exception ex)
         {
             // The clipboard can be locked by another program for a moment
-            MessageBox.Show(this, $"The text could not be copied:\n\n{ex.Message}", "File Info Viewer",
+            MessageBox.Show(this, $"The text could not be copied:\n\n{ex.Message}", Common.AppName,
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }

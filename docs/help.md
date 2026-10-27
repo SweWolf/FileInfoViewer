@@ -50,7 +50,10 @@ You can also type or paste a path into the **File Path** box and click **View Fi
 ## The Main Window
 
 - **File Path** is the file to look at. Click **...** to browse for it, or drag a file onto the
-  window. Dropping or browsing opens the report at once.
+  window. Dropping or browsing opens the report at once. You can also type or paste a path. A path
+  copied with **Copy as path** in File Explorer can be pasted as it is: the quotes around it are
+  removed. If you copy a file in File Explorer and press **Ctrl+V** in the window, that file is
+  used, just as if you had dropped it.
 - **View File Info** opens the report for the path in the box.
 
 The menus:
@@ -61,6 +64,9 @@ The menus:
 - **Help > File Info Viewer Help** opens this help (F1).
 - **Help > About** shows the version, the web address of the program and whether a newer version
   is available on GitHub. This needs an internet connection; without one, nothing is shown.
+- **New Version Available** appears in green at the right end of the menu bar when a newer
+  version has been found on GitHub. Click it to open the download page. It is only checked when
+  **Check for Updates on Startup** is on in the settings, and needs an internet connection.
 
 A message under the box tells you if something went wrong, for example if the file does not
 exist.
@@ -202,6 +208,10 @@ the report can be clickable links. Both are set in the [settings](#settings).
 Choose **Tools > Settings**. Changes are saved at once in
 `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json`.
 
+### Appearance
+
+- **Style**: **Light**, **Dark** or **System** (follows the Windows setting).
+
 ### File Date
 
 - **Time zone**: **Local**, **UTC** or **Both**.
@@ -228,13 +238,14 @@ Choose **Tools > Settings**. Changes are saved at once in
   (1400px)**, **Very wide (1800px)**, **Full width** or **Custom**. With **Custom**, enter a
   number and choose **Pixels** or **Percent**.
 
-### Appearance
-
-- **Style**: **Light**, **Dark** or **System** (follows the Windows setting).
-
 ### Warnings
 
 - **Wrong File Extension**: warn when the content of a file does not match its extension.
+
+### Updates
+
+- **Check for Updates on Startup**: look for a newer version on GitHub when the program starts.
+  When there is one, **New Version Available** appears in the menu bar. It is on by default.
 
 ## Create Shortcut
 
@@ -281,6 +292,7 @@ FileInfoViewer.exe -T1 "C:\Pictures\image.png"
 |---|---|
 | F1 | Open this help |
 | F6 | Go to the **File Path** box and select its text |
+| Ctrl+V | Use a file copied in File Explorer (text is pasted as usual) |
 | Alt+B | Click **...** (browse for a file) |
 | Ctrl+E | Click **View File Info** |
 | Enter (in the **File Path** box) | View the file info |
@@ -309,8 +321,8 @@ set.
 **Chapters or tracks are not shown for a video.** They are read for MKV, WebM, MP4 and MOV files.
 Other video formats show the basic information only.
 
-**The About box shows no information about new versions.** It needs an internet connection and
-access to GitHub. Without them, nothing is shown.
+**No "New Version Available" or no information about new versions in About.** Both need an internet connection and
+access to GitHub. Without them, nothing is shown. The check at startup can be turned off in the settings.
 
 You can find the program, the source code and the latest version at
 [github.com/SweWolf/FileInfoViewer](https://github.com/SweWolf/FileInfoViewer).

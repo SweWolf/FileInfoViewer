@@ -35,7 +35,7 @@ static class Program
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Error processing file:\n\n{ex.Message}", "FileInfoViewer",
+                    MessageBox.Show($"Error processing file:\n\n{ex.Message}", Common.AppName,
                         MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
                 finally

@@ -29,6 +29,7 @@ partial class MainForm
         menuViewHelp = new ToolStripMenuItem();
         menuViewHelpSeparator = new ToolStripSeparator();
         aboutToolStripMenuItem = new ToolStripMenuItem();
+        menuNewVersion = new ToolStripMenuItem();
         pnlMain = new Panel();
         lblFilePathLabel = new Label();
         txtFilePath = new TextBox();
@@ -41,7 +42,7 @@ partial class MainForm
         // 
         // menuStrip
         // 
-        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem, helpToolStripMenuItem });
+        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem, helpToolStripMenuItem, menuNewVersion });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
         menuStrip.Size = new Size(820, 24);
@@ -95,6 +96,17 @@ partial class MainForm
         aboutToolStripMenuItem.Text = "About";
         aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
         // 
+        // menuNewVersion
+        //
+        menuNewVersion.Alignment = ToolStripItemAlignment.Right;
+        menuNewVersion.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+        menuNewVersion.ForeColor = Color.Green;
+        menuNewVersion.Name = "menuNewVersion";
+        menuNewVersion.Size = new Size(142, 20);
+        menuNewVersion.Text = "New Version Available";
+        menuNewVersion.Visible = false;
+        menuNewVersion.Click += menuNewVersion_Click;
+        //
         // pnlMain
         // 
         pnlMain.BackColor = Color.White;
@@ -210,4 +222,5 @@ partial class MainForm
     private ToolStripMenuItem menuViewHelp;
     private ToolStripSeparator menuViewHelpSeparator;
     private ToolStripMenuItem aboutToolStripMenuItem;
+    private ToolStripMenuItem menuNewVersion;
 }

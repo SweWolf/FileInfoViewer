@@ -82,7 +82,11 @@ box and click <strong>View File Info</strong> (or press Enter).</p>
 <ul>
 <li><strong>File Path</strong> is the file to look at. Click
 <strong>…</strong> to browse for it, or drag a file onto the window.
-Dropping or browsing opens the report at once.</li>
+Dropping or browsing opens the report at once. You can also type or
+paste a path. A path copied with <strong>Copy as path</strong> in File
+Explorer can be pasted as it is: the quotes around it are removed. If
+you copy a file in File Explorer and press <strong>Ctrl+V</strong> in
+the window, that file is used, just as if you had dropped it.</li>
 <li><strong>View File Info</strong> opens the report for the path in the
 box.</li>
 </ul>
@@ -96,6 +100,11 @@ program on the desktop, in the Start menu or in the Send To menu. See <a href="#
 <li><strong>Help &gt; About</strong> shows the version, the web address
 of the program and whether a newer version is available on GitHub. This
 needs an internet connection; without one, nothing is shown.</li>
+<li><strong>New Version Available</strong> appears in green at the right
+end of the menu bar when a newer version has been found on GitHub. Click
+it to open the download page. It is only checked when <strong>Check for
+Updates on Startup</strong> is on in the settings, and needs an internet
+connection.</li>
 </ul>
 <p>A message under the box tells you if something went wrong, for
 example if the file does not exist.</p>
@@ -257,6 +266,12 @@ set in the <a href="#settings">settings</a>.</p>
 <p>Choose <strong>Tools &gt; Settings</strong>. Changes are saved at
 once in
 <code>%AppData%\SweWolfSoftware\FileInfoViewer\settings.json</code>.</p>
+<h3 id="appearance">Appearance</h3>
+<ul>
+<li><strong>Style</strong>: <strong>Light</strong>,
+<strong>Dark</strong> or <strong>System</strong> (follows the Windows
+setting).</li>
+</ul>
 <h3 id="file-date">File Date</h3>
 <ul>
 <li><strong>Time zone</strong>: <strong>Local</strong>,
@@ -293,16 +308,17 @@ links.</li>
 <strong>Custom</strong>, enter a number and choose
 <strong>Pixels</strong> or <strong>Percent</strong>.</li>
 </ul>
-<h3 id="appearance">Appearance</h3>
-<ul>
-<li><strong>Style</strong>: <strong>Light</strong>,
-<strong>Dark</strong> or <strong>System</strong> (follows the Windows
-setting).</li>
-</ul>
 <h3 id="warnings">Warnings</h3>
 <ul>
 <li><strong>Wrong File Extension</strong>: warn when the content of a
 file does not match its extension.</li>
+</ul>
+<h3 id="updates">Updates</h3>
+<ul>
+<li><strong>Check for Updates on Startup</strong>: look for a newer
+version on GitHub when the program starts. When there is one,
+<strong>New Version Available</strong> appears in the menu bar. It is on
+by default.</li>
 </ul>
 <h2 id="create-shortcut">Create Shortcut</h2>
 <p>Choose <strong>Tools &gt; Create Shortcut…</strong> to make shortcuts
@@ -339,6 +355,10 @@ the main window:</p>
 <pre><code>FileInfoViewer.exe -T1 &quot;C:\Pictures\image.png&quot;</code></pre>
 <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
 <table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
 <thead>
 <tr>
 <th>Key</th>
@@ -353,6 +373,10 @@ the main window:</p>
 <tr>
 <td>F6</td>
 <td>Go to the <strong>File Path</strong> box and select its text</td>
+</tr>
+<tr>
+<td>Ctrl+V</td>
+<td>Use a file copied in File Explorer (text is pasted as usual)</td>
 </tr>
 <tr>
 <td>Alt+B</td>
@@ -392,9 +416,10 @@ default web browser. Check that Windows has one set.</p>
 <p><strong>Chapters or tracks are not shown for a video.</strong> They
 are read for MKV, WebM, MP4 and MOV files. Other video formats show the
 basic information only.</p>
-<p><strong>The About box shows no information about new
-versions.</strong> It needs an internet connection and access to GitHub.
-Without them, nothing is shown.</p>
+<p><strong>No “New Version Available” or no information about new
+versions in About.</strong> Both need an internet connection and access
+to GitHub. Without them, nothing is shown. The check at startup can be
+turned off in the settings.</p>
 <p>You can find the program, the source code and the latest version at
 <a href="https://github.com/SweWolf/FileInfoViewer">github.com/SweWolf/FileInfoViewer</a>.</p>
 </body>

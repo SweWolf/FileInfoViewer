@@ -44,6 +44,9 @@ public class AppSettings
     /// <summary>Unit for the custom content width: "px" or "%".</summary>
     public string CustomContentWidthUnit { get; set; } = "px";
 
+    /// <summary>Whether to look for a newer version on GitHub when the program starts (shows "New Version Available" in the menu bar).</summary>
+    public bool CheckForUpdatesOnStartup { get; set; } = true;
+
     /// <summary>Application window color scheme: "Light", "Dark", or "System".</summary>
     public string AppStyle { get; set; } = "System";
 }

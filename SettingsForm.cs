@@ -8,7 +8,7 @@ public partial class SettingsForm : Form
     {
         InitializeComponent();
         // The Designer sets ClientSize before FixedDialog/ControlBox, which leaves the client area too short
-        ClientSize = new Size(ClientSize.Width, grpWarnings.Bottom + LogicalToDeviceUnits(12));
+        ClientSize = new Size(ClientSize.Width, grpUpdates.Bottom + LogicalToDeviceUnits(12));
         SettingsService.FixButtonStyles(this);
         LoadSettings();
     }
@@ -48,6 +48,9 @@ public partial class SettingsForm : Form
 
         var styleIndex = cboStyle.Items.IndexOf(settings.AppStyle);
         cboStyle.SelectedIndex = styleIndex >= 0 ? styleIndex : cboStyle.Items.IndexOf("System");
+
+        // Last: setting a checkbox can fire a save, and by now every other control holds its stored value
+        chkCheckForUpdates.Checked = settings.CheckForUpdatesOnStartup;
     }
 
     private void UpdateCustomWidthVisibility()
@@ -79,6 +82,7 @@ public partial class SettingsForm : Form
             TextualDataDisplay   = cboTextualData.SelectedItem?.ToString() ?? "Formatted",
             WebLinksClickable    = chkWebLinksClickable.Checked,
             WarnWrongExtension   = chkWarnWrongExtension.Checked,
+            CheckForUpdatesOnStartup = chkCheckForUpdates.Checked,
             ContentMaxWidth          = cboContentWidth.SelectedItem?.ToString() ?? "Normal (1100px)",
             CustomContentWidth       = txtCustomContentWidth.Text.Trim(),
             CustomContentWidthUnit   = optCustContWidthPerc.Checked ? "%" : "px",
@@ -111,6 +115,8 @@ public partial class SettingsForm : Form
     private void chkWebLinksClickable_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
     private void chkWarnWrongExtension_CheckedChanged(object sender, EventArgs e) => SaveSettings();
+
+    private void chkCheckForUpdates_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
     private void cboContentWidth_SelectedIndexChanged(object sender, EventArgs e)
     {

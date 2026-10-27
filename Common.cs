@@ -6,6 +6,9 @@ namespace FileInfoViewer;
 /// </summary>
 internal static class Common
 {
+    /// <summary>The app's display name: the caption of every message box.</summary>
+    public const string AppName = "File Info Viewer";
+
     /// <summary>
     /// Creates a Windows shortcut (.lnk) file at the specified path.
     /// </summary>
@@ -37,32 +40,6 @@ internal static class Common
             FileName = url,
             UseShellExecute = true,
         });
-    }
-
-    /// <summary>
-    /// Checks GitHub for a newer release and prompts the user to go to the download page.
-    /// Fails silently if the network is unavailable or the check fails for any reason.
-    /// </summary>
-    /// <param name="owner">GitHub username or organisation (e.g. "SweWolf")</param>
-    /// <param name="repo">GitHub repository name (e.g. "FileInfoViewer")</param>
-    public static async Task CheckForUpdatesAsync(string owner, string repo)
-    {
-        var currentVersion = System.Reflection.Assembly
-            .GetExecutingAssembly().GetName().Version ?? new Version(1, 0, 0);
-
-        var result = await GitHubUpdateChecker.CheckAsync(owner, repo, currentVersion);
-
-        if (result is { IsUpdateAvailable: true })
-        {
-            var answer = MessageBox.Show(
-                $"A new version is available: {result.LatestVersion}\n\n" +
-                $"You are running version {currentVersion.Major}.{currentVersion.Minor}.{currentVersion.Build}.\n\n" +
-                $"Do you want to go to the download page?",
-                "Update Available", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
-            if (answer == DialogResult.Yes)
-                OpenWithDefaultApp(result.ReleasePageUrl);
-        }
     }
 
     /// <summary>
