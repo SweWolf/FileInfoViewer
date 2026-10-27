@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc 3.11" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>File Info Viewer Help</title>
+  <style>
+
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+</style>
+  <style type="text/css">:root {--text: #1f2328;--muted: #59636e;--bg: #ffffff;--line: #d1d9e0;--code-bg: #f3f4f6;--link: #0969da;}@media (prefers-color-scheme: dark) {:root {--text: #e6edf3;--muted: #9198a1;--bg: #0d1117;--line: #3d444d;--code-bg: #1f242c;--link: #4493f8;}}html { background: var(--bg); }body {max-width: 50rem;margin: 0 auto;padding: 1.5rem 1rem 4rem;font-family: "Segoe UI", system-ui, sans-serif;font-size: 16px;line-height: 1.6;color: var(--text);background: var(--bg);}h1, h2, h3, h4 { line-height: 1.25; margin: 2rem 0 0.75rem; }h1 { font-size: 2rem; margin-top: 0.5rem; }h2 { font-size: 1.5rem; padding-bottom: 0.3rem; border-bottom: 1px solid var(--line); }h3 { font-size: 1.2rem; }h4 { font-size: 1rem; }a { color: var(--link); text-decoration: none; }a:hover { text-decoration: underline; }code, pre {font-family: Consolas, "Cascadia Mono", monospace;font-size: 0.9em;background: var(--code-bg);border-radius: 4px;}code { padding: 0.1em 0.35em; }pre { padding: 0.75rem 1rem; overflow-x: auto; }pre code { padding: 0; }table { border-collapse: collapse; margin: 1rem 0; }th, td { border: 1px solid var(--line); padding: 0.35rem 0.75rem; text-align: left; }th { background: var(--code-bg); }</style>
+</head>
+<body>
+<h1 id="file-info-viewer-help">File Info Viewer Help</h1>
+<p>File Info Viewer collects as much information as it can about any
+file and shows it as a report in your web browser. You can look at
+pictures, sound, video, documents, programs and more, and find out when
+and where a file was made, what program made it, whether an AI made it,
+and where it was downloaded from.</p>
+<h2 id="contents">Contents</h2>
+<ul>
+<li><a href="#getting-started">Getting Started</a></li>
+<li><a href="#the-main-window">The Main Window</a></li>
+<li><a href="#the-report">The Report</a>
+<ul>
+<li><a href="#basic-information-and-timestamps">Basic Information and
+Timestamps</a></li>
+<li><a href="#warning">Warning</a></li>
+<li><a href="#mark-of-the-web">Mark of the Web</a></li>
+<li><a href="#file-hashes">File Hashes</a></li>
+<li><a href="#images">Images</a></li>
+<li><a href="#is-this-ai-generated">Is This AI-Generated?</a></li>
+<li><a href="#audio">Audio</a></li>
+<li><a href="#video">Video</a></li>
+<li><a href="#other-file-types">Other File Types</a></li>
+<li><a href="#copy-buttons-and-web-links">Copy Buttons and Web
+Links</a></li>
+</ul></li>
+<li><a href="#settings">Settings</a></li>
+<li><a href="#create-shortcut">Create Shortcut</a></li>
+<li><a href="#prompt-and-seed">Prompt and Seed</a></li>
+<li><a href="#command-line">Command Line</a></li>
+<li><a href="#keyboard-shortcuts">Keyboard Shortcuts</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+</ul>
+<h2 id="getting-started">Getting Started</h2>
+<h3 id="what-you-need">What You Need</h3>
+<ul>
+<li>Windows 10 (version 1607 or later) or Windows 11.</li>
+<li>The <a href="https://dotnet.microsoft.com/en-us/download/dotnet/10.0">.NET 10
+Desktop Runtime</a>, but only for the small download. The standalone
+download (a single EXE) needs nothing else.</li>
+</ul>
+<p>Nothing is installed and nothing is written to the Windows registry.
+You can keep the program anywhere, for example on a USB drive.</p>
+<h3 id="your-first-report">Your First Report</h3>
+<ol type="1">
+<li>Drag a file from File Explorer onto the window, <strong>or</strong>
+click the <strong>…</strong> button next to <strong>File Path</strong>
+and choose a file.</li>
+<li>The report opens in your default web browser.</li>
+</ol>
+<p>You can also type or paste a path into the <strong>File Path</strong>
+box and click <strong>View File Info</strong> (or press Enter).</p>
+<h2 id="the-main-window">The Main Window</h2>
+<ul>
+<li><strong>File Path</strong> is the file to look at. Click
+<strong>…</strong> to browse for it, or drag a file onto the window.
+Dropping or browsing opens the report at once.</li>
+<li><strong>View File Info</strong> opens the report for the path in the
+box.</li>
+</ul>
+<p>The menus:</p>
+<ul>
+<li><strong>Tools &gt; Create Shortcut…</strong> puts a shortcut to the
+program on the desktop, in the Start menu or in the Send To menu. See <a href="#create-shortcut">Create Shortcut</a>.</li>
+<li><strong>Tools &gt; Settings</strong> opens the <a href="#settings">settings</a>.</li>
+<li><strong>Help &gt; File Info Viewer Help</strong> opens this help
+(F1).</li>
+<li><strong>Help &gt; About</strong> shows the version, the web address
+of the program and whether a newer version is available on GitHub. This
+needs an internet connection; without one, nothing is shown.</li>
+</ul>
+<p>A message under the box tells you if something went wrong, for
+example if the file does not exist.</p>
+<h2 id="the-report">The Report</h2>
+<p>The report is one web page with several cards. It is saved as a
+temporary file and opened in your default browser. It needs no internet
+connection to be read, and you can save it from the browser if you want
+to keep it. A card appears only when the file has something to show for
+it.</p>
+<h3 id="basic-information-and-timestamps">Basic Information and
+Timestamps</h3>
+<p>File name, extension, folder, size (in readable units and in bytes),
+MIME type and, if you choose to show it, the owner. The timestamps are
+the dates the file was created, modified and last accessed. You choose
+in the <a href="#settings">settings</a> whether they are shown in your
+local time, in UTC or both, and whether seconds are included.</p>
+<h3 id="warning">Warning</h3>
+<p>If the content of a file does not match its extension (for example a
+file named <code>holiday.jpg</code> that is really a PNG picture, or an
+MP4 video saved as <code>.mkv</code>), a <strong>Warning</strong> card
+says so near the top and again under <strong>Warnings</strong> at the
+bottom. This is useful for files that were renamed, and it is a classic
+sign of a file that is not what it claims to be. You can turn it off in
+the settings.</p>
+<h3 id="mark-of-the-web">Mark of the Web</h3>
+<p>When a browser downloads a file, Windows can attach a small hidden
+note to it: the <strong>Mark of the Web</strong>. The <strong>Mark of
+the Web</strong> card shows what it says:</p>
+<ul>
+<li><strong>Zone</strong>: where the file came from, for example 3 -
+Internet.</li>
+<li><strong>Downloaded From</strong>: the web address of the file, if
+the program that saved it wrote one.</li>
+<li><strong>Referrer Page</strong>: the web page that linked to the
+download.</li>
+</ul>
+<p>Some download links are temporary and signed. They have a long part
+after a <code>?</code> with an expiry time, a signature and sometimes
+your own IP address. Such a link would not work later, so the card shows
+only the address before the <code>?</code>, with a note, and does not
+make it clickable. Point at the address to see the whole link, or use
+the copy button to copy it.</p>
+<p>The note is part of the file on an NTFS drive. It is lost when the
+file is copied to a drive that is not NTFS, when a cloud service removes
+it, or when you click <strong>Unblock</strong> in the file’s properties.
+Many files simply do not have one. You can turn the card off in the
+settings.</p>
+<h3 id="file-hashes">File Hashes</h3>
+<p>The <strong>File Hashes</strong> card shows the MD5 and SHA-256
+checksums of the file. Use them to check that a download is complete and
+not changed, or to compare two files.</p>
+<p>Calculating hashes of a very large file takes time. A small window
+shows the progress and has a <strong>Cancel</strong> button. If you
+cancel, the report is made without hashes and a warning says so. In the
+settings you can set a size limit: files above it are not hashed at
+all.</p>
+<h3 id="images">Images</h3>
+<p>For pictures the report shows the size in pixels, the resolution
+(DPI), the color format, the bit depth and the number of megapixels.
+Under <strong>EXIF / Metadata</strong> you find everything the picture
+stores about itself: the camera and lens, exposure, date, GPS position,
+the program that edited it and so on. Very technical tags that few
+people need (Lightroom settings, edit history, color profile details,
+the small embedded preview) are folded away under <strong>Show N more
+technical tags</strong>. Click that line to see them.</p>
+<p>Special cases:</p>
+<ul>
+<li><strong>WebP</strong>: the format (lossy, lossless, extended),
+transparency, animation frames and duration.</li>
+<li><strong>SVG</strong>: size, view box, title, the program that made
+it, number of elements, embedded images and scripts.</li>
+<li><strong>Photoshop (PSD, PSB)</strong>: size, color mode, bit depth,
+layers, compression and color profile.</li>
+<li><strong>Camera RAW</strong> (NEF, CR2, ARW, DNG and others): the
+size and all camera and maker-note tags.</li>
+<li><strong>PNG</strong> pictures can hold text, for example the prompt
+and the whole workflow of a ComfyUI image. Such text is shown nicely
+formatted, and you can choose in the settings how much you want to
+see.</li>
+</ul>
+<h3 id="is-this-ai-generated">Is This AI-Generated?</h3>
+<p>Some files say so themselves. File Info Viewer shows three kinds of
+such information, each in its own card. The information comes from the
+file itself and is only shown, not checked.</p>
+<ul>
+<li><strong>Content Credentials (C2PA)</strong> is a digital signature
+that tools such as Google Gemini, Microsoft Designer and OpenAI add to
+pictures and videos. The card shows:
+<ul>
+<li>an <strong>AI-generated</strong> badge, when the file says it was
+made with AI;</li>
+<li>the <strong>Generator</strong> and who signed the file
+(<strong>Signed By</strong>), with the certificate and its dates;</li>
+<li>when it was signed;</li>
+<li>the <strong>Actions</strong> that were recorded, such as Created,
+Edited, Resized and Watermarked, often with the time and the program
+that did them;</li>
+<li>an invisible watermark, if there is one (for example Google’s
+SynthID or Microsoft’s invisible watermark).</li>
+</ul>
+A file that was edited several times can have several signed steps
+(<strong>Manifests</strong>). It works for JPEG, PNG, MP4 and MOV
+files.</li>
+<li><strong>AI Origin</strong> appears for pictures that only have the
+plain “Digital Source Type” tag in their metadata, with no
+signature.</li>
+<li><strong>AI Origin (AIGC Label)</strong> appears for MP4 and MOV
+videos from Chinese AI services (for example Vidu). It shows the label,
+the service’s code and the ID of the job.</li>
+</ul>
+<p><strong>Please remember:</strong> a missing label proves nothing.
+Many programs and web sites remove this information when a picture is
+saved again, shared or taken as a screenshot. A label that is there can
+also be added or removed by anyone. The report says “Not checked” on
+these cards, because the signatures are not verified.</p>
+<h3 id="audio">Audio</h3>
+<p>Tags (title, artist, album, year, genre), lyrics, cover art,
+duration, bit rate, sample rate, channels, the format and the program
+that encoded the file. All tags are listed under <strong>All Metadata
+Tags</strong>.</p>
+<h3 id="video">Video</h3>
+<p>The <strong>Video Information</strong> card has the title and other
+description tags, then:</p>
+<ul>
+<li><strong>Video</strong>: media created, length, frame size, rotation,
+frame rate, data rate, total bit rate, codec and container.</li>
+<li><strong>Has chapters</strong>: Yes with the number of chapters, or
+No. Click <strong>Show N chapters</strong> to see the start time and
+title of each chapter. This works for MKV, WebM, MP4 and MOV files.</li>
+<li><strong>Audio</strong>: data rate, sample rate and channels.</li>
+<li><strong>Embedded Tracks</strong>: the video, audio and subtitle
+tracks inside the file, with language and codec. This works for MKV,
+WebM, MP4 and MOV files.</li>
+<li><strong>All Metadata Tags</strong> and any cover art.</li>
+</ul>
+<h3 id="other-file-types">Other File Types</h3>
+<ul>
+<li><strong>Programs and libraries</strong> (EXE, DLL): version
+information, and for .NET programs the target framework, the
+architecture and the assemblies they use.</li>
+<li><strong>PDF</strong>: pages, version, title, author, creator,
+producer, dates and encryption.</li>
+<li><strong>Archives</strong> (ZIP, RAR, 7z, TAR and more): number of
+files and folders, sizes, encryption and the ZIP comment.</li>
+<li><strong>SQLite databases</strong>: version, page size, tables,
+views, indexes and the number of rows.</li>
+<li><strong>Torrents</strong>: name, trackers, files, size, info hash
+and magnet link.</li>
+<li><strong>SID music</strong> (Commodore 64): title, author, number of
+songs, chip model and addresses.</li>
+<li><strong>Text files</strong>: lines, words, characters, the detected
+encoding and whether there is a byte order mark (BOM).</li>
+</ul>
+<h3 id="copy-buttons-and-web-links">Copy Buttons and Web Links</h3>
+<p>Next to many values there can be a small clipboard button that copies
+the value. Web addresses in the report can be clickable links. Both are
+set in the <a href="#settings">settings</a>.</p>
+<h2 id="settings">Settings</h2>
+<p>Choose <strong>Tools &gt; Settings</strong>. Changes are saved at
+once in
+<code>%AppData%\SweWolfSoftware\FileInfoViewer\settings.json</code>.</p>
+<h3 id="file-date">File Date</h3>
+<ul>
+<li><strong>Time zone</strong>: <strong>Local</strong>,
+<strong>UTC</strong> or <strong>Both</strong>.</li>
+<li><strong>Show Seconds</strong>: include seconds in all times.</li>
+</ul>
+<h3 id="show">Show</h3>
+<ul>
+<li><strong>Copy Button</strong>: <strong>No</strong>,
+<strong>Yes</strong>, or <strong>Yes on hover over</strong>.</li>
+<li><strong>Owner</strong>: show the owner of the file.</li>
+<li><strong>File Attributes</strong>: show attributes such as Read-only
+and Hidden.</li>
+<li><strong>Mark of the Web</strong>: show where a downloaded file came
+from.</li>
+<li><strong>File Hashes</strong>: show the MD5 and SHA-256 hashes.
+<strong>Skip Above</strong> sets the size in MB above which a file is
+not hashed (500 by default; 0 means hash every file).</li>
+<li><strong>Textual Data</strong>: how to show text and JSON found in
+metadata: <strong>None</strong>, <strong>Formatted</strong>, <strong>Raw
+data</strong> or <strong>Both Formatted and Raw Data</strong>.</li>
+</ul>
+<h3 id="web-links">Web Links</h3>
+<ul>
+<li><strong>Clickable</strong>: show web addresses in the report as
+links.</li>
+</ul>
+<h3 id="layout">Layout</h3>
+<ul>
+<li><strong>Content Width</strong>: how wide the report is:
+<strong>Narrow (800px)</strong>, <strong>Normal (1100px)</strong>,
+<strong>Wide (1400px)</strong>, <strong>Very wide (1800px)</strong>,
+<strong>Full width</strong> or <strong>Custom</strong>. With
+<strong>Custom</strong>, enter a number and choose
+<strong>Pixels</strong> or <strong>Percent</strong>.</li>
+</ul>
+<h3 id="appearance">Appearance</h3>
+<ul>
+<li><strong>Style</strong>: <strong>Light</strong>,
+<strong>Dark</strong> or <strong>System</strong> (follows the Windows
+setting).</li>
+</ul>
+<h3 id="warnings">Warnings</h3>
+<ul>
+<li><strong>Wrong File Extension</strong>: warn when the content of a
+file does not match its extension.</li>
+</ul>
+<h2 id="create-shortcut">Create Shortcut</h2>
+<p>Choose <strong>Tools &gt; Create Shortcut…</strong> to make shortcuts
+to the program. Tick where you want them:</p>
+<ul>
+<li><strong>Desktop</strong></li>
+<li><strong>Start Menu (Programs)</strong></li>
+<li><strong>Send To menu</strong>: the program appears when you
+right-click a file in File Explorer and choose <strong>Send to</strong>.
+The report for that file opens at once.</li>
+<li><strong>Send To menu: Prompt and Seed (Template 1)</strong>: see <a href="#prompt-and-seed">Prompt and Seed</a>.</li>
+</ul>
+<p>Under <strong>For:</strong>, choose <strong>Current user
+only</strong> or <strong>All users</strong>. Shortcuts for all users may
+need administrator rights. Send To shortcuts are always for the current
+user only. A shortcut points to the EXE that is running now, so create
+it again if you move the program.</p>
+<h2 id="prompt-and-seed">Prompt and Seed</h2>
+<p>Pictures and videos made with ComfyUI (PNG) or Wan2GP (MP4) store the
+<strong>Prompt</strong>, the <strong>Negative Prompt</strong> and the
+<strong>Seed</strong> that were used. This template opens a small window
+with just those values instead of the whole report, each with a button
+that copies it. A value the file does not have shows “(not found)”.</p>
+<p>To use it, tick <strong>Send To menu: Prompt and Seed (Template
+1)</strong> in <strong>Create Shortcut</strong>. Then right-click a
+picture or video in File Explorer and choose <strong>Send to</strong>,
+then <strong>File Info Viewer - Prompt and Seed</strong>. You can also
+start it from the command line, see below.</p>
+<h2 id="command-line">Command Line</h2>
+<p>Give a file as the first argument to open its report without showing
+the main window:</p>
+<pre><code>FileInfoViewer.exe &quot;C:\Pictures\photo.jpg&quot;</code></pre>
+<p>To show the Prompt and Seed window instead of the report:</p>
+<pre><code>FileInfoViewer.exe -T1 &quot;C:\Pictures\image.png&quot;</code></pre>
+<h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+<table>
+<thead>
+<tr>
+<th>Key</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>Open this help</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Go to the <strong>File Path</strong> box and select its text</td>
+</tr>
+<tr>
+<td>Alt+B</td>
+<td>Click <strong>…</strong> (browse for a file)</td>
+</tr>
+<tr>
+<td>Ctrl+E</td>
+<td>Click <strong>View File Info</strong></td>
+</tr>
+<tr>
+<td>Enter (in the <strong>File Path</strong> box)</td>
+<td>View the file info</td>
+</tr>
+<tr>
+<td>Esc</td>
+<td>Close the program</td>
+</tr>
+</tbody>
+</table>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><strong>The report shows very little for my file.</strong> Not every
+file type holds much information. Files with no metadata at all, such as
+many pictures from AI services, only have the basic information, the
+timestamps and the hashes.</p>
+<p><strong>There is no “AI-generated” label on a picture I know was made
+by AI.</strong> The service may not add one, or it was removed when the
+file was saved again, shared or screenshotted. See <a href="#is-this-ai-generated">Is This AI-Generated?</a>.</p>
+<p><strong>There is no Mark of the Web card.</strong> The file has no
+such note. Files you created yourself, or copied from a drive that is
+not NTFS, do not have one, and it can be removed by cloud services or
+with <strong>Unblock</strong> in the file’s properties.</p>
+<p><strong>The hashes are missing.</strong> The file is larger than the
+<strong>Skip Above</strong> size in the settings, you canceled the
+calculation, or <strong>File Hashes</strong> is turned off.</p>
+<p><strong>The report does not open.</strong> It is opened in your
+default web browser. Check that Windows has one set.</p>
+<p><strong>Chapters or tracks are not shown for a video.</strong> They
+are read for MKV, WebM, MP4 and MOV files. Other video formats show the
+basic information only.</p>
+<p><strong>The About box shows no information about new
+versions.</strong> It needs an internet connection and access to GitHub.
+Without them, nothing is shown.</p>
+<p>You can find the program, the source code and the latest version at
+<a href="https://github.com/SweWolf/FileInfoViewer">github.com/SweWolf/FileInfoViewer</a>.</p>
+</body>
+</html>

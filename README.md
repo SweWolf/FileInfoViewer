@@ -20,8 +20,9 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 - **Syntax-highlighted JSON** — structured metadata (e.g. embedded workflow data in AI-generated images) is pretty-printed with color coding
 - **Configurable** — control timestamp format, timezone, copy buttons, content width, web links, and which sections to show
 - **Dark mode** — Light, Dark, or follow the Windows setting (System)
-- **Prompt and Seed template** — for AI images and videos made with ComfyUI (PNG) or Wan2GP (MP4): a small window with the prompt, seed and a few more values, instead of the full report. Start it from the **Templates** menu or from a Send To shortcut
-- **Keyboard shortcuts** — F6 = file path box, Alt+B = Browse, Ctrl+E = View File Info
+- **Prompt and Seed template** — for AI images and videos made with ComfyUI (PNG) or Wan2GP (MP4): a small window with the prompt, seed and a few more values, instead of the full report. Start it from a Send To shortcut
+- **Built-in help** — **Help > File Info Viewer Help** (F1) opens a help page that is included with the program, so it works without an internet connection
+- **Keyboard shortcuts** — F1 = Help, F6 = file path box, Alt+B = Browse, Ctrl+E = View File Info
 - **Update check** — the About box shows whether a newer version is available on GitHub
 
 ---
@@ -80,7 +81,7 @@ Suggested locations:
 - **Standalone**: place the single `FileInfoViewer.exe` directly in `C:\Program Files\SweWolfSoftware` or any folder of your choice.
 - **Multifile**: extract the zip into a dedicated subfolder, e.g. `C:\Program Files\SweWolfSoftware\FileInfoViewer`, to keep all files together.
 
-Once placed, use the built-in **Setup → Create Shortcut** option inside the app to add it to the Windows **Send To** menu for quick access from Explorer.
+Once placed, use the built-in **Tools → Create Shortcut** option inside the app to add it to the Windows **Send To** menu for quick access from Explorer.
 
 ---
 
@@ -90,19 +91,19 @@ Once placed, use the built-in **Setup → Create Shortcut** option inside the ap
 
 **Drag and drop** — drag any file directly onto the application window.
 
-**Templates** — **Templates → Prompt and Seed** shows only the prompt, seed and a few other values of a ComfyUI PNG or a Wan2GP MP4 in a small window, instead of the HTML report. To use it from Explorer, choose **Setup → Create Shortcut** and tick **Send To menu: Prompt and Seed (Template 1)**. From the command line: `FileInfoViewer.exe -T1 "C:\path\to\file.png"`.
+**Prompt and Seed template** — shows only the prompt, seed and a few other values of a ComfyUI PNG or a Wan2GP MP4 in a small window, instead of the HTML report. To use it from Explorer, choose **Tools → Create Shortcut** and tick **Send To menu: Prompt and Seed (Template 1)**. From the command line: `FileInfoViewer.exe -T1 "C:\path\to\file.png"`.
 
 **Command line / Send To** — pass the file path as an argument:
 ```
 FileInfoViewer.exe "C:\path\to\file.mp3"
 ```
-This makes it ideal for use via the Windows **Send To** menu — use the built-in **Setup → Create Shortcut** menu option inside the app to set it up.
+This makes it ideal for use via the Windows **Send To** menu — use the built-in **Tools → Create Shortcut** menu option inside the app to set it up.
 
 ---
 
 ## Settings
 
-Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` and can be changed via the **⚙ Settings** button:
+Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` and can be changed via **Tools → Settings**:
 
 ### File Date
 | Setting | Description |

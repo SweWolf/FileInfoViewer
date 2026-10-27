@@ -28,6 +28,15 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\FileInfoViewer.png" />
+    <!-- Help > File Info Viewer Help (F1). Rebuild it from help.md with docs\build-help.cmd -->
+    <Content Include="docs\help.html" Link="Help\help.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <!-- Also embedded in the EXE: HelpFiles.cs saves it to %AppData% and opens it when the Help
+         folder is missing (e.g. only the EXE was copied) -->
+    <EmbeddedResource Include="docs\help.html">
+      <LogicalName>Help/help.html</LogicalName>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

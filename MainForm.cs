@@ -107,33 +107,24 @@ public partial class MainForm : Form
         }
     }
 
-    private void btnSettings_Click(object sender, EventArgs e)
+    private void menuSettings_Click(object? sender, EventArgs e)
     {
         using var form = new SettingsForm();
         form.ShowDialog(this);
     }
 
-    private void btnAbout_Click(object sender, EventArgs e)
+    private void aboutToolStripMenuItem_Click(object? sender, EventArgs e)
     {
         using var form = new AboutForm();
         form.ShowDialog(this);
     }
 
+    private void menuViewHelp_Click(object? sender, EventArgs e) => HelpFiles.OpenHelp("File Info Viewer");
+
     private void btnCreateShortcut_Click(object sender, EventArgs e)
     {
         using var form = new CreateShortcutForm(Application.ExecutablePath);
         form.ShowDialog(this);
-    }
-
-    private void template1ToolStripMenuItem_Click(object? sender, EventArgs e)
-    {
-        var path = txtFilePath.Text.Trim();
-        if (string.IsNullOrWhiteSpace(path))
-        {
-            SetStatus("Please enter or browse to a file path.", error: true);
-            return;
-        }
-        TemplateRunner.Show(1, path, this);
     }
 
     private void MainForm_Resize(object? sender, EventArgs e)

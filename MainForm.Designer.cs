@@ -4,13 +4,10 @@ partial class MainForm
 {
     private System.ComponentModel.IContainer components = null;
 
-    private System.Windows.Forms.Label lblTitle;
     private System.Windows.Forms.Label lblFilePathLabel;
     private System.Windows.Forms.TextBox txtFilePath;
     private System.Windows.Forms.Button btnBrowse;
     private System.Windows.Forms.Button btnView;
-    private System.Windows.Forms.Button btnSettings;
-    private System.Windows.Forms.Panel pnlHeader;
     private System.Windows.Forms.Panel pnlMain;
 
     protected override void Dispose(bool disposing)
@@ -25,12 +22,11 @@ partial class MainForm
         menuStrip = new MenuStrip();
         toolsToolStripMenuItem = new ToolStripMenuItem();
         createShortcutToolStripMenuItem = new ToolStripMenuItem();
-        templatesToolStripMenuItem = new ToolStripMenuItem();
-        template1ToolStripMenuItem = new ToolStripMenuItem();
-        pnlHeader = new Panel();
-        lblTitle = new Label();
-        btnSettings = new Button();
-        btnAbout = new Button();
+        menuSettings = new ToolStripMenuItem();
+        helpToolStripMenuItem = new ToolStripMenuItem();
+        menuViewHelp = new ToolStripMenuItem();
+        menuViewHelpSeparator = new ToolStripSeparator();
+        aboutToolStripMenuItem = new ToolStripMenuItem();
         pnlMain = new Panel();
         lblFilePathLabel = new Label();
         txtFilePath = new TextBox();
@@ -38,104 +34,67 @@ partial class MainForm
         btnView = new Button();
         lblStatus = new Label();
         menuStrip.SuspendLayout();
-        pnlHeader.SuspendLayout();
         pnlMain.SuspendLayout();
         SuspendLayout();
-        // 
+        //
         // menuStrip
-        // 
-        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem, templatesToolStripMenuItem });
+        //
+        menuStrip.Items.AddRange(new ToolStripItem[] { toolsToolStripMenuItem, helpToolStripMenuItem });
         menuStrip.Location = new Point(0, 0);
         menuStrip.Name = "menuStrip";
         menuStrip.Size = new Size(820, 24);
         menuStrip.TabIndex = 2;
-        // 
+        //
         // toolsToolStripMenuItem
-        // 
-        toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createShortcutToolStripMenuItem });
+        //
+        toolsToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { createShortcutToolStripMenuItem, menuSettings });
         toolsToolStripMenuItem.Name = "toolsToolStripMenuItem";
-        toolsToolStripMenuItem.Size = new Size(49, 20);
-        toolsToolStripMenuItem.Text = "Setup";
-        // 
+        toolsToolStripMenuItem.Size = new Size(47, 20);
+        toolsToolStripMenuItem.Text = "Tools";
+        //
         // createShortcutToolStripMenuItem
-        // 
+        //
         createShortcutToolStripMenuItem.Name = "createShortcutToolStripMenuItem";
         createShortcutToolStripMenuItem.Size = new Size(165, 22);
         createShortcutToolStripMenuItem.Text = "Create Shortcut...";
         createShortcutToolStripMenuItem.Click += btnCreateShortcut_Click;
-        // 
-        // templatesToolStripMenuItem
-        // 
-        templatesToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { template1ToolStripMenuItem });
-        templatesToolStripMenuItem.Name = "templatesToolStripMenuItem";
-        templatesToolStripMenuItem.Size = new Size(72, 20);
-        templatesToolStripMenuItem.Text = "Templates";
-        // 
-        // template1ToolStripMenuItem
-        // 
-        template1ToolStripMenuItem.Name = "template1ToolStripMenuItem";
-        template1ToolStripMenuItem.Size = new Size(200, 22);
-        template1ToolStripMenuItem.Text = "Prompt and Seed";
-        template1ToolStripMenuItem.Click += template1ToolStripMenuItem_Click;
-        // 
-        // pnlHeader
-        // 
-        pnlHeader.BackColor = Color.FromArgb(15, 52, 96);
-        pnlHeader.Controls.Add(lblTitle);
-        pnlHeader.Controls.Add(btnSettings);
-        pnlHeader.Controls.Add(btnAbout);
-        pnlHeader.Dock = DockStyle.Top;
-        pnlHeader.Location = new Point(0, 24);
-        pnlHeader.Name = "pnlHeader";
-        pnlHeader.Padding = new Padding(16, 0, 0, 0);
-        pnlHeader.Size = new Size(820, 56);
-        pnlHeader.TabIndex = 1;
-        // 
-        // lblTitle
-        // 
-        lblTitle.AutoSize = true;
-        lblTitle.Font = new Font("Segoe UI", 14F);
-        lblTitle.ForeColor = Color.White;
-        lblTitle.Location = new Point(16, 12);
-        lblTitle.Name = "lblTitle";
-        lblTitle.Size = new Size(173, 25);
-        lblTitle.TabIndex = 0;
-        lblTitle.Text = "📁  File Info Viewer";
-        // 
-        // btnSettings
-        // 
-        btnSettings.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        btnSettings.BackColor = Color.FromArgb(240, 242, 248);
-        btnSettings.Cursor = Cursors.Hand;
-        btnSettings.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);
-        btnSettings.FlatStyle = FlatStyle.Flat;
-        btnSettings.ForeColor = Color.FromArgb(40, 40, 80);
-        btnSettings.Location = new Point(580, 9);
-        btnSettings.Name = "btnSettings";
-        btnSettings.Size = new Size(100, 34);
-        btnSettings.TabIndex = 5;
-        btnSettings.Text = "⚙ Settings";
-        btnSettings.UseVisualStyleBackColor = false;
-        btnSettings.Click += btnSettings_Click;
-        // 
-        // btnAbout
-        // 
-        btnAbout.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-        btnAbout.BackColor = Color.FromArgb(240, 242, 248);
-        btnAbout.Cursor = Cursors.Hand;
-        btnAbout.FlatAppearance.BorderColor = Color.FromArgb(200, 205, 220);
-        btnAbout.FlatStyle = FlatStyle.Flat;
-        btnAbout.ForeColor = Color.FromArgb(40, 40, 80);
-        btnAbout.Location = new Point(696, 9);
-        btnAbout.Name = "btnAbout";
-        btnAbout.Size = new Size(100, 34);
-        btnAbout.TabIndex = 6;
-        btnAbout.Text = "ℹ About";
-        btnAbout.UseVisualStyleBackColor = false;
-        btnAbout.Click += btnAbout_Click;
-        // 
+        //
+        // menuSettings
+        //
+        menuSettings.Name = "menuSettings";
+        menuSettings.Size = new Size(165, 22);
+        menuSettings.Text = "Settings";
+        menuSettings.Click += menuSettings_Click;
+        //
+        // helpToolStripMenuItem
+        //
+        helpToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { menuViewHelp, menuViewHelpSeparator, aboutToolStripMenuItem });
+        helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+        helpToolStripMenuItem.Size = new Size(44, 20);
+        helpToolStripMenuItem.Text = "Help";
+        //
+        // menuViewHelp
+        //
+        menuViewHelp.Name = "menuViewHelp";
+        menuViewHelp.ShortcutKeys = Keys.F1;
+        menuViewHelp.Size = new Size(190, 22);
+        menuViewHelp.Text = "File Info Viewer Help";
+        menuViewHelp.Click += menuViewHelp_Click;
+        //
+        // menuViewHelpSeparator
+        //
+        menuViewHelpSeparator.Name = "menuViewHelpSeparator";
+        menuViewHelpSeparator.Size = new Size(187, 6);
+        //
+        // aboutToolStripMenuItem
+        //
+        aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+        aboutToolStripMenuItem.Size = new Size(190, 22);
+        aboutToolStripMenuItem.Text = "About";
+        aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
+        //
         // pnlMain
-        // 
+        //
         pnlMain.BackColor = Color.White;
         pnlMain.Controls.Add(lblFilePathLabel);
         pnlMain.Controls.Add(txtFilePath);
@@ -143,14 +102,14 @@ partial class MainForm
         pnlMain.Controls.Add(btnView);
         pnlMain.Controls.Add(lblStatus);
         pnlMain.Dock = DockStyle.Fill;
-        pnlMain.Location = new Point(0, 80);
+        pnlMain.Location = new Point(0, 24);
         pnlMain.Name = "pnlMain";
         pnlMain.Padding = new Padding(20, 18, 20, 12);
         pnlMain.Size = new Size(820, 125);
         pnlMain.TabIndex = 0;
-        // 
+        //
         // lblFilePathLabel
-        // 
+        //
         lblFilePathLabel.AutoSize = true;
         lblFilePathLabel.ForeColor = Color.FromArgb(70, 70, 70);
         lblFilePathLabel.Location = new Point(20, 24);
@@ -158,9 +117,9 @@ partial class MainForm
         lblFilePathLabel.Size = new Size(59, 17);
         lblFilePathLabel.TabIndex = 0;
         lblFilePathLabel.Text = "File Path:";
-        // 
+        //
         // txtFilePath
-        // 
+        //
         txtFilePath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         txtFilePath.BackColor = Color.FromArgb(248, 249, 252);
         txtFilePath.BorderStyle = BorderStyle.FixedSingle;
@@ -171,9 +130,9 @@ partial class MainForm
         txtFilePath.Size = new Size(690, 22);
         txtFilePath.TabIndex = 1;
         txtFilePath.KeyDown += txtFilePath_KeyDown;
-        // 
+        //
         // btnBrowse
-        // 
+        //
         btnBrowse.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         btnBrowse.BackColor = Color.FromArgb(240, 242, 248);
         btnBrowse.Cursor = Cursors.Hand;
@@ -187,9 +146,9 @@ partial class MainForm
         btnBrowse.Text = "...";
         btnBrowse.UseVisualStyleBackColor = false;
         btnBrowse.Click += btnBrowse_Click;
-        // 
+        //
         // btnView
-        // 
+        //
         btnView.BackColor = Color.FromArgb(15, 52, 96);
         btnView.Cursor = Cursors.Hand;
         btnView.FlatAppearance.BorderSize = 0;
@@ -203,9 +162,9 @@ partial class MainForm
         btnView.Text = "View File Info";
         btnView.UseVisualStyleBackColor = false;
         btnView.Click += btnView_Click;
-        // 
+        //
         // lblStatus
-        // 
+        //
         lblStatus.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblStatus.Font = new Font("Segoe UI", 8.5F);
         lblStatus.ForeColor = Color.FromArgb(100, 100, 120);
@@ -213,29 +172,26 @@ partial class MainForm
         lblStatus.Name = "lblStatus";
         lblStatus.Size = new Size(726, 23);
         lblStatus.TabIndex = 4;
-        // 
+        //
         // MainForm
-        // 
+        //
         AutoScaleDimensions = new SizeF(7F, 17F);
         AutoScaleMode = AutoScaleMode.Font;
-        ClientSize = new Size(820, 205);
+        ClientSize = new Size(820, 149);
         Controls.Add(pnlMain);
-        Controls.Add(pnlHeader);
         Controls.Add(menuStrip);
         Font = new Font("Segoe UI", 9.5F);
         Icon = (Icon)resources.GetObject("$this.Icon");
         MainMenuStrip = menuStrip;
         MaximizeBox = false;
-        MaximumSize = new Size(1200, 244);
-        MinimumSize = new Size(480, 244);
+        MaximumSize = new Size(1200, 188);
+        MinimumSize = new Size(480, 188);
         Name = "MainForm";
         StartPosition = FormStartPosition.CenterScreen;
         Text = "File Info Viewer";
         Resize += MainForm_Resize;
         menuStrip.ResumeLayout(false);
         menuStrip.PerformLayout();
-        pnlHeader.ResumeLayout(false);
-        pnlHeader.PerformLayout();
         pnlMain.ResumeLayout(false);
         pnlMain.PerformLayout();
         ResumeLayout(false);
@@ -243,10 +199,12 @@ partial class MainForm
     }
 
     private Label lblStatus;
-    private Button btnAbout;
     private MenuStrip menuStrip;
     private ToolStripMenuItem toolsToolStripMenuItem;
     private ToolStripMenuItem createShortcutToolStripMenuItem;
-    private ToolStripMenuItem templatesToolStripMenuItem;
-    private ToolStripMenuItem template1ToolStripMenuItem;
+    private ToolStripMenuItem menuSettings;
+    private ToolStripMenuItem helpToolStripMenuItem;
+    private ToolStripMenuItem menuViewHelp;
+    private ToolStripSeparator menuViewHelpSeparator;
+    private ToolStripMenuItem aboutToolStripMenuItem;
 }
