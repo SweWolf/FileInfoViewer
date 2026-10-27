@@ -70,7 +70,7 @@ Go to the [Releases](https://github.com/SweWolf/FileInfoViewer/releases) page an
 
 **Standalone (single .exe file)** — Recommended for most users. One file, no installation required. Just download `FileInfoViewer.exe`, place it anywhere, and run it. The download is larger (~130 MB) because it bundles the .NET runtime inside.
 
-**Framework-dependent (multifile zip)** — Smaller download (~6 MB), but requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) to be installed on your PC. A good choice if you already have .NET 10 installed or want to keep the file size small.
+**Framework-dependent (multifile zip)** — Smaller download (~13 MB), but requires the [.NET 10 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/10.0) to be installed on your PC. A good choice if you already have .NET 10 installed or want to keep the file size small.
 
 ## Where to put it
 
