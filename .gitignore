@@ -23,3 +23,6 @@ CLAUDE.md
 Thumbs.db
 Desktop.ini
 .DS_Store
+
+# Local release-notes draft (the real notes go on the GitHub release page)
+RELEASE_NOTES_DRAFT.md
