@@ -34,12 +34,12 @@ namespace FileInfoViewer
             label1 = new Label();
             chkShowSeconds = new CheckBox();
             grpShow = new GroupBox();
-            chkMarkOfTheWeb = new CheckBox();
-            chkShowFileHashes = new CheckBox();
-            lblHashSkip = new Label();
-            numHashMaxSizeMb = new NumericUpDown();
-            lblHashMb = new Label();
             lblHashHint = new Label();
+            lblHashMb = new Label();
+            numHashMaxSizeMb = new NumericUpDown();
+            lblHashSkip = new Label();
+            chkShowFileHashes = new CheckBox();
+            chkMarkOfTheWeb = new CheckBox();
             chkFileAttributes = new CheckBox();
             chkOwner = new CheckBox();
             cboTextualData = new ComboBox();
@@ -55,8 +55,8 @@ namespace FileInfoViewer
             groupBox1 = new GroupBox();
             chkWebLinksClickable = new CheckBox();
             groupBox2 = new GroupBox();
-            label5 = new Label();
             cboStyle = new ComboBox();
+            label5 = new Label();
             grpWarnings = new GroupBox();
             chkWarnWrongExtension = new CheckBox();
             grpUpdates = new GroupBox();
@@ -79,7 +79,7 @@ namespace FileInfoViewer
             grpFileDate.Location = new Point(12, 97);
             grpFileDate.Name = "grpFileDate";
             grpFileDate.Size = new Size(360, 101);
-            grpFileDate.TabIndex = 0;
+            grpFileDate.TabIndex = 1;
             grpFileDate.TabStop = false;
             grpFileDate.Text = "File Date";
             // 
@@ -131,23 +131,48 @@ namespace FileInfoViewer
             grpShow.Location = new Point(12, 213);
             grpShow.Name = "grpShow";
             grpShow.Size = new Size(360, 262);
-            grpShow.TabIndex = 1;
+            grpShow.TabIndex = 2;
             grpShow.TabStop = false;
             grpShow.Text = "Show";
             // 
-            // chkMarkOfTheWeb
-            //
-            chkMarkOfTheWeb.AutoSize = true;
-            chkMarkOfTheWeb.Checked = true;
-            chkMarkOfTheWeb.CheckState = CheckState.Checked;
-            chkMarkOfTheWeb.Location = new Point(108, 115);
-            chkMarkOfTheWeb.Name = "chkMarkOfTheWeb";
-            chkMarkOfTheWeb.Size = new Size(110, 19);
-            chkMarkOfTheWeb.TabIndex = 4;
-            chkMarkOfTheWeb.Text = "Mark of the Web";
-            chkMarkOfTheWeb.UseVisualStyleBackColor = true;
-            chkMarkOfTheWeb.CheckedChanged += chkMarkOfTheWeb_CheckedChanged;
-            //
+            // lblHashHint
+            // 
+            lblHashHint.AutoSize = true;
+            lblHashHint.Location = new Point(126, 193);
+            lblHashHint.Name = "lblHashHint";
+            lblHashHint.Size = new Size(114, 15);
+            lblHashHint.TabIndex = 11;
+            lblHashHint.Text = "(0 = Hash Every File)";
+            // 
+            // lblHashMb
+            // 
+            lblHashMb.AutoSize = true;
+            lblHashMb.Location = new Point(270, 169);
+            lblHashMb.Name = "lblHashMb";
+            lblHashMb.Size = new Size(25, 15);
+            lblHashMb.TabIndex = 10;
+            lblHashMb.Text = "MB";
+            // 
+            // numHashMaxSizeMb
+            // 
+            numHashMaxSizeMb.Location = new Point(196, 166);
+            numHashMaxSizeMb.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            numHashMaxSizeMb.Name = "numHashMaxSizeMb";
+            numHashMaxSizeMb.Size = new Size(70, 23);
+            numHashMaxSizeMb.TabIndex = 5;
+            numHashMaxSizeMb.TextAlign = HorizontalAlignment.Right;
+            numHashMaxSizeMb.Value = new decimal(new int[] { 500, 0, 0, 0 });
+            numHashMaxSizeMb.ValueChanged += numHashMaxSizeMb_ValueChanged;
+            // 
+            // lblHashSkip
+            // 
+            lblHashSkip.AutoSize = true;
+            lblHashSkip.Location = new Point(126, 169);
+            lblHashSkip.Name = "lblHashSkip";
+            lblHashSkip.Size = new Size(66, 15);
+            lblHashSkip.TabIndex = 9;
+            lblHashSkip.Text = "Skip Above";
+            // 
             // chkShowFileHashes
             // 
             chkShowFileHashes.AutoSize = true;
@@ -156,56 +181,31 @@ namespace FileInfoViewer
             chkShowFileHashes.Location = new Point(108, 140);
             chkShowFileHashes.Name = "chkShowFileHashes";
             chkShowFileHashes.Size = new Size(85, 19);
-            chkShowFileHashes.TabIndex = 5;
+            chkShowFileHashes.TabIndex = 4;
             chkShowFileHashes.Text = "File Hashes";
             chkShowFileHashes.UseVisualStyleBackColor = true;
             chkShowFileHashes.CheckedChanged += chkShowFileHashes_CheckedChanged;
-            //
-            // lblHashSkip
-            //
-            lblHashSkip.AutoSize = true;
-            lblHashSkip.Location = new Point(126, 169);
-            lblHashSkip.Name = "lblHashSkip";
-            lblHashSkip.Size = new Size(64, 15);
-            lblHashSkip.TabIndex = 9;
-            lblHashSkip.Text = "Skip Above";
-            //
-            // numHashMaxSizeMb
-            //
-            numHashMaxSizeMb.Location = new Point(196, 166);
-            numHashMaxSizeMb.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
-            numHashMaxSizeMb.Name = "numHashMaxSizeMb";
-            numHashMaxSizeMb.Size = new Size(70, 23);
-            numHashMaxSizeMb.TabIndex = 6;
-            numHashMaxSizeMb.TextAlign = HorizontalAlignment.Right;
-            numHashMaxSizeMb.Value = new decimal(new int[] { 500, 0, 0, 0 });
-            numHashMaxSizeMb.ValueChanged += numHashMaxSizeMb_ValueChanged;
-            //
-            // lblHashMb
-            //
-            lblHashMb.AutoSize = true;
-            lblHashMb.Location = new Point(270, 169);
-            lblHashMb.Name = "lblHashMb";
-            lblHashMb.Size = new Size(24, 15);
-            lblHashMb.TabIndex = 10;
-            lblHashMb.Text = "MB";
-            //
-            // lblHashHint
-            //
-            lblHashHint.AutoSize = true;
-            lblHashHint.Location = new Point(126, 193);
-            lblHashHint.Name = "lblHashHint";
-            lblHashHint.Size = new Size(139, 15);
-            lblHashHint.TabIndex = 11;
-            lblHashHint.Text = "(0 = Hash Every File)";
-            //
+            // 
+            // chkMarkOfTheWeb
+            // 
+            chkMarkOfTheWeb.AutoSize = true;
+            chkMarkOfTheWeb.Checked = true;
+            chkMarkOfTheWeb.CheckState = CheckState.Checked;
+            chkMarkOfTheWeb.Location = new Point(108, 115);
+            chkMarkOfTheWeb.Name = "chkMarkOfTheWeb";
+            chkMarkOfTheWeb.Size = new Size(114, 19);
+            chkMarkOfTheWeb.TabIndex = 3;
+            chkMarkOfTheWeb.Text = "Mark of the Web";
+            chkMarkOfTheWeb.UseVisualStyleBackColor = true;
+            chkMarkOfTheWeb.CheckedChanged += chkMarkOfTheWeb_CheckedChanged;
+            // 
             // chkFileAttributes
             // 
             chkFileAttributes.AutoSize = true;
             chkFileAttributes.Location = new Point(108, 90);
             chkFileAttributes.Name = "chkFileAttributes";
             chkFileAttributes.Size = new Size(99, 19);
-            chkFileAttributes.TabIndex = 3;
+            chkFileAttributes.TabIndex = 2;
             chkFileAttributes.Text = "File Attributes";
             chkFileAttributes.UseVisualStyleBackColor = true;
             chkFileAttributes.CheckedChanged += chkFileAttributes_CheckedChanged;
@@ -216,7 +216,7 @@ namespace FileInfoViewer
             chkOwner.Location = new Point(108, 65);
             chkOwner.Name = "chkOwner";
             chkOwner.Size = new Size(61, 19);
-            chkOwner.TabIndex = 2;
+            chkOwner.TabIndex = 1;
             chkOwner.Text = "Owner";
             chkOwner.UseVisualStyleBackColor = true;
             chkOwner.CheckedChanged += chkOwner_CheckedChanged;
@@ -229,7 +229,7 @@ namespace FileInfoViewer
             cboTextualData.Location = new Point(108, 225);
             cboTextualData.Name = "cboTextualData";
             cboTextualData.Size = new Size(200, 23);
-            cboTextualData.TabIndex = 7;
+            cboTextualData.TabIndex = 6;
             cboTextualData.SelectedIndexChanged += cboTextualData_SelectedIndexChanged;
             // 
             // label3
@@ -271,7 +271,7 @@ namespace FileInfoViewer
             grpLayout.Location = new Point(14, 556);
             grpLayout.Name = "grpLayout";
             grpLayout.Size = new Size(360, 114);
-            grpLayout.TabIndex = 2;
+            grpLayout.TabIndex = 4;
             grpLayout.TabStop = false;
             grpLayout.Text = "Layout";
             // 
@@ -336,7 +336,7 @@ namespace FileInfoViewer
             groupBox1.Location = new Point(14, 490);
             groupBox1.Name = "groupBox1";
             groupBox1.Size = new Size(362, 54);
-            groupBox1.TabIndex = 2;
+            groupBox1.TabIndex = 3;
             groupBox1.TabStop = false;
             groupBox1.Text = "Web Links";
             // 
@@ -360,18 +360,9 @@ namespace FileInfoViewer
             groupBox2.Location = new Point(12, 5);
             groupBox2.Name = "groupBox2";
             groupBox2.Size = new Size(359, 88);
-            groupBox2.TabIndex = 3;
+            groupBox2.TabIndex = 0;
             groupBox2.TabStop = false;
             groupBox2.Text = "Appearance";
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.Location = new Point(12, 28);
-            label5.Name = "label5";
-            label5.Size = new Size(32, 15);
-            label5.TabIndex = 0;
-            label5.Text = "Style";
             // 
             // cboStyle
             // 
@@ -383,53 +374,62 @@ namespace FileInfoViewer
             cboStyle.Size = new Size(200, 23);
             cboStyle.TabIndex = 0;
             cboStyle.SelectedIndexChanged += cboStyle_SelectedIndexChanged;
-            //
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(12, 28);
+            label5.Name = "label5";
+            label5.Size = new Size(32, 15);
+            label5.TabIndex = 0;
+            label5.Text = "Style";
+            // 
             // grpWarnings
-            //
+            // 
             grpWarnings.Controls.Add(chkWarnWrongExtension);
             grpWarnings.Location = new Point(14, 682);
             grpWarnings.Name = "grpWarnings";
             grpWarnings.Size = new Size(360, 54);
-            grpWarnings.TabIndex = 4;
+            grpWarnings.TabIndex = 5;
             grpWarnings.TabStop = false;
             grpWarnings.Text = "Warnings";
-            //
+            // 
             // chkWarnWrongExtension
-            //
+            // 
             chkWarnWrongExtension.AutoSize = true;
             chkWarnWrongExtension.Checked = true;
             chkWarnWrongExtension.CheckState = CheckState.Checked;
             chkWarnWrongExtension.Location = new Point(110, 22);
             chkWarnWrongExtension.Name = "chkWarnWrongExtension";
-            chkWarnWrongExtension.Size = new Size(140, 19);
+            chkWarnWrongExtension.Size = new Size(136, 19);
             chkWarnWrongExtension.TabIndex = 0;
             chkWarnWrongExtension.Text = "Wrong File Extension";
             chkWarnWrongExtension.UseVisualStyleBackColor = true;
             chkWarnWrongExtension.CheckedChanged += chkWarnWrongExtension_CheckedChanged;
-            //
+            // 
             // grpUpdates
-            //
+            // 
             grpUpdates.Controls.Add(chkCheckForUpdates);
             grpUpdates.Location = new Point(14, 748);
             grpUpdates.Name = "grpUpdates";
             grpUpdates.Size = new Size(360, 54);
-            grpUpdates.TabIndex = 5;
+            grpUpdates.TabIndex = 0;
             grpUpdates.TabStop = false;
             grpUpdates.Text = "Updates";
-            //
+            // 
             // chkCheckForUpdates
-            //
+            // 
             chkCheckForUpdates.AutoSize = true;
             chkCheckForUpdates.Checked = true;
             chkCheckForUpdates.CheckState = CheckState.Checked;
             chkCheckForUpdates.Location = new Point(110, 22);
             chkCheckForUpdates.Name = "chkCheckForUpdates";
-            chkCheckForUpdates.Size = new Size(200, 19);
+            chkCheckForUpdates.Size = new Size(181, 19);
             chkCheckForUpdates.TabIndex = 0;
             chkCheckForUpdates.Text = "Check for Updates on Startup";
             chkCheckForUpdates.UseVisualStyleBackColor = true;
             chkCheckForUpdates.CheckedChanged += chkCheckForUpdates_CheckedChanged;
-            //
+            // 
             // SettingsForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
