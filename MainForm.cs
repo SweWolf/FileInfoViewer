@@ -127,13 +127,6 @@ public partial class MainForm : Form
         form.ShowDialog(this);
     }
 
-    private void MainForm_Resize(object? sender, EventArgs e)
-    {
-        txtFilePath.Width = ClientSize.Width - 82 - 20 - 92;
-        btnBrowse.Left   = ClientSize.Width - 20 - 80;
-        lblStatus.Width  = ClientSize.Width - 82 - 20;
-    }
-
     private void SetStatus(string message, bool error)
     {
         lblStatus.Text = message;
