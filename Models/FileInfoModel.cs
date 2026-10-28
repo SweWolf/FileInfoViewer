@@ -138,6 +138,7 @@ public class AudioInfoModel
     public string Channels { get; set; } = "";
     public string BitDepth { get; set; } = "";
     public string Software { get; set; } = "";
+    public string Container { get; set; } = "";  // MP4/M4A brand, e.g. "Apple iTunes AAC-LC (.M4A) Audio"
 
     // Special
     public bool HasCoverArt { get; set; }

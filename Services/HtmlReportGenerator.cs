@@ -436,6 +436,7 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
                     Row(sb, "Audio Source", H(aud.AudioSourceUrl) + CopyBtn(aud.AudioSourceUrl, copyDisplay), raw: true);
             }
             RowIfSet(sb, "Duration", aud.Duration);
+            RowIfSet(sb, "Container", aud.Container);
             RowIfSet(sb, "Encoding", aud.Encoding);
             RowIfSet(sb, "Bit Rate", aud.BitRate);
             RowIfSet(sb, "Sample Rate", aud.SampleRate);

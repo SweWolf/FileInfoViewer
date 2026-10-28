@@ -670,6 +670,8 @@ public static class FileInfoCollector
         {
             audio.Duration   = FormatDuration(props.Duration);
             audio.Encoding   = props.Description?.Trim() ?? "";
+            var aacProfile   = ReadAacProfile(props);
+            if (aacProfile != "") audio.Encoding = audio.Encoding == "" ? aacProfile : $"{audio.Encoding}, {aacProfile}";
             audio.BitRate    = props.AudioBitrate > 0 ? $"{props.AudioBitrate} kbps" : "";
             audio.SampleRate = props.AudioSampleRate > 0 ? $"{props.AudioSampleRate} Hz" : "";
             audio.Channels   = props.AudioChannels > 0 ? props.AudioChannels.ToString() : "";
@@ -682,6 +684,10 @@ public static class FileInfoCollector
         try
         {
             var directories = ImageMetadataReader.ReadMetadata(filePath);
+            var brand = directories.OfType<MetadataExtractor.Formats.QuickTime.QuickTimeFileTypeDirectory>().FirstOrDefault()
+                ?.GetString(MetadataExtractor.Formats.QuickTime.QuickTimeFileTypeDirectory.TagMajorBrand)?.Trim();
+            if (!string.IsNullOrEmpty(brand))
+                audio.Container = brand.ToLowerInvariant() is "m4a" or "m4b" ? BrandDisplay(brand) : $"{BrandDisplay(brand)} ({brand})";
             AddMetadataTags(directories, audio.AllTags, audio.MoreTags, (tagName, value) =>
             {
                 // Skip binary picture data
@@ -713,7 +719,39 @@ public static class FileInfoCollector
         return $"{(int)rounded.TotalMinutes}:{rounded.Seconds:D2} ({duration.TotalSeconds:F1}s)";
     }
 
-    // The software that wrote the file: RIFF INFO "ISFT" (WAV), ID3v2 "TSSE" (MP3), Xiph "ENCODER" (FLAC/Ogg)
+    // AAC profile of an MP4/M4A file, from the audio object type in the esds decoder config ("AAC-LC", "HE-AAC"...)
+    private static string ReadAacProfile(TagLib.Properties props)
+    {
+        try
+        {
+            foreach (var codec in props.Codecs)
+            {
+                if (codec is not TagLib.Mpeg4.IsoAudioSampleEntry entry) continue;
+                foreach (var box in entry.Children)
+                {
+                    if (box is not TagLib.Mpeg4.AppleElementaryStreamDescriptor esds) continue;
+                    if (esds.ObjectTypeId != 0x40 || esds.DecoderConfig.Count == 0) continue; // 0x40 = MPEG-4 audio
+                    return (esds.DecoderConfig[0] >> 3) switch
+                    {
+                        1  => "AAC Main",
+                        2  => "AAC-LC",
+                        3  => "AAC-SSR",
+                        4  => "AAC-LTP",
+                        5  => "HE-AAC",
+                        29 => "HE-AAC v2",
+                        _  => ""
+                    };
+                }
+            }
+        }
+        catch
+        {
+            // Non-critical
+        }
+        return "";
+    }
+
+    // The software that wrote the file: RIFF INFO "ISFT" (WAV), ID3v2 "TSSE" (MP3), Xiph "ENCODER" (FLAC/Ogg), MP4 "©too" (M4A)
     private static string ReadEncoderSoftware(TagLib.File tagFile)
     {
         try
@@ -732,6 +770,11 @@ public static class FileInfoCollector
             {
                 var encoder = xiph.GetFirstField("ENCODER");
                 if (!string.IsNullOrWhiteSpace(encoder)) return encoder.Trim();
+            }
+            if (tagFile.GetTag(TagLib.TagTypes.Apple) is TagLib.Mpeg4.AppleTag apple)
+            {
+                var too = apple.GetText(new TagLib.ByteVector(new byte[] { 0xA9, (byte)'t', (byte)'o', (byte)'o' })).FirstOrDefault(s => !string.IsNullOrWhiteSpace(s));
+                if (too != null) return too.Trim();
             }
         }
         catch
@@ -979,8 +1022,8 @@ public static class FileInfoCollector
         "isom" or "iso2" or "iso4" or "iso5" or "iso6"
             or "mp41" or "mp42" or "avc1" or "dash"       => "MP4",
         "m4v" or "m4vh" or "m4vp"                         => "MP4 video (Apple M4V)",
-        "m4a"                                             => "MPEG-4 audio (M4A)",
-        "m4b"                                             => "MPEG-4 audiobook (M4B)",
+        "m4a"                                             => "Apple iTunes AAC-LC (.M4A) Audio",
+        "m4b"                                             => "Apple iTunes AAC-LC (.M4B) Audio Book",
         "3gp4" or "3gp5" or "3gp6" or "3ge6" or "3gg6"    => "3GPP",
         "3g2a" or "3g2b" or "3g2c"                        => "3GPP2",
         "xavc"                                            => "Sony XAVC",
