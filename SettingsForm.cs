@@ -10,6 +10,18 @@ public partial class SettingsForm : Form
         // The Designer sets ClientSize before FixedDialog/ControlBox, which leaves the client area too short
         ClientSize = new Size(ClientSize.Width, grpUpdates.Bottom + LogicalToDeviceUnits(12));
         SettingsService.FixButtonStyles(this);
+
+        components ??= new System.ComponentModel.Container(); // disposes the tooltip with the form
+        var tip = new ToolTip(components) { AutoPopDelay = 15000 };
+        const string hashTip =
+            "Calculates the MD5, SHA-1, and SHA-256 hashes of the file.\r\n" +
+            "No: never. Yes: for every file.\r\n" +
+            "Only on Executables: only for programs and code that can run or install, such as " +
+            ".exe, .dll, .sys, .msi, .bat, .cmd, .ps1, .vbs, .js, and .jar. " +
+            "Pictures, documents, and media files get no hashes.";
+        tip.SetToolTip(cboFileHashes, hashTip);
+        tip.SetToolTip(lblFileHashes, hashTip);
+
         LoadSettings();
     }
 
@@ -29,7 +41,8 @@ public partial class SettingsForm : Form
         chkMarkOfTheWeb.Checked   = settings.ShowMarkOfTheWeb;
         // Number first: setting the checkbox can fire a save that would otherwise store the designer default
         numHashMaxSizeMb.Value    = Math.Clamp(settings.HashMaxSizeMb, (int)numHashMaxSizeMb.Minimum, (int)numHashMaxSizeMb.Maximum);
-        chkShowFileHashes.Checked = settings.ShowFileHashes;
+        var hashIndex = cboFileHashes.Items.IndexOf(settings.FileHashes);
+        cboFileHashes.SelectedIndex = hashIndex >= 0 ? hashIndex : 2; // default: "Only on Executables"
         UpdateHashLimitEnabled();
 
         var tdIndex = cboTextualData.Items.IndexOf(settings.TextualDataDisplay);
@@ -63,7 +76,7 @@ public partial class SettingsForm : Form
 
     private void UpdateHashLimitEnabled()
     {
-        bool on = chkShowFileHashes.Checked;
+        bool on = cboFileHashes.SelectedItem?.ToString() != "No";
         lblHashSkip.Enabled = numHashMaxSizeMb.Enabled = lblHashMb.Enabled = lblHashHint.Enabled = on;
     }
 
@@ -77,7 +90,7 @@ public partial class SettingsForm : Form
             ShowOwner            = chkOwner.Checked,
             ShowFileAttributes   = chkFileAttributes.Checked,
             ShowMarkOfTheWeb     = chkMarkOfTheWeb.Checked,
-            ShowFileHashes       = chkShowFileHashes.Checked,
+            FileHashes           = cboFileHashes.SelectedItem?.ToString() ?? "Only on Executables",
             HashMaxSizeMb        = (int)numHashMaxSizeMb.Value,
             TextualDataDisplay   = cboTextualData.SelectedItem?.ToString() ?? "Formatted",
             WebLinksClickable    = chkWebLinksClickable.Checked,
@@ -102,7 +115,7 @@ public partial class SettingsForm : Form
 
     private void chkMarkOfTheWeb_CheckedChanged(object sender, EventArgs e) => SaveSettings();
 
-    private void chkShowFileHashes_CheckedChanged(object sender, EventArgs e)
+    private void cboFileHashes_SelectedIndexChanged(object sender, EventArgs e)
     {
         UpdateHashLimitEnabled();
         SaveSettings();

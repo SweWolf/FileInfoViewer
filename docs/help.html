@@ -153,9 +153,9 @@ it, or when you click <strong>Unblock</strong> in the file’s properties.
 Many files simply do not have one. You can turn the card off in the
 settings.</p>
 <h3 id="file-hashes">File Hashes</h3>
-<p>The <strong>File Hashes</strong> card shows the MD5 and SHA-256
-checksums of the file. Use them to check that a download is complete and
-not changed, or to compare two files.</p>
+<p>The <strong>File Hashes</strong> card shows the MD5, SHA-1, and
+SHA-256 checksums of the file. Use them to check that a download is
+complete and not changed, or to compare two files.</p>
 <p>Calculating hashes of a very large file takes time. A small window
 shows the progress and has a <strong>Cancel</strong> button. If you
 cancel, the report is made without hashes and a warning says so. In the
@@ -169,7 +169,11 @@ stores about itself: the camera and lens, exposure, date, GPS position,
 the program that edited it and so on. Very technical tags that few
 people need (Lightroom settings, edit history, color profile details,
 the small embedded preview) are folded away under <strong>Show N more
-technical tags</strong>. Click that line to see them.</p>
+technical tags</strong>. Click that line to see them. A long digital
+signature in a text tag (for example the “Signature: …” that Grok
+Imagine adds) cannot be read by a person, so it is shown as one line,
+such as “Signature (base64, 752 bytes)”. Hover over it to see the whole
+text, or use the copy button.</p>
 <p>Special cases:</p>
 <ul>
 <li><strong>WebP</strong>: the format (lossy, lossless, extended),
@@ -196,8 +200,12 @@ pictures and videos. The card shows:
 <ul>
 <li>an <strong>AI-generated</strong> badge, when the file says it was
 made with AI;</li>
-<li>the <strong>Generator</strong> and who signed the file
-(<strong>Signed By</strong>), with the certificate and its dates;</li>
+<li>the <strong>Generator</strong>, the <strong>Author</strong> when the
+file names one (for example the company behind the AI service), and who
+signed the file (<strong>Signed By</strong>), with the certificate and
+its dates. A <strong>Certificate Note</strong> appears when the
+certificate is a temporary or self-signed one, which does not confirm
+who really signed the file;</li>
 <li>when it was signed;</li>
 <li>the <strong>Actions</strong> that were recorded, such as Created,
 Edited, Resized and Watermarked, often with the time and the program
@@ -287,7 +295,10 @@ setting).</li>
 and Hidden.</li>
 <li><strong>Mark of the Web</strong>: show where a downloaded file came
 from.</li>
-<li><strong>File Hashes</strong>: show the MD5 and SHA-256 hashes.
+<li><strong>File Hashes</strong>: show the MD5, SHA-1, and SHA-256
+hashes. Choose <strong>No</strong>, <strong>Yes</strong>, or
+<strong>Only on Executables</strong> (the default: programs, libraries,
+installers and scripts such as .exe, .dll, .msi, .bat and .ps1).
 <strong>Skip Above</strong> sets the size in MB above which a file is
 not hashed (500 by default; 0 means hash every file).</li>
 <li><strong>Textual Data</strong>: how to show text and JSON found in

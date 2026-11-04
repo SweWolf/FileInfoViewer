@@ -27,7 +27,7 @@ public sealed class HashProgressForm : Form
         Padding = new Padding(16);
         try { Icon = Icon.ExtractAssociatedIcon(Application.ExecutablePath); } catch { }
 
-        _lblFile.Text = $"Calculating hashes (MD5 and SHA-256) for:\r\n{fileName}";
+        _lblFile.Text = $"Calculating hashes (MD5, SHA-1, and SHA-256) for:\r\n{fileName}";
         _btnCancel.Click += (_, _) => RequestCancel();
         CancelButton = _btnCancel;
 

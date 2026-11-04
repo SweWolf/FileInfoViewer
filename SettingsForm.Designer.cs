@@ -38,7 +38,8 @@ namespace FileInfoViewer
             lblHashMb = new Label();
             numHashMaxSizeMb = new NumericUpDown();
             lblHashSkip = new Label();
-            chkShowFileHashes = new CheckBox();
+            cboFileHashes = new ComboBox();
+            lblFileHashes = new Label();
             chkMarkOfTheWeb = new CheckBox();
             chkFileAttributes = new CheckBox();
             chkOwner = new CheckBox();
@@ -120,7 +121,8 @@ namespace FileInfoViewer
             grpShow.Controls.Add(lblHashMb);
             grpShow.Controls.Add(numHashMaxSizeMb);
             grpShow.Controls.Add(lblHashSkip);
-            grpShow.Controls.Add(chkShowFileHashes);
+            grpShow.Controls.Add(lblFileHashes);
+            grpShow.Controls.Add(cboFileHashes);
             grpShow.Controls.Add(chkMarkOfTheWeb);
             grpShow.Controls.Add(chkFileAttributes);
             grpShow.Controls.Add(chkOwner);
@@ -175,16 +177,23 @@ namespace FileInfoViewer
             // 
             // chkShowFileHashes
             // 
-            chkShowFileHashes.AutoSize = true;
-            chkShowFileHashes.Checked = true;
-            chkShowFileHashes.CheckState = CheckState.Checked;
-            chkShowFileHashes.Location = new Point(108, 140);
-            chkShowFileHashes.Name = "chkShowFileHashes";
-            chkShowFileHashes.Size = new Size(85, 19);
-            chkShowFileHashes.TabIndex = 4;
-            chkShowFileHashes.Text = "File Hashes";
-            chkShowFileHashes.UseVisualStyleBackColor = true;
-            chkShowFileHashes.CheckedChanged += chkShowFileHashes_CheckedChanged;
+            cboFileHashes.DropDownStyle = ComboBoxStyle.DropDownList;
+            cboFileHashes.FormattingEnabled = true;
+            cboFileHashes.Items.AddRange(new object[] { "No", "Yes", "Only on Executables" });
+            cboFileHashes.Location = new Point(108, 137);
+            cboFileHashes.Name = "cboFileHashes";
+            cboFileHashes.Size = new Size(200, 23);
+            cboFileHashes.TabIndex = 4;
+            cboFileHashes.SelectedIndexChanged += cboFileHashes_SelectedIndexChanged;
+            //
+            // lblFileHashes
+            //
+            lblFileHashes.AutoSize = true;
+            lblFileHashes.Location = new Point(20, 140);
+            lblFileHashes.Name = "lblFileHashes";
+            lblFileHashes.Size = new Size(66, 15);
+            lblFileHashes.TabIndex = 12;
+            lblFileHashes.Text = "File Hashes";
             // 
             // chkMarkOfTheWeb
             // 
@@ -479,7 +488,8 @@ namespace FileInfoViewer
         private CheckBox chkFileAttributes;
         private CheckBox chkOwner;
         private CheckBox chkMarkOfTheWeb;
-        private CheckBox chkShowFileHashes;
+        private ComboBox cboFileHashes;
+        private Label lblFileHashes;
         private Label lblHashSkip;
         private NumericUpDown numHashMaxSizeMb;
         private Label lblHashMb;

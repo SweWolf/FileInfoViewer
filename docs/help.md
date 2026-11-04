@@ -112,7 +112,7 @@ properties. Many files simply do not have one. You can turn the card off in the 
 
 ### File Hashes
 
-The **File Hashes** card shows the MD5 and SHA-256 checksums of the file. Use them to check that a
+The **File Hashes** card shows the MD5, SHA-1, and SHA-256 checksums of the file. Use them to check that a
 download is complete and not changed, or to compare two files.
 
 Calculating hashes of a very large file takes time. A small window shows the progress and has a
@@ -126,7 +126,9 @@ depth and the number of megapixels. Under **EXIF / Metadata** you find everythin
 stores about itself: the camera and lens, exposure, date, GPS position, the program that edited it
 and so on. Very technical tags that few people need (Lightroom settings, edit history, color
 profile details, the small embedded preview) are folded away under **Show N more technical
-tags**. Click that line to see them.
+tags**. Click that line to see them. A long digital signature in a text tag (for example the
+"Signature: ..." that Grok Imagine adds) cannot be read by a person, so it is shown as one line,
+such as "Signature (base64, 752 bytes)". Hover over it to see the whole text, or use the copy button.
 
 Special cases:
 
@@ -147,7 +149,10 @@ own card. The information comes from the file itself and is only shown, not chec
 - **Content Credentials (C2PA)** is a digital signature that tools such as Google Gemini,
   Microsoft Designer and OpenAI add to pictures and videos. The card shows:
   - an **AI-generated** badge, when the file says it was made with AI;
-  - the **Generator** and who signed the file (**Signed By**), with the certificate and its dates;
+  - the **Generator**, the **Author** when the file names one (for example the company behind the
+    AI service), and who signed the file (**Signed By**), with the certificate and its dates. A
+    **Certificate Note** appears when the certificate is a temporary or self-signed one, which does
+    not confirm who really signed the file;
   - when it was signed;
   - the **Actions** that were recorded, such as Created, Edited, Resized and Watermarked, often
     with the time and the program that did them;
@@ -223,7 +228,9 @@ Choose **Tools > Settings**. Changes are saved at once in
 - **Owner**: show the owner of the file.
 - **File Attributes**: show attributes such as Read-only and Hidden.
 - **Mark of the Web**: show where a downloaded file came from.
-- **File Hashes**: show the MD5 and SHA-256 hashes. **Skip Above** sets the size in MB above which
+- **File Hashes**: show the MD5, SHA-1, and SHA-256 hashes. Choose **No**, **Yes**, or **Only on
+  Executables** (the default: programs, libraries, installers and scripts such as .exe, .dll, .msi,
+  .bat and .ps1). **Skip Above** sets the size in MB above which
   a file is not hashed (500 by default; 0 means hash every file).
 - **Textual Data**: how to show text and JSON found in metadata: **None**, **Formatted**, **Raw
   data** or **Both Formatted and Raw Data**.

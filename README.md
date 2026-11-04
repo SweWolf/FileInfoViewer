@@ -118,7 +118,7 @@ Settings are stored at `%AppData%\SweWolfSoftware\FileInfoViewer\settings.json` 
 | Owner | Include the file owner row in the report |
 | File attributes | Include the file attributes section in the report |
 | Mark of the Web | Include where a downloaded file came from (zone, download address, referrer page); only shown for files that have it |
-| File hashes | Include MD5 and SHA-256 hashes in the report. "Skip Above" sets the file size in MB above which hashing is skipped (default 500, 0 = hash every file) |
+| File hashes | Include MD5, SHA-1, and SHA-256 hashes in the report: No, Yes, or "Only on Executables" (the default: EXE, DLL, installers, scripts and similar). "Skip Above" sets the file size in MB above which hashing is skipped (default 500, 0 = hash every file) |
 | Textual data | How to display structured/JSON metadata: None, Formatted, Raw data, or Both |
 
 ### Layout

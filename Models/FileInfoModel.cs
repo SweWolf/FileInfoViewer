@@ -20,6 +20,7 @@ public class FileInfoModel
 
     // Hashes
     public string Md5 { get; set; } = "";
+    public string Sha1 { get; set; } = "";
     public string Sha256 { get; set; } = "";
 
     // Mark of the Web (null when the file has none)

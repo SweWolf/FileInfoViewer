@@ -34,6 +34,21 @@ public static class FileInfoCollector
 
     private static readonly HashSet<string> AssemblyExtensions = [".exe", ".dll"];
 
+    /// <summary>Extensions treated as executables by the "Only on Executables" hash setting.</summary>
+    private static readonly HashSet<string> ExecutableExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".exe", ".dll", ".sys", ".ocx", ".scr", ".cpl", ".com", ".msi", ".msix", ".appx",
+        ".bat", ".cmd", ".ps1", ".vbs", ".js", ".jar", ".lnk",
+    };
+
+    internal static bool HashesWanted(Models.AppSettings settings, string extension) =>
+        settings.FileHashes switch
+        {
+            "Yes" => true,
+            "No" => false,
+            _ => ExecutableExtensions.Contains(extension),
+        };
+
     private static readonly HashSet<string> SqliteExtensions =
         [".db", ".sqlite", ".sqlite3", ".db3", ".s3db"];
 
@@ -138,8 +153,9 @@ public static class FileInfoCollector
         if (settings.ShowMarkOfTheWeb)
             model.WebOrigin = MarkOfTheWeb.Read(fi.FullName);
 
-        // Hashes: not computed when hidden in the report, or for files above the size limit (long waits)
-        if (settings.ShowFileHashes)
+        // Hashes: not computed when off, for non-executables in "Only on Executables" mode,
+        // or for files above the size limit (long waits)
+        if (HashesWanted(settings, fi.Extension))
         {
             var maxBytes = settings.HashMaxSizeMb * 1024L * 1024L;
             if (maxBytes > 0 && fi.Length > maxBytes)
@@ -153,6 +169,7 @@ public static class FileInfoCollector
                     // One pass over the file for both hashes
                     using var stream = new FileStream(fi.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, 1 << 20);
                     using var md5 = IncrementalHash.CreateHash(HashAlgorithmName.MD5);
+                    using var sha1 = IncrementalHash.CreateHash(HashAlgorithmName.SHA1);
                     using var sha256 = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
                     var buffer = new byte[1 << 20];
                     var clock = Stopwatch.StartNew();
@@ -162,6 +179,7 @@ public static class FileInfoCollector
                     {
                         hashCancel.ThrowIfCancellationRequested();
                         md5.AppendData(buffer, 0, read);
+                        sha1.AppendData(buffer, 0, read);
                         sha256.AppendData(buffer, 0, read);
                         done += read;
                         if (hashProgress != null && clock.ElapsedMilliseconds - lastReport >= 100)
@@ -171,6 +189,7 @@ public static class FileInfoCollector
                         }
                     }
                     model.Md5 = Convert.ToHexString(md5.GetHashAndReset()).ToLowerInvariant();
+                    model.Sha1 = Convert.ToHexString(sha1.GetHashAndReset()).ToLowerInvariant();
                     model.Sha256 = Convert.ToHexString(sha256.GetHashAndReset()).ToLowerInvariant();
                 }
                 catch (OperationCanceledException)

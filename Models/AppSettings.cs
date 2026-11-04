@@ -20,8 +20,16 @@ public class AppSettings
     /// <summary>Whether to show the Mark of the Web section (where a downloaded file came from) in the HTML report.</summary>
     public bool ShowMarkOfTheWeb { get; set; } = true;
 
-    /// <summary>Whether to show the File Hashes section in the HTML report.</summary>
-    public bool ShowFileHashes { get; set; } = true;
+    /// <summary>Whether to calculate and show file hashes: "No", "Yes", or "Only on Executables".</summary>
+    public string FileHashes { get; set; } = "Only on Executables";
+
+    /// <summary>Old on/off setting, read only so a stored "off" carries over to <see cref="FileHashes"/>. Never written.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public bool? ShowFileHashes
+    {
+        get => null;
+        set { if (value == false) FileHashes = "No"; }
+    }
 
     /// <summary>Files larger than this many MB get no hashes (hashing a huge file takes long). 0 = no limit.</summary>
     public int HashMaxSizeMb { get; set; } = 500;

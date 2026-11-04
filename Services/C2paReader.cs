@@ -219,6 +219,7 @@ public static class C2paReader
         var seenActions = new HashSet<string>();
         var seenOther = new HashSet<string>();
         string? generator = null, title = null, format = null;
+        var authors = new List<string>();
         X509Certificate2? signer = null;
 
         foreach (var manifest in manifests) // oldest first; the last one is the active manifest
@@ -237,6 +238,18 @@ public static class C2paReader
                         {
                             foreach (var action in Items(Get(value, "actions")))
                                 AddAction(info, action, seenActions);
+                        }
+                        else if (name is "c2pa.creative_work" or "stds.schema-org.CreativeWork")
+                        {
+                            foreach (var author in Items(Get(value, "author")))
+                            {
+                                var authorName = Text(Get(author, "name"));
+                                if (authorName == null) continue;
+                                var authorType = Text(Get(author, "@type"));
+                                var authorText = authorType != null ? $"{authorName} ({authorType})" : authorName;
+                                if (!authors.Contains(authorText)) authors.Add(authorText);
+                            }
+                            if (seenOther.Add(name)) info.OtherAssertions.Add(AssertionName(name));
                         }
                         else if (seenOther.Add(name))
                         {
@@ -261,6 +274,7 @@ public static class C2paReader
         if (generator != null) info.Summary.Add(new("Generator", generator));
         if (title != null) info.Summary.Add(new("Title", title));
         if (format != null) info.Summary.Add(new("Format", format));
+        if (authors.Count > 0) info.Summary.Add(new("Author", string.Join(", ", authors)));
         if (signer != null)
         {
             var cn = signer.GetNameInfo(X509NameType.SimpleName, false);
@@ -270,6 +284,13 @@ public static class C2paReader
             var issuer = signer.GetNameInfo(X509NameType.SimpleName, true);
             if (!string.IsNullOrEmpty(issuer)) info.Summary.Add(new("Certificate Issuer", issuer));
             info.Summary.Add(new("Certificate Valid", $"{signer.NotBefore:yyyy-MM-dd} to {signer.NotAfter:yyyy-MM-dd}"));
+            // No trust list here, so only flag what the certificate says about itself
+            var certNames = signer.Subject + " " + signer.Issuer;
+            if (certNames.Contains("ephemeral", StringComparison.OrdinalIgnoreCase)
+                || certNames.Contains("local use only", StringComparison.OrdinalIgnoreCase))
+                info.Summary.Add(new("Certificate Note", "Temporary self-made certificate: it does not confirm who signed the file"));
+            else if (signer.SubjectName.RawData.AsSpan().SequenceEqual(signer.IssuerName.RawData))
+                info.Summary.Add(new("Certificate Note", "Self-signed: the signer's identity is not independently confirmed"));
         }
         if (timestamps.Count > 0)
         {
@@ -356,7 +377,7 @@ public static class C2paReader
         "c2pa.soft-binding" => "Invisible watermark",
         "c2pa.training-mining" => "Data mining / AI training permissions",
         "stds.exif" => "EXIF data",
-        "stds.schema-org.CreativeWork" => "Creative work (author info)",
+        "c2pa.creative_work" or "stds.schema-org.CreativeWork" => "Creative work (author info)",
         _ => n,
     };
 

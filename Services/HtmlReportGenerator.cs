@@ -32,7 +32,7 @@ public static class HtmlReportGenerator
         var copyDisplay  = settings.CopyButtonDisplay; // "No", "Yes", "Yes on hover over"
         var showOwner    = settings.ShowOwner;
         var showAttribs  = settings.ShowFileAttributes;
-        var showHashes   = settings.ShowFileHashes;
+        var showHashes   = settings.FileHashes != "No";
         var tzDisplay    = settings.TimeZoneDisplay;
         var contentWidth = settings.ContentMaxWidth switch {
             "Narrow (800px)"    => "800px",
@@ -220,6 +220,8 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
 """);
             if (!string.IsNullOrEmpty(model.Md5))
                 Row(sb, "MD5", $"""<span class="hash">{model.Md5}</span>""" + CopyBtn(model.Md5, copyDisplay), raw: true);
+            if (!string.IsNullOrEmpty(model.Sha1))
+                Row(sb, "SHA-1", $"""<span class="hash">{model.Sha1}</span>""" + CopyBtn(model.Sha1, copyDisplay), raw: true);
             if (!string.IsNullOrEmpty(model.Sha256))
                 Row(sb, "SHA-256", $"""<span class="hash">{model.Sha256}</span>""" + CopyBtn(model.Sha256, copyDisplay), raw: true);
             sb.AppendLine("  </table></div>");
@@ -1053,8 +1055,26 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
 
     // Format a tag value with thousand separators when it looks like a large integer,
     // but leave it untouched when the key suggests it's a seed, hash, or identifier.
+    private static readonly Regex _signatureRx =
+        new(@"^Signature:\s*([A-Za-z0-9+/\s]{200,}={0,2})\s*$", RegexOptions.Compiled);
+
+    /// <summary>
+    /// A long "Signature: ..." value (Grok Imagine writes one into Image Description and User Comment) is base64 of a
+    /// cryptographic signature: not readable, so it is shown as a one-line summary. The full text is the tooltip and the copy button.
+    /// </summary>
+    private static string? ShortSignature(string value)
+    {
+        var m = _signatureRx.Match(value.Trim());
+        if (!m.Success) return null;
+        var b64 = Regex.Replace(m.Groups[1].Value, @"\s+", "");
+        var bytes = new byte[b64.Length];
+        if (!Convert.TryFromBase64String(b64, bytes, out int len)) return null;
+        return $"""<span title="{H(value)}">Signature (base64, {len:N0} bytes) <span style="color:#999;font-size:.85rem">- not readable text; hover to see it all</span></span>""";
+    }
+
     private static string SmartFormatTagValue(string key, string value)
     {
+        if (ShortSignature(value) is { } shortSig) return shortSig;
         var lk = key.ToLowerInvariant();
         if (lk.Contains("seed") || lk.Contains("hash") || lk.Contains("crc") ||
             lk.Contains("checksum") || lk.Contains("unique id") || lk.Contains("uniqueid"))
