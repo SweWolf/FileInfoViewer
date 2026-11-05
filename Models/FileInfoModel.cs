@@ -197,6 +197,9 @@ public class VideoInfoModel
     // Lyrics (from ID3v2 USLT or similar)
     public string Lyrics { get; set; } = "";
 
+    // Page the video was made on (a Suno MP4: the song's page, from the C2PA provenance data); see AudioSourceReader
+    public string AudioSourceUrl { get; set; } = "";
+
     // Cover art
     public bool HasCoverArt { get; set; }
     public string? CoverArtBase64 { get; set; }

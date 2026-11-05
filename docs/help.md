@@ -177,9 +177,14 @@ Tags (title, artist, album, year, genre), lyrics, cover art, duration, bit rate,
 channels, the format and the program that encoded the file. All tags are listed under **All
 Metadata Tags**.
 
+**Audio Source** is the web page the file came from, shown as a link under the comment. It is read
+from the file's "audio source" tag. A WAV or M4A made with Suno has no such tag, but its comment
+holds the song's ID, and the link to the song's page is made from that.
+
 ### Video
 
-The **Video Information** card has the title and other description tags, then:
+The **Video Information** card has the title and other description tags (an **Audio Source** link
+for an MP4 made with Suno, shown under the comment), then:
 
 - **Video**: media created, length, frame size, rotation, frame rate, data rate, total bit rate,
   codec and container.

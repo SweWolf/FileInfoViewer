@@ -233,9 +233,15 @@ these cards, because the signatures are not verified.</p>
 duration, bit rate, sample rate, channels, the format and the program
 that encoded the file. All tags are listed under <strong>All Metadata
 Tags</strong>.</p>
+<p><strong>Audio Source</strong> is the web page the file came from,
+shown as a link under the comment. It is read from the file’s “audio
+source” tag. A WAV or M4A made with Suno has no such tag, but its
+comment holds the song’s ID, and the link to the song’s page is made
+from that.</p>
 <h3 id="video">Video</h3>
 <p>The <strong>Video Information</strong> card has the title and other
-description tags, then:</p>
+description tags (an <strong>Audio Source</strong> link for an MP4 made
+with Suno, shown under the comment), then:</p>
 <ul>
 <li><strong>Video</strong>: media created, length, frame size, rotation,
 frame rate, data rate, total bit rate, codec and container.</li>

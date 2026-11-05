@@ -684,6 +684,10 @@ public static class FileInfoCollector
                 audio.AudioSourceUrl = woasFrame.Text?.FirstOrDefault() ?? "";
         }
 
+        // No WOAS tag: a Suno WAV / M4A names the song in its comment (the page address is made from the id)
+        if (string.IsNullOrWhiteSpace(audio.AudioSourceUrl))
+            audio.AudioSourceUrl = AudioSourceReader.Read(filePath) ?? "";
+
         var props = tagFile.Properties;
         if (props != null)
         {
@@ -814,6 +818,7 @@ public static class FileInfoCollector
         video.Comment = shell.Comment;
         video.Tags    = shell.Tags.Length > 0 ? string.Join("; ", shell.Tags) : "";
         video.Rating  = FormatRating(shell.Rating);
+        video.AudioSourceUrl = AudioSourceReader.Read(filePath) ?? "";   // a Suno MP4: the song's page (C2PA provenance data)
 
         video.Duration = FormatDuration(shell.Duration);
         if (shell.FrameWidth > 0)  video.Width  = shell.FrameWidth;

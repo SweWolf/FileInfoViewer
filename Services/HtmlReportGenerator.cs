@@ -428,15 +428,7 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             RowIfSet(sb, "Genre", aud.Genre);
             RowIfSet(sb, "Composer", aud.Composer);
             RowIfSetCopy(sb, "Comment", aud.Comment, copyDisplay);
-            if (!string.IsNullOrWhiteSpace(aud.AudioSourceUrl))
-            {
-                var isWebLink = aud.AudioSourceUrl.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
-                             || aud.AudioSourceUrl.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
-                if (isWebLink)
-                    Row(sb, "Audio Source", $"""<a href="{H(aud.AudioSourceUrl)}" target="_blank" rel="noopener noreferrer">{H(aud.AudioSourceUrl)}</a>""" + CopyBtn(aud.AudioSourceUrl, copyDisplay), raw: true);
-                else
-                    Row(sb, "Audio Source", H(aud.AudioSourceUrl) + CopyBtn(aud.AudioSourceUrl, copyDisplay), raw: true);
-            }
+            AudioSourceRow(sb, aud.AudioSourceUrl, copyDisplay);
             RowIfSet(sb, "Duration", aud.Duration);
             RowIfSet(sb, "Container", aud.Container);
             RowIfSet(sb, "Encoding", aud.Encoding);
@@ -495,13 +487,14 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             // Description group (matches Windows Explorer Details tab)
             bool hasDesc = !string.IsNullOrEmpty(vid.Title) || !string.IsNullOrEmpty(vid.Subject)
                         || !string.IsNullOrEmpty(vid.Comment) || !string.IsNullOrEmpty(vid.Tags)
-                        || !string.IsNullOrEmpty(vid.Rating);
+                        || !string.IsNullOrEmpty(vid.Rating) || !string.IsNullOrEmpty(vid.AudioSourceUrl);
             if (hasDesc)
             {
                 sb.AppendLine("""  <div class="card-header" style="font-size:.82rem;color:#888;padding:.4rem 1.4rem;background:#fafbff;border-bottom:1px solid #f0f2f5">Description</div><table>""");
                 RowIfSetCopy(sb, "Title",    vid.Title,   copyDisplay);
                 RowIfSet(sb, "Subtitle", vid.Subject);
                 RowJsonOrCopy(sb, "Comment",  vid.Comment, copyDisplay);
+                AudioSourceRow(sb, vid.AudioSourceUrl, copyDisplay);
                 RowIfSetCopy(sb, "Tags",     vid.Tags,    copyDisplay);
                 RowIfSet(sb, "Rating",   vid.Rating);
                 sb.AppendLine("  </table>");
@@ -904,6 +897,18 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
         foreach (var (key, value) in tags.OrderBy(x => x.Key))
             Row(sb, key, SmartFormatTagValue(key, value) + CopyBtn(value, copyDisplay), raw: true);
         sb.AppendLine("  </table></details>");
+    }
+
+    /// <summary>The "Audio Source" row (the page a music or video file came from): a link when it is a web address, with a copy button.</summary>
+    private static void AudioSourceRow(StringBuilder sb, string url, string copyDisplay)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return;
+        var isWebLink = url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                     || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+        if (isWebLink)
+            Row(sb, "Audio Source", $"""<a href="{H(url)}" target="_blank" rel="noopener noreferrer">{H(url)}</a>""" + CopyBtn(url, copyDisplay), raw: true);
+        else
+            Row(sb, "Audio Source", H(url) + CopyBtn(url, copyDisplay), raw: true);
     }
 
     private static void RowIfSet(StringBuilder sb, string label, string value)
