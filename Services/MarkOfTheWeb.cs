@@ -35,6 +35,8 @@ public sealed record WebOrigin(int? ZoneId, string? HostUrl, string? ReferrerUrl
 /// History:
 ///   2026-10-24  First version (SweWolf File Explorer only).
 ///   2026-10-24  FileInfoViewer: keeps every other key of the stream in Extra (HostIpAddress, LastWriterPackageFamilyName ...).
+///   2026-11-04  A NUL byte at the end of the stream (a Suno download: `HostUrl=https://suno.com/` + 00) is removed from the values;
+///               it made the address a broken link.
 /// </summary>
 public static class MarkOfTheWeb
 {
@@ -52,13 +54,13 @@ public static class MarkOfTheWeb
             string? line;
             while ((line = reader.ReadLine()) != null)
             {
-                line = line.Trim();
+                line = line.Trim().Trim('\0');   // some browsers end the stream with a NUL byte: Trim() leaves it on the last value
                 if (line.StartsWith('[')) { inSection = line.Equals("[ZoneTransfer]", StringComparison.OrdinalIgnoreCase); continue; }
                 if (!inSection) continue;
 
                 int eq = line.IndexOf('=');
                 if (eq <= 0) continue;
-                string key = line[..eq].Trim(), value = line[(eq + 1)..].Trim();
+                string key = line[..eq].Trim(), value = line[(eq + 1)..].Trim().Trim('\0').Trim();
                 if (value.Length == 0) continue;
 
                 if (key.Equals("ZoneId", StringComparison.OrdinalIgnoreCase) && int.TryParse(value, out var id)) zone = id;

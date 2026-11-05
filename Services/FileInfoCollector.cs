@@ -612,6 +612,29 @@ public static class FileInfoCollector
         }
     }
 
+    /// <summary>
+    /// An M4A / MP4 from Suno keeps its comment in several pieces in the ©cmt atom ("made with suno", "created=...", "id=..."), and
+    /// TagLib's Tag.Comment returns only the first one. When the atom has more than one piece they are joined with "; " (as ExifTool
+    /// shows them) and used if that is longer than what was read before. A single piece (a Wan2GP JSON, an ordinary comment) is left as it was.
+    /// </summary>
+    private static string FullMp4Comment(TagLib.File tagFile, string current)
+    {
+        try
+        {
+            if (tagFile.GetTag(TagLib.TagTypes.Apple, false) is TagLib.Mpeg4.AppleTag apple)
+            {
+                var pieces = apple.GetText(new TagLib.ByteVector(new byte[] { 0xA9, (byte)'c', (byte)'m', (byte)'t' }));
+                if (pieces.Length > 1)
+                {
+                    var joined = string.Join("; ", pieces);
+                    if (joined.Length > current.Length) return joined;
+                }
+            }
+        }
+        catch { /* keep what was read */ }
+        return current;
+    }
+
     private static void CollectAudioInfo(string filePath, FileInfoModel model)
     {
         var audio = new AudioInfoModel();
@@ -629,7 +652,7 @@ public static class FileInfoCollector
         audio.TrackNumber = tag.Track > 0 ? (tag.TrackCount > 0 ? $"{tag.Track}/{tag.TrackCount}" : tag.Track.ToString()) : "";
         audio.Genre       = tag.Genres?.Length > 0 ? string.Join(", ", tag.Genres) : "";
         audio.Composer    = tag.Composers?.Length > 0 ? string.Join(", ", tag.Composers) : "";
-        audio.Comment     = tag.Comment ?? "";
+        audio.Comment     = FullMp4Comment(tagFile, tag.Comment ?? "");
         audio.Lyrics      = tag.Lyrics ?? "";
         audio.HasCoverArt = tag.Pictures?.Length > 0;
 
@@ -839,6 +862,7 @@ public static class FileInfoCollector
             var tag = tagFile.Tag;
             if (string.IsNullOrEmpty(video.Title))   video.Title   = tag.Title ?? "";
             if (string.IsNullOrEmpty(video.Comment)) video.Comment = tag.Comment ?? "";
+            video.Comment = FullMp4Comment(tagFile, video.Comment);
             video.Creator   = tag.Performers?.Length > 0 ? string.Join(", ", tag.Performers) : "";
             video.Year      = tag.Year > 0 ? tag.Year.ToString() : "";
             video.Genre     = tag.Genres?.Length > 0 ? string.Join(", ", tag.Genres) : "";
