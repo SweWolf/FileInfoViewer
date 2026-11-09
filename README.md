@@ -20,7 +20,7 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 - **Syntax-highlighted JSON** — structured metadata (e.g. embedded workflow data in AI-generated images) is pretty-printed with color coding
 - **Configurable** — control timestamp format, timezone, copy buttons, content width, web links, and which sections to show
 - **Dark mode** — Light, Dark, or follow the Windows setting (System)
-- **Prompt and Seed template** — for AI images and videos made with ComfyUI (PNG) or Wan2GP (MP4): a small window with the prompt, seed and a few more values, instead of the full report. Start it from a Send To shortcut
+- **Prompt and Seed template** — for AI images and videos made with ComfyUI, Fooocus or Automatic1111 (PNG) or Wan2GP (MP4): a small window with the prompt, seed and a few more values, instead of the full report. Start it from a Send To shortcut
 - **Built-in help** — **Help > File Info Viewer Help** (F1) opens a help page that is included with the program, so it works without an internet connection
 - **Keyboard shortcuts** — F1 = Help, F6 = file path box, Alt+B = Browse, Ctrl+E = View File Info
 - **Update check** — a green **New Version Available** item appears in the menu bar when a newer version is on GitHub (can be turned off in Settings), and the About box shows the same
@@ -91,7 +91,7 @@ Once placed, use the built-in **Tools → Create Shortcut** option inside the ap
 
 **Drag and drop** — drag any file directly onto the application window.
 
-**Prompt and Seed template** — shows only the prompt, seed and a few other values of a ComfyUI PNG or a Wan2GP MP4 in a small window, instead of the HTML report. To use it from Explorer, choose **Tools → Create Shortcut** and tick **Send To menu: Prompt and Seed (Template 1)**. From the command line: `FileInfoViewer.exe -T1 "C:\path\to\file.png"`.
+**Prompt and Seed template** — shows only the prompt, seed and a few other values of a ComfyUI, Fooocus or Automatic1111 PNG or a Wan2GP MP4 in a small window, instead of the HTML report. To use it from Explorer, choose **Tools → Create Shortcut** and tick **Send To menu: Prompt and Seed (Template 1)**. From the command line: `FileInfoViewer.exe -T1 "C:\path\to\file.png"`.
 
 **Command line / Send To** — pass the file path as an argument:
 ```

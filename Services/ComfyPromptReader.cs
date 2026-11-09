@@ -7,6 +7,7 @@ namespace FileInfoViewer.Services;
 /// The values come from the PNG text chunk "prompt" (node id to {class_type, inputs}). Node ids and
 /// class names differ between workflows, so nothing is looked up by id: the sampler node is found by
 /// its seed input and its positive/negative links are followed to the text node.
+/// Without that chunk the "parameters" chunk is tried (Fooocus, then Automatic1111: see AiParametersReader.cs).
 /// </summary>
 internal static class ComfyPromptReader
 {
@@ -31,7 +32,13 @@ internal static class ComfyPromptReader
         catch (Exception ex) { return TemplateResult.Fail($"The file could not be read: {ex.Message}"); }
 
         if (!chunks.TryGetValue("prompt", out var json))
-            return TemplateResult.Fail("No ComfyUI prompt data was found in this file.");
+        {
+            // Not ComfyUI: the "parameters" chunk of Fooocus (JSON) or Automatic1111 and its relatives
+            if (chunks.TryGetValue("parameters", out var parameters)
+                && (FooocusReader.Parse(parameters) ?? Automatic1111Reader.Parse(parameters)) is { } found)
+                return found;
+            return TemplateResult.Fail("No prompt data (ComfyUI, Fooocus or Automatic1111) was found in this file.");
+        }
 
         try
         {

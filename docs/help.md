@@ -275,7 +275,8 @@ the EXE that is running now, so create it again if you move the program.
 
 ## Prompt and Seed
 
-Pictures and videos made with ComfyUI (PNG) or Wan2GP (MP4) store the **Prompt**, the **Negative
+Pictures and videos made with ComfyUI, Fooocus or Automatic1111 (and programs like it, such as
+Forge) as PNG, or with Wan2GP as MP4, store the **Prompt**, the **Negative
 Prompt** and the **Seed** that were used. This template opens a small window with just those values
 instead of the whole report, each with a button that copies it. A value the file does not have
 shows "(not found)".

@@ -25,7 +25,7 @@ internal static class Templates
         {
             ".png" => ComfyPromptReader.Read(filePath),
             ".mp4" or ".m4v" or ".mov" => Wan2GpReader.Read(filePath),
-            _ => TemplateResult.Fail("This template reads PNG files (ComfyUI) and MP4 files (Wan2GP) only."),
+            _ => TemplateResult.Fail("This template reads PNG files (ComfyUI, Fooocus, Automatic1111) and MP4 files (Wan2GP) only."),
         };
 
     public static Template? Get(int number) => All.FirstOrDefault(t => t.Number == number);
