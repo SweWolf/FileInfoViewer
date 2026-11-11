@@ -437,6 +437,46 @@ public static class FileInfoCollector
         model.ArchiveInfo = info;
     }
 
+    /// <summary>Frame count, total duration and frame rate of a GIF (Format Details), plus one "GIF Frame nnn" tag per frame.</summary>
+    private static void AddGifFrameInfo(IEnumerable<MetadataExtractor.Directory> directories,
+        ImageInfoModel imageInfo, Action<string, string?> addTag)
+    {
+        var controls = directories.OfType<MetadataExtractor.Formats.Gif.GifControlDirectory>().ToList();
+        var frames = directories.OfType<MetadataExtractor.Formats.Gif.GifImageDirectory>().ToList();
+        if (frames.Count == 0) return;
+
+        // A frame's Control block comes just before its Image block
+        double totalSeconds = 0;
+        for (var i = 0; i < frames.Count; i++)
+        {
+            var f = frames[i];
+            var c = i < controls.Count ? controls[i] : null;
+            double delay = 0;
+            if (c != null && c.TryGetInt32(MetadataExtractor.Formats.Gif.GifControlDirectory.TagDelay, out var d))
+                delay = d / 100.0; // GIF delays are in hundredths of a second
+            totalSeconds += delay;
+
+            f.TryGetInt32(MetadataExtractor.Formats.Gif.GifImageDirectory.TagWidth, out var w);
+            f.TryGetInt32(MetadataExtractor.Formats.Gif.GifImageDirectory.TagHeight, out var h);
+            f.TryGetInt32(MetadataExtractor.Formats.Gif.GifImageDirectory.TagLeft, out var x);
+            f.TryGetInt32(MetadataExtractor.Formats.Gif.GifImageDirectory.TagTop, out var y);
+            var text = $"{w} × {h} at {x}, {y}; delay {delay:0.##} s";
+            if (c?.GetDescription(MetadataExtractor.Formats.Gif.GifControlDirectory.TagDisposalMethod) is { Length: > 0 } disposal)
+                text += $"; {disposal}";
+            addTag($"GIF Frame {i + 1:D4}", text);
+        }
+
+        if (frames.Count > 1)
+        {
+            imageInfo.FormatDetails["Frames"] = frames.Count.ToString("N0");
+            if (totalSeconds > 0)
+            {
+                imageInfo.FormatDetails["Duration"] = $"{totalSeconds:0.##} seconds";
+                imageInfo.FormatDetails["Average Frame Rate"] = $"{frames.Count / totalSeconds:0.#} fps";
+            }
+        }
+    }
+
     private static void CollectImageInfo(string filePath, FileInfoModel model)
     {
         var imageInfo = new ImageInfoModel();
@@ -484,10 +524,19 @@ public static class FileInfoCollector
                 imageInfo.ExifTags[key] = value;
             }
 
+            // GIF: every frame has its own Control and Image block (an animation can have hundreds):
+            // show a short summary, and one compact row per frame in the collapsed technical tags
+            if (model.Extension == ".gif")
+                AddGifFrameInfo(directories, imageInfo, AddTag);
+
             foreach (var directory in directories)
             {
                 // WebpInfoReader already shows this (in more detail)
                 if (directory is MetadataExtractor.Formats.WebP.WebPDirectory) continue;
+
+                // GIF frames: handled above
+                if (directory is MetadataExtractor.Formats.Gif.GifControlDirectory
+                              or MetadataExtractor.Formats.Gif.GifImageDirectory) continue;
 
                 // PSD: PsdInfoReader shows the header; the Photoshop resource tags are mostly binary internals
                 if (model.Extension is ".psd" or ".psb")
