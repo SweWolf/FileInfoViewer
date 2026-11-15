@@ -30,6 +30,7 @@ public partial class MainForm : Form
         if (result is { IsUpdateAvailable: true } && !IsDisposed)
         {
             _updateReleasePageUrl = result.ReleasePageUrl;
+            menuNewVersion.ForeColor = IsDark() ? Color.FromArgb(110, 215, 155) : Color.Green;
             menuNewVersion.Visible = true;
         }
     }
@@ -157,10 +158,17 @@ public partial class MainForm : Form
         form.ShowDialog(this);
     }
 
+    // True when the app is showing the dark color scheme (Dark, or System with Windows in dark mode)
+#pragma warning disable WFO5001
+    private static bool IsDark() => Application.IsDarkModeEnabled;
+#pragma warning restore WFO5001
+
     private void SetStatus(string message, bool error)
     {
         lblStatus.Text = message;
-        lblStatus.ForeColor = error ? Color.Crimson : Color.FromArgb(0, 120, 80);
+        var dark = IsDark();
+        lblStatus.ForeColor = error ? (dark ? Color.FromArgb(255, 125, 125) : Color.Crimson)
+                                    : (dark ? Color.FromArgb(110, 215, 155) : Color.FromArgb(0, 120, 80));
     }
 
     protected override bool ProcessCmdKey(ref Message msg, Keys keyData)

@@ -9,6 +9,13 @@ public partial class AboutForm : Form
         InitializeComponent();
         Services.SettingsService.FixButtonStyles(this);
 
+        // Link color: the light blue of the SweWolf Media Player's About box on a dark background (the default
+        // dark blue is unreadable there); the same color while pressed, so it doesn't flash red
+#pragma warning disable WFO5001
+        var linkColor = Application.IsDarkModeEnabled ? Color.FromArgb(120, 170, 255) : Color.FromArgb(0, 90, 200);
+#pragma warning restore WFO5001
+        lnkGitHub.LinkColor = lnkGitHub.ActiveLinkColor = lnkGitHub.VisitedLinkColor = linkColor;
+
         var version = Assembly.GetExecutingAssembly().GetName().Version;
         lblVersion.Text = version != null
             ? $"Version {version.Major}.{version.Minor}.{version.Build}"
@@ -36,7 +43,7 @@ public partial class AboutForm : Form
         if (result.IsUpdateAvailable)
         {
             lblUpdateStatus.Text = $"↑ Version {result.LatestVersion} available";
-            lblUpdateStatus.ForeColor = Color.FromArgb(255, 210, 80); // warm yellow
+            lblUpdateStatus.ForeColor = Color.FromArgb(255, 210, 80); // warm yellow (on the dark blue header)
         }
         else
         {

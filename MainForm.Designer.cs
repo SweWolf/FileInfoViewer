@@ -109,7 +109,7 @@ partial class MainForm
         //
         // pnlMain
         // 
-        pnlMain.BackColor = Color.White;
+        pnlMain.BackColor = SystemColors.Control;
         pnlMain.Controls.Add(lblFilePathLabel);
         pnlMain.Controls.Add(txtFilePath);
         pnlMain.Controls.Add(btnBrowse);
@@ -125,7 +125,7 @@ partial class MainForm
         // lblFilePathLabel
         // 
         lblFilePathLabel.AutoSize = true;
-        lblFilePathLabel.ForeColor = Color.FromArgb(70, 70, 70);
+        lblFilePathLabel.ForeColor = SystemColors.ControlText;
         lblFilePathLabel.Location = new Point(20, 24);
         lblFilePathLabel.Name = "lblFilePathLabel";
         lblFilePathLabel.Size = new Size(59, 17);
@@ -135,10 +135,10 @@ partial class MainForm
         // txtFilePath
         // 
         txtFilePath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-        txtFilePath.BackColor = Color.FromArgb(248, 249, 252);
+        txtFilePath.BackColor = SystemColors.Window;
         txtFilePath.BorderStyle = BorderStyle.FixedSingle;
         txtFilePath.Font = new Font("Consolas", 12F);
-        txtFilePath.ForeColor = Color.FromArgb(30, 30, 30);
+        txtFilePath.ForeColor = SystemColors.WindowText;
         txtFilePath.Location = new Point(82, 20);
         txtFilePath.Name = "txtFilePath";
         txtFilePath.Size = new Size(680, 26);
@@ -182,7 +182,7 @@ partial class MainForm
         // 
         lblStatus.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
         lblStatus.Font = new Font("Segoe UI", 10F);
-        lblStatus.ForeColor = Color.FromArgb(100, 100, 120);
+        lblStatus.ForeColor = SystemColors.GrayText;
         lblStatus.Location = new Point(82, 96);
         lblStatus.Name = "lblStatus";
         lblStatus.Size = new Size(716, 23);

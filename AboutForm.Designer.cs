@@ -86,7 +86,7 @@ namespace FileInfoViewer
             // 
             // pnlContent
             // 
-            pnlContent.BackColor = Color.White;
+            pnlContent.BackColor = SystemColors.Control;
             pnlContent.Controls.Add(lblDescription);
             pnlContent.Controls.Add(lblCopyright);
             pnlContent.Controls.Add(lnkGitHub);
@@ -102,7 +102,7 @@ namespace FileInfoViewer
             // lblDescription
             // 
             lblDescription.Font = new Font("Segoe UI", 9.5F);
-            lblDescription.ForeColor = Color.FromArgb(50, 50, 50);
+            lblDescription.ForeColor = SystemColors.ControlText;
             lblDescription.Location = new Point(20, 18);
             lblDescription.Name = "lblDescription";
             lblDescription.Size = new Size(400, 36);
@@ -113,7 +113,7 @@ namespace FileInfoViewer
             // 
             lblCopyright.AutoSize = true;
             lblCopyright.Font = new Font("Segoe UI", 9F);
-            lblCopyright.ForeColor = Color.FromArgb(120, 120, 120);
+            lblCopyright.ForeColor = SystemColors.GrayText;
             lblCopyright.Location = new Point(20, 62);
             lblCopyright.Name = "lblCopyright";
             lblCopyright.Size = new Size(102, 15);
@@ -136,7 +136,7 @@ namespace FileInfoViewer
             // 
             lblBuiltWithHeader.AutoSize = true;
             lblBuiltWithHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-            lblBuiltWithHeader.ForeColor = Color.FromArgb(50, 50, 50);
+            lblBuiltWithHeader.ForeColor = SystemColors.ControlText;
             lblBuiltWithHeader.Location = new Point(20, 116);
             lblBuiltWithHeader.Name = "lblBuiltWithHeader";
             lblBuiltWithHeader.Size = new Size(64, 15);
@@ -146,7 +146,7 @@ namespace FileInfoViewer
             // lblBuiltWith
             // 
             lblBuiltWith.Font = new Font("Segoe UI", 9F);
-            lblBuiltWith.ForeColor = Color.FromArgb(80, 80, 80);
+            lblBuiltWith.ForeColor = SystemColors.ControlText;
             lblBuiltWith.Location = new Point(20, 136);
             lblBuiltWith.Name = "lblBuiltWith";
             lblBuiltWith.Size = new Size(400, 52);
