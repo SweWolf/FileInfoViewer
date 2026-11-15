@@ -161,6 +161,15 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
     <div class="card-header">🕐 Timestamps</div>
     <table>
 """);
+        // Taken: the camera's own clock (EXIF has no time zone unless OffsetTimeOriginal exists)
+        if (model.TakenLocal is { } taken)
+        {
+            var offText = model.TakenOffset is { } o
+                ? $" (UTC{(o < TimeSpan.Zero ? "-" : "+")}{Math.Abs(o.Hours):00}:{Math.Abs(o.Minutes):00})" : "";
+            Row(sb, "Taken", taken.ToString(tsFmt) + offText);
+            if (model.TakenOffset is { } off && (tzDisplay == "UTC" || tzDisplay == "Both"))
+                Row(sb, "Taken (UTC)", (taken - off).ToString(tsFmt));
+        }
         if (tzDisplay == "Local" || tzDisplay == "Both")
         {
             Row(sb, "Created",  localCreated.ToString(tsFmt));

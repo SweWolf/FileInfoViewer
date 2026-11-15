@@ -18,6 +18,11 @@ public class FileInfoModel
     public DateTime ModifiedUtc { get; set; }
     public DateTime AccessedUtc { get; set; }
 
+    // Date the picture was taken (EXIF DateTimeOriginal): the camera's wall-clock time, with no time zone.
+    // TakenOffset is only set when the file also has the EXIF offset tag (OffsetTimeOriginal).
+    public DateTime? TakenLocal { get; set; }
+    public TimeSpan? TakenOffset { get; set; }
+
     // Hashes
     public string Md5 { get; set; } = "";
     public string Sha1 { get; set; } = "";

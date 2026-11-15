@@ -562,6 +562,19 @@ public static class FileInfoCollector
                     AddTag($"{directory.Name} / {tag.Name}", tag.Description);
             }
 
+            // Date taken: EXIF DateTimeOriginal (camera wall-clock time) + offset tag when present
+            foreach (var sub in directories.OfType<ExifSubIfdDirectory>())
+            {
+                if (!sub.TryGetDateTime(ExifDirectoryBase.TagDateTimeOriginal, out var taken)) continue;
+                model.TakenLocal = DateTime.SpecifyKind(taken, DateTimeKind.Unspecified);
+                var off = sub.GetString(ExifDirectoryBase.TagTimeZoneOriginal)?.Trim();
+                if (!string.IsNullOrEmpty(off)
+                    && TimeSpan.TryParse(off.TrimStart('+'), System.Globalization.CultureInfo.InvariantCulture, out var ts)
+                    && Math.Abs(ts.TotalHours) <= 14)
+                    model.TakenOffset = ts;
+                break;
+            }
+
             // HEIC/HEIF/AVIF: no GDI+ decoder, so take the size of the primary image from its properties
             if (HeifExtensions.Contains(model.Extension)
                 && directories.OfType<MetadataExtractor.Formats.Heif.HeicImagePropertiesDirectory>().FirstOrDefault() is { } heif
