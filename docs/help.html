@@ -121,6 +121,12 @@ MIME type and, if you choose to show it, the owner. The timestamps are
 the dates the file was created, modified and last accessed. You choose
 in the <a href="#settings">settings</a> whether they are shown in your
 local time, in UTC or both, and whether seconds are included.</p>
+<p>For a picture with an EXIF date, a <strong>Taken</strong> row is
+shown first: the date and time the picture was taken, as the camera’s
+clock said. EXIF has no time zone, so this time is shown as it is, not
+converted. Newer cameras and phones also store the offset from UTC; then
+it is shown after the time, for example “(UTC+01:00)”, and <strong>Taken
+(UTC)</strong> is added when you show UTC times.</p>
 <h3 id="warning">Warning</h3>
 <p>If the content of a file does not match its extension (for example a
 file named <code>holiday.jpg</code> that is really a PNG picture, or an
@@ -178,6 +184,9 @@ text, or use the copy button.</p>
 <ul>
 <li><strong>WebP</strong>: the format (lossy, lossless, extended),
 transparency, animation frames and duration.</li>
+<li><strong>Animated GIF</strong>: the number of frames, the duration
+and the average frame rate. One short row per frame is under
+<strong>Show N more technical tags</strong>.</li>
 <li><strong>SVG</strong>: size, view box, title, the program that made
 it, number of elements, embedded images and scripts.</li>
 <li><strong>Photoshop (PSD, PSB)</strong>: size, color mode, bit depth,

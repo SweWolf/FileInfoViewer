@@ -84,6 +84,11 @@ to show it, the owner. The timestamps are the dates the file was created, modifi
 accessed. You choose in the [settings](#settings) whether they are shown in your local time, in
 UTC or both, and whether seconds are included.
 
+For a picture with an EXIF date, a **Taken** row is shown first: the date and time the picture was
+taken, as the camera's clock said. EXIF has no time zone, so this time is shown as it is, not
+converted. Newer cameras and phones also store the offset from UTC; then it is shown after the
+time, for example "(UTC+01:00)", and **Taken (UTC)** is added when you show UTC times.
+
 ### Warning
 
 If the content of a file does not match its extension (for example a file named `holiday.jpg`
@@ -133,6 +138,8 @@ such as "Signature (base64, 752 bytes)". Hover over it to see the whole text, or
 Special cases:
 
 - **WebP**: the format (lossy, lossless, extended), transparency, animation frames and duration.
+- **Animated GIF**: the number of frames, the duration and the average frame rate. One short row
+  per frame is under **Show N more technical tags**.
 - **SVG**: size, view box, title, the program that made it, number of elements, embedded images and
   scripts.
 - **Photoshop (PSD, PSB)**: size, color mode, bit depth, layers, compression and color profile.

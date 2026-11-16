@@ -31,7 +31,7 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 
 | Type | What is collected |
 |---|---|
-| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic, heif, avif) | Dimensions, DPI, pixel format, bit depth, full EXIF and XMP metadata, embedded textual/JSON data. WebP: format (lossy/lossless/extended), alpha, animation frames, loop count and duration. JPEG and PNG: Content Credentials (C2PA) and the AI-generated tag, when present |
+| **Images** (jpg, png, gif, bmp, tiff, webp, ico, heic, heif, avif) | Dimensions, DPI, pixel format, bit depth, full EXIF and XMP metadata, embedded textual/JSON data. WebP: format (lossy/lossless/extended), alpha, animation frames, loop count and duration. Animated GIF: frames, duration and average frame rate. JPEG and PNG: Content Credentials (C2PA) and the AI-generated tag, when present |
 | **Photoshop** (psd, psb) | Size, color mode, bit depth, DPI, channels, layer count, compression, ICC profile, EXIF/IPTC/XMP, saving program |
 | **Camera RAW** (nef, nrw, cr2, arw, dng, orf, rw2, raf, pef, srw) | Image size and all EXIF and maker-note tags (camera, lens, exposure, ISO and more) |
 | **Vector images** (svg) | Width, height, view box, SVG version, title, description, creating program (Illustrator, Inkscape), element count, embedded images, scripts |
@@ -44,7 +44,7 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 | **SID music** (.sid) | Title, author, released, songs, video standard, SID chip model, load/init/play addresses |
 | **Executables / DLLs** (.exe, .dll) | File version info, .NET assembly info, target framework, architecture, referenced assemblies |
 | **Text files** (.txt, .log, .cs, .json, .xml, etc.) | Line, word and character count, encoding detection, BOM presence |
-| **All files** | Size, timestamps, Mark of the Web, MD5 + SHA-256 hashes, MIME type, file attributes, owner |
+| **All files** | Size, timestamps (and the date a picture was taken, from its EXIF data), Mark of the Web, MD5, SHA-1 and SHA-256 hashes, MIME type, file attributes, owner |
 
 ---
 
