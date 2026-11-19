@@ -103,7 +103,8 @@ When a browser downloads a file, Windows can attach a small hidden note to it: t
 Web**. The **Mark of the Web** card shows what it says:
 
 - **Zone**: where the file came from, for example 3 - Internet.
-- **Downloaded From**: the web address of the file, if the program that saved it wrote one.
+- **Downloaded From**: the web address of the file, if the program that saved it wrote one. Not shown when the program only wrote the placeholder
+  `about:internet`, because that says nothing about where the file came from.
 - **Referrer Page**: the web page that linked to the download.
 
 Some download links are temporary and signed. They have a long part after a `?` with an expiry

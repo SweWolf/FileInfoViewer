@@ -212,7 +212,8 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
   <table>
 """);
             if (web.ZoneText != null) Row(sb, "Zone", web.ZoneText);
-            if (web.HostUrl != null) Row(sb, "Downloaded From", WebAddress(web.HostUrl) + CopyBtn(web.HostUrl, copyDisplay), raw: true);
+            // "about:internet" is a placeholder some programs write when they don't know the address: no information
+            if (web.HostUrl != null && !web.HostUrl.Trim().Equals("about:internet", StringComparison.OrdinalIgnoreCase)) Row(sb, "Downloaded From", WebAddress(web.HostUrl) + CopyBtn(web.HostUrl, copyDisplay), raw: true);
             if (web.ReferrerUrl != null) Row(sb, "Referrer Page", WebAddress(web.ReferrerUrl) + CopyBtn(web.ReferrerUrl, copyDisplay), raw: true);
             foreach (var (key, value) in web.Extra)
                 Row(sb, key, WebAddress(value) + CopyBtn(value, copyDisplay), raw: true);
