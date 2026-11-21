@@ -210,6 +210,12 @@ for an MP4 made with Suno, shown under the comment), then:
 - **PDF**: pages, version, title, author, creator, producer, dates and encryption.
 - **Archives** (ZIP, RAR, 7z, TAR and more): number of files and folders, sizes, encryption and the
   ZIP comment.
+- **Disc images** (ISO): volume label, type of disc (DVD-Video, Blu-ray, Windows installation disc,
+  bootable or data disc), created date, size, number of files and folders and whether the disc is
+  bootable. For a **DVD-Video** disc the report also has a **DVD-Video** card with the main title
+  (length and chapters), the video format, every audio track and subtitle language, the region and a
+  list of all titles. The disc is not mounted or extracted: only the parts that hold this information
+  are read, so even a large image opens quickly.
 - **SQLite databases**: version, page size, tables, views, indexes and the number of rows.
 - **Torrents**: name, trackers, files, size, info hash and magnet link.
 - **SID music** (Commodore 64): title, author, number of songs, chip model and addresses.

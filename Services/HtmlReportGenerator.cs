@@ -828,6 +828,73 @@ document.addEventListener('DOMContentLoaded',function(){document.querySelectorAl
             sb.AppendLine("</div>");
         }
 
+        // Disc image card (ISO), with a DVD-Video card when the disc is a DVD
+        if (model.IsoInfo is { } iso)
+        {
+            sb.AppendLine("""
+<div class="card">
+  <div class="card-header">💿 Disc Image</div>
+  <table>
+""");
+            Row(sb, "Type", iso.Kind);
+            RowIfSet(sb, "Volume Label", iso.VolumeLabel);
+            RowIfSet(sb, "Disc Title", iso.DiscTitle);
+            var isoFmt = settings.ShowSeconds ? "yyyy-MM-dd HH:mm:ss" : "yyyy-MM-dd HH:mm";
+            if (iso.Created.HasValue)  Row(sb, "Created",  iso.Created.Value.ToString(isoFmt) + " UTC");
+            if (iso.Modified.HasValue && iso.Modified != iso.Created) Row(sb, "Modified", iso.Modified.Value.ToString(isoFmt) + " UTC");
+            RowIfSet(sb, "Application", iso.Application);
+            RowIfSet(sb, "Publisher", iso.Publisher);
+            RowIfSet(sb, "Prepared By", iso.Preparer);
+            if (iso.ImageBytes > 0) Row(sb, "Image Size", FormatSize(iso.ImageBytes));
+
+            var isoCounts = new List<string>();
+            if (iso.FileCount > 0)   isoCounts.Add($"{iso.FileCount:N0} file{(iso.FileCount == 1 ? "" : "s")}");
+            if (iso.FolderCount > 0) isoCounts.Add($"{iso.FolderCount:N0} folder{(iso.FolderCount == 1 ? "" : "s")}");
+            if (isoCounts.Count > 0) Row(sb, "Contents", string.Join(", ", isoCounts) + (iso.TotalFileBytes > 0 ? $" ({FormatSize(iso.TotalFileBytes)})" : ""));
+            if (iso.VideoStreamFiles > 0)
+                Row(sb, "Video Files", $"{iso.VideoStreamFiles:N0} M2TS file{(iso.VideoStreamFiles == 1 ? "" : "s")} ({FormatSize(iso.VideoStreamBytes)})");
+            if (iso.RootItems.Count > 0)
+                Row(sb, "Top Level", string.Join(", ", iso.RootItems.Take(12)) + (iso.RootItems.Count > 12 ? ", …" : ""));
+            Row(sb, "Bootable", iso.IsBootable ? "Yes" : "No");
+            if (iso.HasUdf) Row(sb, "UDF File System", "Yes");
+            sb.AppendLine("  </table></div>");
+
+            if (iso.Dvd is { } dvd)
+            {
+                static string Dur(TimeSpan t) => $"{(int)t.TotalHours}:{t.Minutes:00}:{t.Seconds:00}";
+
+                sb.AppendLine("""
+<div class="card">
+  <div class="card-header">🎬 DVD-Video</div>
+  <table>
+""");
+                if (dvd.MainTitle is { } main)
+                {
+                    Row(sb, "Main Title", $"Title {main.Number}, {Dur(main.Duration)}" + (main.Chapters > 0 ? $", {main.Chapters} chapters" : ""));
+                    if (main.Angles > 1) Row(sb, "Angles", main.Angles.ToString());
+                }
+                if (dvd.Titles.Count > 0) Row(sb, "Titles", dvd.Titles.Count.ToString());
+                RowIfSet(sb, "Video", dvd.Video);
+                for (int i = 0; i < dvd.Audio.Count; i++)
+                    Row(sb, dvd.Audio.Count == 1 ? "Audio" : $"Audio {i + 1}", dvd.Audio[i]);
+                if (dvd.Subtitles.Count > 0)
+                    Row(sb, dvd.Subtitles.Count == 1 ? "Subtitle" : $"Subtitles ({dvd.Subtitles.Count})",
+                        string.Join(", ", dvd.Subtitles));
+                RowIfSet(sb, "Region", dvd.Regions);
+                sb.AppendLine("  </table>");
+
+                if (dvd.Titles.Count > 1)
+                {
+                    // Collapsed, like the chapter list and the technical tags
+                    sb.AppendLine($"""  <details class="more-tags"><summary>Show all {dvd.Titles.Count} titles</summary><table class="tag-table">""");
+                    foreach (var t in dvd.Titles)
+                        Row(sb, $"Title {t.Number}", Dur(t.Duration) + (t.Chapters > 0 ? $", {t.Chapters} chapters" : "") + $" (title set {t.TitleSet})");
+                    sb.AppendLine("  </table></details>");
+                }
+                sb.AppendLine("</div>");
+            }
+        }
+
         // Archive info card
         if (model.ArchiveInfo is { } arc)
         {

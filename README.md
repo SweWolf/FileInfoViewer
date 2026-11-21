@@ -40,6 +40,7 @@ A .NET 10 WinForms application that collects as much metadata as possible about 
 | **PDF** (.pdf) | Page count, PDF version, title, author, subject, keywords, creator, producer, creation/modified dates, encryption |
 | **Archives** (zip, rar, 7z, tar, tar.gz, tar.bz2, tar.xz) | Format, file and folder count, compressed and uncompressed size, encryption, ZIP comment |
 | **SQLite databases** (.db, .sqlite, .sqlite3, .db3, .s3db) | SQLite version, page size and count, encoding, journal mode, tables, views and indexes, row count per table |
+| **Disc images** (.iso) | Volume label, disc type, created date, size, file and folder count, bootable flag. DVD-Video discs also show the main title's length, chapters, video format, audio tracks, subtitle languages and region, plus a list of all titles |
 | **Torrents** (.torrent) | Name, trackers, file list, total size, piece size, info hash, magnet link, private flag, creator, creation date |
 | **SID music** (.sid) | Title, author, released, songs, video standard, SID chip model, load/init/play addresses |
 | **Executables / DLLs** (.exe, .dll) | File version info, .NET assembly info, target framework, architecture, referenced assemblies |

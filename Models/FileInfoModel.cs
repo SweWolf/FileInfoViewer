@@ -63,6 +63,7 @@ public class FileInfoModel
 
     // Torrent file info
     public TorrentInfoModel? TorrentInfo { get; set; }
+    public IsoInfoModel? IsoInfo { get; set; }
 
     // SID (Commodore 64 music) file info
     public SidInfoModel? SidInfo { get; set; }
@@ -343,6 +344,49 @@ public class ArchiveInfoModel
     public long TotalCompressedBytes { get; set; }
     public bool IsEncrypted { get; set; }
     public string Comment { get; set; } = "";
+}
+
+public class IsoInfoModel
+{
+    public string Kind { get; set; } = "";
+    public string VolumeLabel { get; set; } = "";
+    public string DiscTitle { get; set; } = "";
+    public string SystemId { get; set; } = "";
+    public string VolumeSet { get; set; } = "";
+    public string Publisher { get; set; } = "";
+    public string Preparer { get; set; } = "";
+    public string Application { get; set; } = "";
+    public DateTime? Created { get; set; }
+    public DateTime? Modified { get; set; }
+    public long ImageBytes { get; set; }
+    public long TotalFileBytes { get; set; }
+    public int FileCount { get; set; }
+    public int FolderCount { get; set; }
+    public bool IsBootable { get; set; }
+    public bool HasUdf { get; set; }
+    public List<string> RootItems { get; set; } = [];
+    public int VideoStreamFiles { get; set; }
+    public long VideoStreamBytes { get; set; }
+    public DvdInfoModel? Dvd { get; set; }
+}
+
+public class DvdInfoModel
+{
+    public string Regions { get; set; } = "";
+    public List<DvdTitleInfo> Titles { get; set; } = [];
+    public DvdTitleInfo? MainTitle { get; set; }
+    public string Video { get; set; } = "";
+    public List<string> Audio { get; set; } = [];
+    public List<string> Subtitles { get; set; } = [];
+}
+
+public class DvdTitleInfo
+{
+    public int Number { get; set; }
+    public int TitleSet { get; set; }
+    public int Angles { get; set; }
+    public TimeSpan Duration { get; set; }
+    public int Chapters { get; set; }
 }
 
 public class AssemblyInfoModel

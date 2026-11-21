@@ -66,7 +66,7 @@ public static class FileInfoCollector
 
     private static readonly Dictionary<string, string> MimeTypes = new(StringComparer.OrdinalIgnoreCase)
     {
-        { ".torrent", "application/x-bittorrent" },
+        { ".torrent", "application/x-bittorrent" }, { ".iso", "application/x-iso9660-image" },
         { ".sid", "audio/prs.sid" }, { ".psd", "image/vnd.adobe.photoshop" }, { ".psb", "image/vnd.adobe.photoshop" },
         { ".jpg", "image/jpeg" }, { ".jpeg", "image/jpeg" }, { ".png", "image/png" },
         { ".gif", "image/gif" }, { ".bmp", "image/bmp" }, { ".tiff", "image/tiff" },
@@ -363,6 +363,22 @@ public static class FileInfoCollector
             catch (Exception ex)
             {
                 model.Warnings.Add($"Could not read torrent info: {ex.Message}");
+            }
+        }
+
+        // Disc image info (ISO 9660; DVD-Video details)
+        if (model.Extension == ".iso")
+        {
+            try
+            {
+                if (IsoInfoReader.IsIsoFile(filePath))
+                    model.IsoInfo = IsoInfoReader.Read(filePath);
+                else
+                    model.Warnings.Add("This .iso file has no ISO 9660 volume descriptor, so its contents are not listed.");
+            }
+            catch (Exception ex)
+            {
+                model.Warnings.Add($"Could not read disc image info: {ex.Message}");
             }
         }
 
